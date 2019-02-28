@@ -1,0 +1,20 @@
+{
+    "chartType":[
+
+        {"text": "Barchart", "value": "bar"},
+        {"text": "Areachart", "value": "area"},
+        {"text": "Linechart", "value": "line"},
+        {"text": "ScatterPlot", "value": "point"},
+        {"text": "Rectangle", "value": "rect"},
+        {"text": "Square", "value": "square"},
+        {"text": "Label", "value": "text"},
+        {"text": "Tick", "value": "tick"}
+    ],
+
+    "typesPrefab": [
+        {"text":"Quantitative","value":"quantitative"},
+        {"text":"Ordinal","value":"ordinal"},
+        {"text":"Temporal","value":"temporal"},
+        {"text":"Nominal","value":"nominal"}
+    ]
+}

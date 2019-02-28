@@ -1,0 +1,175 @@
+{
+
+    "Barchart":{
+
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"color","text":"Fill","attr":"encoding","type":"in"},
+            {"name":"row","text":"Row","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+
+        ],
+        "type": "Chart",
+        "maker": "bar"
+    },
+    "Linechart":{
+
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"stroke","text":"Stroke","attr":"encoding","type":"in"},
+            {"name":"row","text":"Row","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+
+        ],
+        "type":"Chart",
+        "maker": "line"
+    },
+    "Scatterplot":{
+
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"fill","text":"Fill","attr":"encoding","type":"in"},
+            {"name":"size","text":"Size","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+
+        ],
+        "type":"Chart",
+        "maker": "point"
+    },
+    "Stripplot":{
+
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"stroke","text":"Stroke","attr":"encoding","type":"in"},
+            {"name":"row","text":"Row","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+
+        ],
+        "type":"Chart",
+        "maker": "tick"
+    },
+    "Boxplot":{
+
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"stroke","text":"Stroke","attr":"encoding","type":"in"},
+            {"name":"row","text":"Row","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+
+        ],
+        "type":"Chart",
+        "maker": "boxplot"
+    },
+    "Color":{
+
+        "inPorts": [
+            {"name":"In","text":"In","attr":"field" ,"type":"in"}
+        ],
+        "outPorts": [
+            {"name":"Out","text":"Out","attr":"field","type":"out"}
+        ],
+        "type":"Operator"
+    },
+    "Sum":{
+
+        "inPorts": [
+            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"Sum","text":"Sum","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "Reduce":{
+
+        "inPorts": [
+            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"Reduce","text":"Reduce","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "Multi":{
+
+        "inPorts": [
+            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"Multi","text":"Multi","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "Table":{
+
+        "inPorts": [],
+        "outPorts": [],
+        "type":"Data"
+    },
+    "Filter":{
+
+        "inPorts": [
+            {"name":"dimension","text":"Dim","attr":"processor","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"output","text":"Output","attr":"processor","type":"out"}
+        ],
+        "type":"Processor"
+    },
+    "Log":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"processor","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"output","text":"Output","attr":"field","type":"out"}
+        ],
+        "type":"Processor"
+    },
+    "Left Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Right Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Inner Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Outer Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    }
+
+}
