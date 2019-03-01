@@ -96,17 +96,17 @@
 </template>
 <script>
 import vegaEmbed from "vega-embed";
-import config from "../assets/config.json";
+import config from "../../assets/config.json";
 import $ from "jquery";
-import dataHelper from "../commons/Helper/dataHelper";
-import caculator_modules from "../commons/Helper/caculator_modules";
-import processor_modules from "../commons/Helper/processer_modules";
-import BlueComponent from "../commons/BlueComponent";
+import dataHelper from "../../common/Helper/dataHelper";
+import caculator_modules from "../../common/Helper/caculator_modules";
+import processor_modules from "../../common/Helper/processer_modules";
+import BlueComponent from "../../common/BlueComponents/BlueComponent";
 import * as d3 from "d3";
-import blueComponentTypes from "../assets/blueComponentTypes.json";
-import modelConfig from "../assets/modelConfig.json";
-import BlueprintLine from "../commons/BlueprintLine";
-import VegaModel from "../commons/vegaModel";
+import blueComponentTypes from "../../assets/blueComponentTypes.json";
+import modelConfig from "../../assets/modelConfig.json";
+import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
+import VegaModel from "../../common/BlueComponents/vegaModel";
 
 
 export default {
@@ -727,5 +727,5 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import './Styles/editor';
+@import '../Styles/editor';
 </style>
