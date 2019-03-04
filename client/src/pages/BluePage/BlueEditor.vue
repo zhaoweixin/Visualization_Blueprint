@@ -30,50 +30,49 @@
     </div>
   
      <vs-row vs-h="6">
-
+       <!--数据添加模块-->
         <vs-col id='data_list_container' vs-type="flex" vs-justify="left" vs-align="top" vs-w="2" style="max-height:800px;overflow-y:scroll">
-             <div id='data_list'>
-              <vs-list :key="index" v-for="(data, index) in dataList">
-              
-                  <vs-button color="dark" type="line" :key="data.index" icon="menu">{{data.name}}</vs-button>
-                  <span style="color:rgb(20, 115, 230);padding:10px;float:right;font-size:13px">Length: {{data.length}}</span>
-              
-                  <vs-divider></vs-divider>
             
+            <div id='data_list'>
+              <vs-collapse accordion :key="index" v-for="(data, index) in dataList">
+                <vs-collapse-item style="background:rgb(142,170,255); border-radius:10px">
+                  <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px">
+                    {{data.name}}
+                  </div>
+                  <span style="color:white;padding:5px;float:right;font-size:15px">Length: {{data.length}}</span>
+                  <vs-divider style="margin:3px"></vs-divider>
                   <div :key="index" v-for="(dim, index) in data.dimensions">
                     <vs-list-item>
                       <h3 style="float:left;color:white">{{dim.name}}</h3>
-                       <vs-select style="float:left;width:170px" v-model="dim.type">
+                       <vs-select style="float:left;width:130px" v-model="dim.type">
                         <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in dataTypes" />
                       </vs-select>
-                        <vs-avatar style="float:right;margin:0px;margin-left:10px" :color="dim.color" text="Add" v-on:click="dimensionSelected(data.name, dim)"/>
+                        <vs-avatar style="float:right;margin:0px;margin-left:10px; background:rgb(167,189,255)" :color="dim.color" text="+" v-on:click="dimensionSelected(data.name, dim)"/>
                     </vs-list-item>
                   </div>
-              </vs-list>
-             </div>
+                </vs-collapse-item>
+              </vs-collapse >
+            </div>
         </vs-col>
-
+      <!--蓝图编辑模块-->
         <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="8">
-             <div id='preview'><svg id ='editorborad'></svg></div>
+             <div id='preview' style="background:rgba(0,0,0,0.05)"><svg id ='editorborad'></svg></div>
         </vs-col>
-
+      <!--蓝图功能模块-->
         <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="2" style="max-height:800px;overflow-y:scroll">
             <div id='editor'>
-
               <vs-collapse accordion :key="item.name" v-for="item in componentTypes">
-                <vs-collapse-item>
+                <vs-collapse-item style="background:rgb(142,170,255); border-radius:10px">
                   <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px">
                     {{item.name}}
                   </div>
                   <vs-list :key="index" v-for="(meta, index) in item.childrens">
-
-                    <vs-button style="width:80%; justify-content: left; margin-left:10%" color="rgb(134,4,98)" type="filled"  v-on:click="createNewComponent(item.name, meta)" icon="add_circle">{{meta}}</vs-button>
+                    <vs-button style="width:80%; justify-content: left; margin-left:10%" color="rgb(167,189,255)" type="filled"  v-on:click="createNewComponent(item.name, meta)" icon="add_circle">{{meta}}</vs-button>
                     <vs-divider></vs-divider>
                   </vs-list>  
                 </vs-collapse-item>
               </vs-collapse >
-            
-              <vs-button style="width:50%; justify-content: right; float:right;margin-right:15%" color="#ED3500" type="filled" icon="apps">Find more component</vs-button>
+              <vs-button style="width:50%; justify-content: right; float:right;margin-right:15%" color="rgb(142,170,255)" type="filled" icon="apps">Find more component</vs-button>
             </div>
         </vs-col>
     </vs-row>
@@ -81,7 +80,7 @@
     <vs-row vs-h="4">
       <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="2">
              <div id='infoPanel' style='height:450px'>
-                <vs-textarea style='color:white; height:450px' cols="100" rows="23" color='white' v-model="model_config_text" />
+                <vs-textarea style='height:450px' cols="100" rows="23" v-model="model_config_text" />
              </div>
     </vs-col>
      <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="10">
@@ -176,7 +175,7 @@ export default {
           .attr("x2", d => d.x2)
           .attr("y1", d => d.y1)
           .attr("y2", d => d.y2)
-          .attr("stroke", "#555");
+          .attr("stroke", "#00000030");
       }
     },
 
@@ -198,7 +197,7 @@ export default {
     createNewComponent(group, name) {
       let properties = this.modelConfig[name];
       properties["fill"] = this.componentTypes[group].color;
-      properties["name"] = name;
+      properties["name"] = name; 
 
       let _com = new BlueComponent(this.container, properties);
       this.addClickEvent2Circle(_com);
@@ -550,7 +549,7 @@ export default {
       let result = this.vegaObject.getOutputForced();
 
       //Show the result in bottom canvas via vage compilier
-      vegaEmbed("#canvas", result, { theme: "dark" });
+      vegaEmbed("#canvas", result, { theme: "default" });
     },
     connectionRemove(connect){
       
@@ -692,7 +691,7 @@ export default {
 
     //Set the init setting of textarea
     d3.selectAll("textarea")
-      .style("color", "white")
+      .style("color", "grey")
       .style("font-size", "16px");
 
     //Add a listener for window's resize

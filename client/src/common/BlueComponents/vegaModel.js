@@ -7,7 +7,7 @@ export default class VegaModel {
         this.data["width"] = width;
         this.data["height"] = height;
         this.data["layer"] = [];
-        this.data['background'] = '#202020'
+        this.data['background'] = '#ffffff'
         this.config = {}
       
         this['data'].title = {
