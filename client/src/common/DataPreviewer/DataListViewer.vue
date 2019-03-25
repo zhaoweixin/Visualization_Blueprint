@@ -1,34 +1,63 @@
 <template>
-    <div>
-        <vs-row vs-h="2">
+    
+        <!-- <vs-row vs-h="2"> -->
                 <!--数据列表功能区-->
-        </vs-row>
+        <!-- </vs-row>
             <vs-row vs-h="10">
                 <!--数据列表查看区-->
-                <vs-table search :data="state.listdata"  max-items="10" pagination>
+            <vs-row vs-w="12" vs-h="12">
+                <vs-table search :data="state.listdata" style="width:100%" max-items="10"  stripe pagination>
                     <template slot="header">
-                        <h3> Users </h3>
+                        <h2> Users </h2>
+                        <br>
                     </template>
                     
-                    <template slot="thead" v-for="(item, index) in state.sortKey">
-                        <vs-th sort-key="item"> {{item}} </vs-th>
+                    <template slot="thead" >
+                        <template v-for="(item, index) in state.nameKey">
+                        <vs-th :sort-key="item"> {{item}} </vs-th>
+                        </template>
+                        <vs-th>操作</vs-th>
+                       
+                        
                     </template>
-
+                    
+                        
+                       
                     <template slot-scope="{data}">
                         <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-                            <template v-for="(item, index) in state.sortKey">
-                                <vs-td :data="data[indextr][item]">{{data[indextr][item]}} </vs-td>
-                            </template>
+                            
+                                <template v-for="(item) in state.nameKey">
+                                    <vs-td :data="data[indextr][item]">{{data[indextr][item]}}
+                                        <template slot="edit">
+                                            <vs-input v-model="data[indextr][item]" class="inputx" placeholder="item"/>
+                                        </template>
+                                     </vs-td>
+                                     
+                                </template>
+                            
+                            
+                                
+                                    <vs-button color="warning" type="line"  :key="indextr" @click="delectit(tr.id)">delete</vs-button>
+                                    <!-- <vs-button color="primary" type="line"  :key="indextr" @click="fixit(tr.id)">fix</vs-button> -->
+                               
+                            
                         </vs-tr>
                     </template>
+                     
                 </vs-table>
+                <!-- <template v-show="show" v-for="(tr,trindex) in data[0]">
+                    <vs-alert :title="title(trindex)" color="rgb(231, 154, 23)" active="true">
+                        {{wenzi(trindex)}}
+                    </vs-alert>
+                </template> -->
             </vs-row>
-    </div>
+    
 </template>
 
 <script>
 import Vue from 'vue'
 import DataManager from '../DataManager'
+import * as d3 from "d3"
 export default{
     name:'DataListViewer',
     data: function(){
@@ -36,7 +65,7 @@ export default{
             state:{
                 listdata:[
                     {
-                        "id": 1,
+                        "id":1,
                         "name": "Leanne Graham",
                         "username": "Bret",
                         "email": "Sincere@april.biz",
@@ -106,8 +135,11 @@ export default{
                         "website": "ambrose.net",
                     }
                 ],
-                sortKey:['email', 'username', 'id']
+                sortKey:['email', 'username', 'id','操作'],
+                nameKey:['email', 'username', 'id']
             },
+            show:false,
+            clickId:-1
         }
     },
     props: ['tableMsg'],
@@ -117,6 +149,24 @@ export default{
         }
     },
     methods: {
+        delectit(id){
+            //let toDelect = d3.select('#'+id)
+            console.log(id)
+            let that = this
+            //let intId = parseInt(id)
+            for(let i=0;i<that.state.listdata.length;i++){
+                if((id) == that.state.listdata[i].id){
+                    
+                    that.state.listdata.splice(i,1)
+                }
+            }
+            console.log(that.state.listdata);
+            //toDelect.remove();
+        },
+        // fixit(id){
+        //     this.show = true;
+        //     this.clickId = parseInt(id);
+        // },
         generateTable: function(){
             let listdata = [
                 {
@@ -140,8 +190,24 @@ export default{
             this.$set(this.state, 'listdata', listdata)
         }
     },
+    computed:{
+        // title:function(trindex){
+
+        // },
+        // wenzi:function(trindex){
+
+        // }
+        sortKeys:function(item,index){
+            if(index===this.state.sortKey.length)
+            return "null"
+            else return item
+            
+            
+        }
+    },
     mounted () {}
 }
 </script>
 <style>
+
 </style>

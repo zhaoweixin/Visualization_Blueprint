@@ -9,7 +9,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"Out","text":"Out","attr":"encoding","type":"out"}
         ],
         "type": "Chart",
         "maker": "bar"
@@ -23,7 +23,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"Out","text":"Out","attr":"encoding","type":"out"}
         ],
         "type":"Chart",
         "maker": "line"
@@ -37,7 +37,7 @@
             {"name":"size","text":"Size","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"Out","text":"Out","attr":"encoding","type":"out"}
         ],
         "type":"Chart",
         "maker": "point"
@@ -51,7 +51,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"Out","text":"Out","attr":"encoding","type":"out"}
         ],
         "type":"Chart",
         "maker": "tick"
@@ -65,7 +65,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"Out","text":"Out","attr":"encoding","type":"out"}
         ],
         "type":"Chart",
         "maker": "boxplot"
@@ -170,6 +170,26 @@
             {"name":"dim","text":"Dim","attr":"connector","type":"in"}
         ],
         "type":"Connector"
+    },
+    "Template A":{
+        "inPorts":[
+            {"name":"chart_a","text":"chartA","attr":"Layout","type":"in"},
+            {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
+            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
+            {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+        ],
+        
+        "type":"Layout"
+    },
+    "Template B":{
+        "inPorts":[
+            {"name":"chart_a","text":"chartA","attr":"Layout","type":"in"},
+            {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
+            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
+            {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+        ],
+        "type":"Layout"
     }
+
 
 }

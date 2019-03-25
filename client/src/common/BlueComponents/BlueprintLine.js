@@ -13,6 +13,7 @@ export default class BlueprintLine {
         this.isWaitPath = false //false -> path正在移动 true -> path已经确定
         this.circleCoordinatesX = '' //预览路径时末端端点X
         this.circleCoordinatesY = '' //预览路径时末端端点Y
+        
         this.pathCount = 0
         this.container = container
         this.existingPort = []

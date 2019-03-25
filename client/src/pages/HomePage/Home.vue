@@ -1,11 +1,16 @@
 <template>
     <div>
-        <vs-col vs-w="1.5" vs-h="12">
-            <data-list-bar/>
-        </vs-col>
-        <vs-col vs-w="10.5" vs-h="12">
-            <data-previewer/>
-        </vs-col>
+        <!-- <vs-row > -->
+            <vs-col vs-w="2.5" vs-h="12">
+                <data-list-bar/>
+            
+            </vs-col>
+            <vs-col vs-w="9.5" vs-h="12">
+                <data-previewer/>
+            </vs-col>
+        <!-- </vs-row> -->
+      
+        
     </div> 
 </template>
 <script>

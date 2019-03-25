@@ -27,7 +27,7 @@ export default class BlueComponent {
         this.isLoading = true
 
         for(let key in options){
-            this[key] = options[key] //Set the initial parameter
+            this[key] = options[key] //Set the initial parameter 设置初始参数
         }
 
         this.width = this.name.length > 15 ? this.name.length * 10 : 180 
@@ -59,8 +59,8 @@ export default class BlueComponent {
             .on("end", function(d){
                 that.dragended(this, d)
             }));
-            
-        this.draw()
+        console.log(this.type);
+        this.draw(this.type)
     }
     //Get the current position and delta translation
     getPos(){
@@ -132,7 +132,7 @@ export default class BlueComponent {
     //Add a new port to component
     addPort(type, port){
 
-        port.text = port.text[0].toUpperCase() + port.text.slice(1, port.text.length)
+        port.text = port.text[0].toUpperCase() + port.text.slice(1, port.text.length)//array.slice:数组切片
 
         if(type == 'in'){
             this.inPorts.push(port)
@@ -140,7 +140,7 @@ export default class BlueComponent {
         else{
             this.outPorts.push(port)
         }
-
+        //console.log(type,port);
         this.redraw()
     }
     //Draw the back retangle
@@ -306,13 +306,159 @@ export default class BlueComponent {
         .attr('stroke-width','2')
        
     }
-    draw(){
+    drawTemp(){
+        let that = this;
+        let name = that.name;
+        //console.log(that)
+        let dataTodraw = ['A','B','C','D'];
+        this.container
+           // .data(dataTodraw)
+            //.enter()
+            .append("rect")
+            .attr("class",'myRect')
+            .attr("x",that.width*2/5)
+            .attr("y",that.height*7/27)
+            .attr("width",that.width/2)
+            .attr("height",that.height*2/3-10)
+            .attr("fill","#f47a55")
 
+        let startX = that.width*2/5;
+        let endX = that.width*9/10;
+        let startY = that.height*7/27;
+        let endY = that.height*25/27-10;
+        let data1 = [[startX,(startY+endY)/2],[endX,(startY+endY)/2]]; //画横线的数据
+        let data2 = [[(startX+endX)/2,startY],[(startX+endX)/2,endY]]; //画竖线的数据
+
+        let data11 = [[startX,(endY-startY)*3/4+startY],[endX,(endY-startY)*3/4+startY]];
+        let data22 = [[(endX-startX)*2/3+startX,startY],[(endX-startX)*2/3+startX,(endY-startY)*3/4+startY]];
+        let data33 = [[(endX-startX)*2/3+startX,startY+(endY-startY)*3/8],[endX,startY+(endY-startY)*3/8]];
+        
+        let lineGenerator = d3.line()
+            .x(function(d){
+                return d[0];
+            })
+            .y(function(d){
+                return d[1];
+            });
+        
+        if(name === 'Template A'){
+            this.container
+        .append("path")
+        .attr('stroke','#fff')
+        .attr('fill','none')
+        .attr('stroke-width','2')
+        .attr('d',lineGenerator(data1));
+
+        this.container.append("path")
+        .attr('stroke','#fff')
+        .attr('fill','none')
+        .attr('stroke-width','2')
+        .attr('d',lineGenerator(data2));
+
+        this.container.selectAll(".info")
+            .data(dataTodraw)
+            .enter()
+            .append("text")
+            .attr("class","info")
+            .attr("text-anchor", "middle")
+            .attr('fill','white')
+            .attr("x",function(d,i){
+                if(i===0||i===2){
+                    return (endX-startX)/4+startX
+                }
+                else{
+                    return (endX-startX)*3/4+startX
+                }
+            })
+            .attr("y",function(d,i){
+                if(i===1||i===0){
+                    return (endY-startY)/4+startY+6
+                }
+                else{
+                    return (endY-startY)*3/4+startY+6
+                }
+            })
+            .text(function(d,i){
+                return d
+            })
+        }
+        else{
+            this.container
+        .append("path")
+        .attr('stroke','#fff')
+        .attr('fill','none')
+        .attr('stroke-width','2')
+        .attr('d',lineGenerator(data11));
+
+        this.container.append("path")
+        .attr('stroke','#fff')
+        .attr('fill','none')
+        .attr('stroke-width','2')
+        .attr('d',lineGenerator(data22));
+       
+        this.container.append("path")
+        .attr('stroke','#fff')
+        .attr('fill','none')
+        .attr('stroke-width','2')
+        .attr('d',lineGenerator(data33));
+        
+        this.container.selectAll(".info")
+            .data(dataTodraw)
+            .enter()
+            .append("text")
+            .attr("class","info")
+            .attr("text-anchor", "middle")
+            .attr('fill','white')
+            .attr("x",function(d,i){
+                if(i===0){
+                    return (endX-startX)/3+startX
+                }
+                else if(i===3){
+                    return (endX-startX)/2+startX
+                }
+                else{
+                    return (endX-startX)*5/6+startX
+                }
+            })
+            .attr("y",function(d,i){
+                let thisY;
+                if(i===0){
+                    thisY= startY+(endY-startY)*3/8
+                }
+                else if(i ===1){
+                    thisY= startY+(endY-startY)*3/16
+                }
+                else if(i===2){
+                    thisY= startY+(endY-startY)*9/16
+                }
+                else{
+                    thisY= startY+(endY-startY)*7/8
+                }
+                return thisY + 6
+            })
+            .text(function(d,i){
+                return d
+            })
+    
+    
+    }
+
+    }
+    draw(type){
+       
+        if(type === 'Layout'){
+            this.width *= 1.5
+            this.drawBack()
+            this.drawTitle()
+            this.drawInPorts()
+            this.drawOutPorts()
+            this.drawTemp()
+        }else{
         this.drawBack()
         this.drawTitle()
         this.drawInPorts()
         this.drawOutPorts()
-
+        }
     }
     dragstarted(node, d) {
        // d3.select(node).raise().classed("active", true);

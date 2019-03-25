@@ -19,5 +19,10 @@
         "name": "Connector", 
         "childrens": ["Left Join", "Right Join", "Inner Join", "Outer Join"],
         "color": "#704cff"
+    },
+    "Layout":{
+        "name":"Layout",
+        "childrens":["Template A","Template B"],
+        "color":"#37BC22"
     }
 }

@@ -1,48 +1,15 @@
 <template lang="html">
     <div id="datapreviewer">
-        <vs-row vs-h="4">
+        <vs-row vs-h="8" >
             <vs-row vs-h="4">
                 <!--数据连接信息栏-->
                 <vs-avatar icon="grid_on" />
                 <h3 style="margin: auto">DataName</h3>
             </vs-row>
-            <vs-row vs-h="8">
-                <div id="testdiv" style="position:absolute" :data="checkBoxesList"></div>
-                <div id="draggableMenu" style="font-size: 8px; position:absolute; left:768px; top:125px; width: 300px; height: 150px; background-color: rgba(200, 200, 200, 0.2); opacity:0;">
-                    <div style="float: left; width:260px; height:30px; text-align:left; ">
-                        <p style="padding: 12px">Connect</p>
-                    </div>
-                    <div style="float: left; width:40px; height:20px;">
-                        <vs-button color="rgb(128,128,128)" type="flat" icon="clear" style="padding: auto" v-on:click="clickClosedraggableMenu()"></vs-button>
-                    </div>
-                    
-                    <div :key="index" v-for = "(todo, index) in svgtodos">
-                        <div style="float: left; width:75px; height:60px; padding-top: 10px">
-                            <img :src = "getImgUrl(todo.route)"  style="float: left; width:75px; height:30px;">
-                            <vs-button color="rgb(128,128,128)" type="flat" style="float: left; width:75px; height:30px; padding-top: 5px;" v-on:click="generateData(todo.type)">{{ todo.type }}</vs-button>
-                        </div>
-                    </div>
-                    
-                    <div style="float: left; width:300px; padding-top:10px">
-                        <div style="float: left; width:150px;">
-                            <vs-select color="rgb(128,128,128)" :label="state.labels.left" v-model="state.attrLeftSelect" style="float: left; width:150px;">
-                                <vs-select-item :key= "index" :value="item.value" :text="item.text" v-for= "(item,index) in state.attrList.left" />
-                            </vs-select>
-                        </div>
-                        
-                        <div style="float: left; width:150px;">
-                            <vs-select color="rgb(128,128,128)" :label="state.labels.right" v-model="state.attrRightSelect" style="float: left; width:150px;">
-                                <vs-select-item :key = "index" :value="item.value" :text="item.text" v-for= "(item,index) in state.attrList.right" />
-                            </vs-select>
-                        </div>
-                    </div>
-                    
-                </div>
-            </vs-row>
-        </vs-row>
-        <vs-row vs-h="8" style="margin-top: 30%">
             <Data-list-viewer :tableMsg="state.tablemsg"/>
         </vs-row>
+        
+        
     </div>
 </template>
 <script>
@@ -138,100 +105,7 @@ export default{
                 container = d3.select('#' + id)
             this.chartResize(id, window.innerWidth * 0.875, window.innerHeight * 0.65 * 0.33)
         },
-        chartResize(id, innerWidth, innerHeight){
-            let height = innerHeight > innerWidth * 2 ? innerWidth * 2 : innerHeight,
-                width = innerWidth;
-            d3.select('#' + id).attr('width', width).attr('height', height).style('fill', "steelblue")
-        },
-        draggableMenuInit(){
-            let rectDrag = d3.drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended)
-            let rect = d3.select('#draggableMenu')
-                .call(rectDrag)
-
-            let button = d3.select('#testbutton')
-                .on('click', function(){
-                })
-
-            function dragstarted(d){
-            }
-            function dragged(d){
-                d3.select(this)
-                    .style("left", function(){
-                        let re = parseInt(d3.select(this).style('left')) + d3.event.dx
-                        return re + 'px'
-                    })
-                    .style("top", function(){
-                        let re = parseInt(d3.select(this).style('top')) + d3.event.dy
-                        return re + 'px'
-                    });
-            }
-            function dragended(d){
-            }
-        },
-        addDataTabs(dataName){
-            let that = this
-            if(this.dataTabs.count >= 2) return;
-
-            let top = 50,
-                left = null,
-                width = 100,
-                height = 25,
-                divId = 'div_' + dataName,
-                randomColor = d3.scaleOrdinal(d3.schemeCategory10),
-                position = null
-            
-            //通过tab位置字典获取tab left位置 并设置id
-            for(let i=0; i<this.state.tabsPosition.length; i++){
-                let d = this.state.tabsPosition[i]
-                if(d.isoccupy == false){
-                    left = d.left
-                    d.isoccupy = true
-                    d.id = divId
-                    position = d.position
-                    break;
-                }
-            }
-
-            let div = d3.select('#testdiv')
-            let addtab = div.append('div')
-                    .attr('id', divId)
-                    .style('top', top + 'px')
-                    .style('left', left + 'px')
-                    .style('width', width + 'px')
-                    .style('height', height + 'px')
-                    .style('background-color', 'rgb(235,235,235)')
-                    .style('position', 'absolute')
-                    .style('border-left', function(){
-                        return '5px solid ' + randomColor(Math.floor(Math.random() * 10))
-                    })
-                    .text(dataName)
-                    .style('padding-top', '4px')
-                    .style('font-size', '.8rem')
-
-                addtab.style('opacity', 0)
-                addtab.transition().duration(300).style('opacity', 1)
-
-            if(this.dataTabs.datalist.indexOf(dataName) == -1){
-                this.dataTabs.count ++ 
-                this.dataTabs.datalist.push(dataName)
-            }
-
-            
-            DataManager.getFileAttrList(dataName).then(function(response) {
-                let re = []
-                response.data.forEach((d, i) => {
-                    re.push({'text': d.name, 'value': d.name})
-                })
-
-                //new draggable data attr list
-                that.$set(that.state['attrList'], position, re)
-                //new draggable data title
-                that.$set(that.state['labels'], position, dataName)
-            })
-        },
+        
         delDataTabs(dataName){
             if(this.dataTabs.count <= 0) return;
             let dataIndex = this.dataTabs.datalist.indexOf(dataName),
