@@ -8,26 +8,21 @@
             <vs-row vs-w="12" vs-h="12">
                 <vs-table search :data="state.listdata" style="width:100%" max-items="10"  stripe pagination>
                     <template slot="header">
-                        <h2> Users </h2>
-                        <br>
+                        <h2> Users </h2>                    
                     </template>
                     
-                    <template slot="thead" >
-                        <template v-for="(item, index) in state.nameKey">
-                        <vs-th :sort-key="item"> {{item}} </vs-th>
+                    <template slot="thead">
+                        <template  v-for="(item, index) in state.nameKey">
+                        <vs-th :sort-key="item" width="350"> {{item}} </vs-th>
                         </template>
                         <vs-th>操作</vs-th>
-                       
-                        
                     </template>
-                    
-                        
-                       
+                            
                     <template slot-scope="{data}">
                         <vs-tr :key="indextr" v-for="(tr, indextr) in data">
                             
                                 <template v-for="(item) in state.nameKey">
-                                    <vs-td :data="data[indextr][item]">{{data[indextr][item]}}
+                                    <vs-td :data="data[indextr][item]" width = "350">{{data[indextr][item]}}
                                         <template slot="edit">
                                             <vs-input v-model="data[indextr][item]" class="inputx" placeholder="item"/>
                                         </template>

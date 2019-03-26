@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import Vuesax from 'vuesax'
+import * as d3 from 'd3'
 import ElementUI from 'element-ui'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
@@ -107,3 +108,4 @@ new Vue({
     this.$store.dispatch('getFilesListData') // init listdata
   }
 }).$mount('#app')
+
