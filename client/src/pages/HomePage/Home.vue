@@ -1,21 +1,28 @@
 <template>
     <div>
-        <vs-col vs-w="1.5" vs-h="12">
-            <data-list-bar/>
-        </vs-col>
-        <vs-col vs-w="10.5" vs-h="12">
-            <data-previewer/>
-        </vs-col>
+        <!-- <vs-row > -->
+            <vs-col vs-w="2.5" vs-h="12">
+                <data-list-bar/>
+                <data-previewer/>
+            </vs-col>
+            <vs-col vs-w="9.5" vs-h="12">
+                <data-list-viewer/>
+            </vs-col>
+        <!-- </vs-row> -->
+      
+        
     </div> 
 </template>
 <script>
 import DataListBar from '../../common/DataListBar/DataListBar'
 import DataPreviewer from '../../common/DataPreviewer/DataPreviewer'
+import DataListViewer from '../../common/DataPreviewer/DataListViewer'
 export default{
     name: 'homepage',
     components: {
         DataListBar,
-        DataPreviewer
+        DataPreviewer,
+        DataListViewer
     }
 }
 </script>

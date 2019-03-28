@@ -176,6 +176,24 @@
             {"name":"dim","text":"Dim","attr":"viewer","type":"in"}
         ],
         "type":"Viewer"
+    },
+    "Template A":{
+        "inPorts":[
+            {"name":"chart_a","text":"chartA","attr":"Layout","type":"in"},
+            {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
+            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
+            {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+        ],
+        
+        "type":"Layout"
+    },
+    "Template B":{
+        "inPorts":[
+            {"name":"chart_a","text":"chartA","attr":"Layout","type":"in"},
+            {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
+            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
+            {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+        ],
+        "type":"Layout"
     }
-
 }

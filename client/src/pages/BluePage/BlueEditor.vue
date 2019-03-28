@@ -625,7 +625,7 @@ export default {
       }
 
       let result = this.vegaObject.getOutputForced();
-
+      console.log(result);
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
     },

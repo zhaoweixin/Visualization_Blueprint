@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import Vuesax from 'vuesax'
+import * as d3 from 'd3'
+import ElementUI from 'element-ui'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
@@ -14,6 +16,7 @@ import DataManager from './common/DataManager'
 
 Vue.use(VueRouter)
 Vue.use(Vuex)
+Vue.use(ElementUI)
 Vue.use(Vuesax, {
   theme:{
     colors:{
@@ -33,7 +36,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
+  mode:'history'
 })
 
 
@@ -104,3 +108,4 @@ new Vue({
     this.$store.dispatch('getFilesListData') // init listdata
   }
 }).$mount('#app')
+

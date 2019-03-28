@@ -24,5 +24,10 @@
         "name": "Viewer",
         "childrens": ["Viewer"],
         "color": "#704cff"
+    },
+    "Layout":{
+        "name":"Layout",
+        "childrens":["Template A","Template B"],
+        "color":"#37BC22"
     }
 }

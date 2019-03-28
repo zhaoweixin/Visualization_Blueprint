@@ -31,5 +31,7 @@ body{
   min-height:800px;
   background: #ffffff
 }
-
+body .vs-table colgroup.gutter{
+    display: table-cell!important;
+}
 </style>
