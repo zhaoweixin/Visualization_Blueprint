@@ -146,7 +146,8 @@ export default {
       componentLink:[],
       componentIndex:[],
       componentGraph:"",
-      exstingPorts:[]
+      exstingPorts:[],
+      vegaObjectList:[]
     };
   },
   methods: {
@@ -256,6 +257,7 @@ export default {
       }
       
       let _com = new BlueComponent(this.container, properties);
+      console.log("_com", _com)
       this.addClickEvent2Circle(_com);
       this.blueComponents.push(_com);
       //if create viewer, create tab
@@ -290,7 +292,7 @@ export default {
           let coordinates = d3.mouse(this);
           that.drawingLine.dynamicGenerateCurveLine(coordinates);
           that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
-          
+
         }
       });
       
@@ -318,6 +320,7 @@ export default {
           let ports = component.getAllPorts();
           if (d.type == "in") {
             ports["outPorts"].forEach(function(k) {
+              
               k.parent = component.id
               k.id = component.id
               allPorts.push(k);
@@ -411,16 +414,15 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target) {
       let that = this;
-
-
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
+      console.log("target~~~", target)
       if (source.attr == "field" && target.attr == "encoding") {
         let meta = {
           name: source.name,
           key: target.name,
           type: source.dimension_type
         };
-
+        //console.log("that.modelConfig", that.modelConfig, target)
         let maker = that.modelConfig[target.parent].maker;
 
         that.vegaObject.setEncoding(target.parent, meta);
@@ -625,7 +627,6 @@ export default {
       }
 
       let result = this.vegaObject.getOutputForced();
-      console.log(result);
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
     },
@@ -817,6 +818,7 @@ export default {
           }
         }
       }
+      
       //根据view组件进行遍历 获取有相连关系的组件
       for(let i=0; i<viewerList.length; i++){
         viewerTreeLink[viewerList[i]] = []
@@ -836,6 +838,10 @@ export default {
           return;
         }
       }
+      //根据view分组新建object 需要#list
+      //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
+      //vegaEmbed("#canvas", result, { theme: "default" });
+
 
     },
     dynamicvstab(){

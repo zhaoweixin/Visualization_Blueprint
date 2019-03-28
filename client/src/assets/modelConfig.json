@@ -175,6 +175,9 @@
         "inPorts":[
             {"name":"dim","text":"Dim","attr":"viewer","type":"in"}
         ],
+        "outPorts": [
+            {"name":"output","text":"Output","attr":"field","type":"out"}
+        ],
         "type":"Viewer"
     },
     "Template A":{

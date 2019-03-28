@@ -135,10 +135,10 @@ export default class VegaModel {
         return this.config
     }
     reset(){
-        console.log("reset before", this.data.layer)
+        //console.log("reset before", this.data.layer)
         this.data["layer"] = [];
         //this.data["data"] = {};
-        console.log("reset after", this.data.layer)
+       //console.log("reset after", this.data.layer)
         this.layers = {}
     }
 }

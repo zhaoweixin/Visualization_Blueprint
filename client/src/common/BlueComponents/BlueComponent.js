@@ -468,7 +468,6 @@ export default class BlueComponent {
     dragged(node, d){
         let that = this
         
-        //console.log("node, d, that.x that.y that.dx, that.dy",node,d, that.x, that.y, that.dx, that.dy)
         d3.select(node).attr("transform", function(q){
             
             that.dx = d3.event.x - that.x
@@ -500,11 +499,10 @@ export default class BlueComponent {
         let ret = []
         ret['inPorts'] = this.inPorts
         ret['inPorts'].forEach(function(d){
-            
             d.parentX = that.x
             d.parentY = that.y
-            d.parent = that.id
-            
+            d.parent = that.name
+            d.parentid = that.id
             ret.push(d)
         })
 
@@ -513,7 +511,8 @@ export default class BlueComponent {
             
             d.parentX = that.x
             d.parentY = that.y
-            d.parent = that.id
+            d.parent = that.name
+            d.parentid = that.id
             
             ret.push(d)
         })
