@@ -26,7 +26,6 @@
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="timeline"></vs-button>
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
-
     </div>
   
      <vs-row vs-h="6">
@@ -79,13 +78,18 @@
 
     <vs-row vs-h="4">
       <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="2">
-             <div id='infoPanel' style='height:450px'>
-                <vs-textarea style='height:450px' cols="100" rows="23" v-model="model_config_text" />
-             </div>
-    </vs-col>
-     <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="10">
-             <div id='canvas'> </div>
-    </vs-col>
+        <div id='infoPanel' style='height:450px'>
+          <vs-textarea style='height:450px' cols="100" rows="23" v-model="model_config_text" />
+        </div>
+      </vs-col>
+      <vs-col vs-type="flex" vs-justify="left" vs-align="top" vs-w="10" id="preview_container">
+        <div>
+          <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in vsbuttonbox.button">
+            <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" >{{meta.content}}</vs-button>
+          </div>
+        </div>
+        <div id='canvas'></div>
+      </vs-col>
     </vs-row>
 
     <vs-row vs-h="4"></vs-row>
@@ -106,6 +110,9 @@ import blueComponentTypes from "../../assets/blueComponentTypes.json";
 import modelConfig from "../../assets/modelConfig.json";
 import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
+import vsbutton from "../../assets/vsbuttonbox.json";
+import Transjson from "../../assets/transJson.json"
+import { keys } from 'd3';
 
 
 export default {
@@ -128,7 +135,18 @@ export default {
       dataTypes: config.typesPrefab, //Store all the data type which supported by vega-lite
       model_config_text: "", //The text which translated by vega-lite model
       dataConnection:{},
-      loadedDatasets:{}
+      loadedDatasets:{},
+      vsbuttonbox:vsbutton,
+      viewer:{
+        'count':0,
+        "list":[]
+      },
+      blueComponentsCount:{},
+      transjson: Transjson,
+      componentLink:[],
+      componentIndex:[],
+      componentGraph:"",
+      exstingPorts:[]
     };
   },
   methods: {
@@ -143,7 +161,7 @@ export default {
       this.container = d3.select("#editorborad");
       this.container.append("g").attr("id", "grid_layer");
       this.chartResize(window.innerWidth * 0.65, window.innerHeight * 0.6);
-
+      this.bluecomponentscountInit()
       this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
     },
 
@@ -193,22 +211,68 @@ export default {
       this.drawGrids();
     },
 
+    //init blue componets counts
+    bluecomponentscountInit(){
+      for(const key in this.componentTypes){
+        if(!this.blueComponentsCount.hasOwnProperty(key)){
+          this.blueComponentsCount[key] = 0
+        }
+      }
+    },
     //create a new component to canvas which need a component type and a unique name
     createNewComponent(group, name) {
+      //init generate properties
       let properties = this.modelConfig[name];
       properties["fill"] = this.componentTypes[group].color;
-      properties["name"] = name; 
+      properties["name"] = name;
+      //according to this.blueComponentsCount construct id and add 1
+      properties['id'] = properties.type + '-' + this.blueComponentsCount[properties.type]
+      this.blueComponentsCount[properties.type] = this.blueComponentsCount[properties.type] + 1
+      
 
+      //make sure that the viewer name equal to button content
+      if(group == "Viewer"){
+
+        let propertiesname = 'Viewer' + this.viewer.count
+
+        //update viewer set
+        this.viewer.count = this.viewer.count + 1
+        this.viewer.list.push(propertiesname)
+        
+        //create tab
+        this.vsbuttonbox.button.every(function(d,i){
+          if(d['style'] == 'none'){
+
+            d['style'] = 'block'
+            d['content'] = propertiesname
+            properties["name"] = propertiesname; 
+            return false
+
+          }else{
+            return true
+          }
+        })
+
+      }
+      
       let _com = new BlueComponent(this.container, properties);
       this.addClickEvent2Circle(_com);
       this.blueComponents.push(_com);
+      //if create viewer, create tab
 
     },
 
     //find the component by the component's name
-    getComponentByName(name) {
+    getComponentByName(name) { //by id
       for (let i = 0; i < this.blueComponents.length; i++) {
         if (name == this.blueComponents[i].name) {
+          return this.blueComponents[i];
+        }
+      }
+    },
+    getComponentById(id) { //by id
+      for (let i = 0; i < this.blueComponents.length; i++) {
+        if (id == this.blueComponents[i].id) {
           return this.blueComponents[i];
         }
       }
@@ -217,7 +281,6 @@ export default {
     //boundind the click event to the circles which represent the ports in component
     addClickEvent2Circle(com) {
       let that = this;
-
       //darwing the connection line accroding to the mouse real-time position
       this.container.on("mousemove", function(d) {
         if (
@@ -226,43 +289,54 @@ export default {
         ) {
           let coordinates = d3.mouse(this);
           that.drawingLine.dynamicGenerateCurveLine(coordinates);
-          that.drawingLine.findNearestPoint(coordinates);
+          that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
+          
         }
       });
-
+      
       //after click the circle, there will new a line in canvas
+      
       com.getAllCircles().on("click", function(d) {
         let x = d.parentX + d.x;
         let y = d.parentY + d.y;
+        let sourceid = com.id
 
         let line = (that.drawingLine = new BlueprintLine(
           that.container,
           com.name,
           [x, y],
-          d
+          d,
+          sourceid
         ));
+        
         that.blueLines.push(line);
-
         that.mouseAction = "drawing_line";
-
+        
         let allPorts = [];
 
-        that.blueComponents.forEach(function(component) {
+        that.blueComponents.forEach(function(component,i) {
           let ports = component.getAllPorts();
           if (d.type == "in") {
-            ports["outPorts"].forEach(function(d) {
-              d.parent = component.name
-              allPorts.push(d);
+            ports["outPorts"].forEach(function(k) {
+              k.parent = component.id
+              k.id = component.id
+              allPorts.push(k);
             });
           } else {
-            ports["inPorts"].forEach(function(d) {
-              d.parent = component.name
-              allPorts.push(d);
+            ports["inPorts"].forEach(function(k) {
+              k.parent = component.id
+              k.id = component.id
+              allPorts.push(k);
             });
           }
         });
-        line.setExstingPorts(allPorts);
+
+        that.exstingPorts = new Array()
+        that.exstingPorts = allPorts
+        
+        //line.setExstingPorts(allPorts);
       });
+      
     },
 
     ///////////////////////////////
@@ -273,6 +347,7 @@ export default {
     //     Add a new component contain this port
     ////////////////////////////////
 
+    //data component
     dimensionSelected(source, dim) {
       dim.checked = !dim.checked;
 
@@ -315,6 +390,8 @@ export default {
           }
         ];
         properties["name"] = source;
+        properties["id"] = source;
+        
         let _com = new BlueComponent(this.container, properties);
         this.dataComponent[source] = _com;
         this.addClickEvent2Circle(_com);
@@ -334,6 +411,7 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target) {
       let that = this;
+
 
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
       if (source.attr == "field" && target.attr == "encoding") {
@@ -464,6 +542,7 @@ export default {
 
       // The case of source attribution is 「FIELD」 and target is PROCESSOR
       if (source.attr == "field" && target.attr == "processor") {
+        console.log("source target", source, target)
         let sourcePortName = source.name;
 
        // console.log(this.loadedDatasets, this.contextData)
@@ -529,10 +608,9 @@ export default {
     
       let source = connect.source;
       let target = connect.target;
-
       let dataNameDict = {};
       that.dataList.forEach(function(d) {
-        dataNameDict[d.name] = 1;
+        dataNameDict[d.name] = 1; 
       });
 
       if (source.parent in dataNameDict 
@@ -553,6 +631,215 @@ export default {
     },
     connectionRemove(connect){
       
+    },
+    constructTransJson(connect){
+      //递归遍历 若遍历完毕没有targetid 和 sourceid 则直接在第一层添加
+      //若遍历完毕有sourceid没有targetid 则 在sourceid子节点添加
+      //若遍历完毕有sourceid和targetid 则 在sourceid内添加属性
+      var _sourceid = connect.sourceId
+      var _targetid = connect.targetId
+      var isExistSource = 0
+      var isExistTarget = 0
+      recursion(this.transjson.children)
+
+      function recursion(children){
+        //console.log(children)
+        if(children.length == 0) return;
+
+        children.forEach(function(d){
+          if(d.id == _targetid && d.sourceId == _sourceid){
+            isExistSource = 1
+            isExistTarget = 1
+          }
+          if(d.id == _sourceid && d.children.length == 0){
+            isExistSource = 1
+            isExistTarget = 0
+          }
+          if(d.sourceId == _targetid ){
+            isExistSource = 0
+            isExistTarget = 1
+          }
+          recursion(d["children"])
+        })
+      }
+      //当对象内有没有这条边并且不存在sourceid 和 targetid 时 即两个component没有连接过 直接更新本层id sourceid attr
+      if(isExistSource == 0 && isExistTarget == 0){
+        this.transjson.children.push({
+          "id": _targetid,
+          "sourceId": _sourceid,
+          "attr":[{"sourcePort": connect.source, "targetPort": connect.target}],
+          "children":[]
+        })
+      }
+      //当对象内没有这条边但是存在source 不存在target时
+      //即 source和ssource连接过 但是source没有和target连接过 需要增加source层下层边属性和增加source层本层孩子节点
+      
+      //attr只存储和上层连接的边属性
+      if(isExistSource == 1 && isExistTarget == 0){
+        recursion_add_10(this.transjson.children)
+        function recursion_add_10(children){
+          children.forEach(function(d){
+            if(d.id == _sourceid){
+
+              d.children.push({
+                "id": _targetid,
+                "sourceId": _sourceid,
+                "attr": [{
+                "sourcePort": connect.source,
+                "targetPort": connect.target
+                }],
+                "children": []
+              })
+              return;
+            }
+            recursion_add_10(d.children)
+          })
+        }
+        
+      }
+      //当对象内有这条边 存在source和target时 
+      //即source和target已经连接过 只需要source本层属性和source层本层孩子节点
+      if(isExistSource == 1 && isExistTarget == 1){
+        recursion_add_11(this.transjson.children)
+        function recursion_add_11(children){
+          children.forEach(function(d){
+            if(d.id == _targetid && d.sourceId == _sourceid){
+              d.attr.push({
+                "sourcePort": connect.source,
+                "targetPort": connect.target
+              })
+              /*
+              d.children.push({
+                "id": _targetid,
+                "sourceId": _sourceid,
+                "attr": [],
+                "children": []
+              })
+              */
+              return;
+            }
+            recursion_add_11(d.children)
+          })
+        }
+      }
+      //当对象内没有这条边，不存在source但存在target时
+      //在transjson中添加父节点，在父节点添加id sourceid attr 在子节点中添加sourceid
+      if(isExistSource == 0 && isExistTarget == 1){
+        
+        recursion_add_01(this.transjson.children) 
+        function recursion_add_01(children){
+          children.forEach(function(d){
+            if(d.sourceId == _targetid){
+              //填充
+              var tempd = JSON.parse(JSON.stringify(d));
+              //d.id = _targetid
+              d.id = _targetid
+              d.sourceId = _sourceid
+              d.attr = [{"sourcePort": connect.source, "targetPort": connect.target}]
+              d.children = [tempd]
+              return;
+            }
+            recursion_add_01(d.children)
+          })
+        }
+
+      }
+      
+    },
+    buildDFS(connect){
+      const _id = connect.sourceId + "_" + connect.targetId
+      if(!this.componentLink.dict.hasOwnProperty(_id)){
+        const temp = [connect.sourceId, connect.targetId]
+        this.componentLink.dict[_id] = temp
+        this.componentLink.list.push({"source": connect.sourceId, "target": connect.targetId})
+        const root = [] //{"name": "root", "children": []}
+        //add component to link
+        
+        if(this.componentLink.hierarchy.length = 0){
+
+          this.componentLink.hierarchy.push(
+            {"name": connect.sourceId, 
+              "children": [{ "name": connect.targetId, "children": [] }]
+            }
+            )
+        }
+
+        function addId(){
+          
+        }
+        
+        console.log(root)
+      }else{
+
+      }
+
+    },
+    buildBlueGraph(connect){
+      //首先处理componentIndex
+      let that = this
+      let linkname = connect.sourceId + "_" + connect.targetId
+      let addId = [connect.sourceId, connect.targetId]
+      addId.forEach(function(d){
+        if(that.componentIndex.indexOf(d) == -1){
+          that.componentIndex.push(d)
+        }
+      })
+      //存入link
+      if(this.componentLink.indexOf(linkname) == -1){
+        this.componentLink.push(linkname)
+      }
+      //建立根据componentIndex覆盖更新二维数组
+      this.componentGraph = new Array()
+      this.componentIndex.forEach(function(d, i){
+        that.componentGraph[i] = new Array()
+      })
+      //graph init
+      for(let i=0; i<this.componentIndex.length; i++){
+        for(let j=0; j<this.componentIndex.length; j++){
+          this.componentGraph[i][j] = 0
+        }
+      }
+      for(let i=0; i<this.componentLink.length; i++){
+        let indexsource = this.componentIndex.indexOf(this.componentLink[i].split('_')[0])
+        let indextarget = this.componentIndex.indexOf(this.componentLink[i].split('_')[1])
+        this.componentGraph[indexsource][indextarget] = 1
+      }
+
+      //获取view组件
+      let viewerDict = {}
+      let viewerList = []
+      let viewerTreeLink = {}
+      for(let i=0 ;i<this.componentIndex.length; i++){
+        if(this.getComponentById(this.componentIndex[i]).type == "Viewer"){
+          if(!viewerDict.hasOwnProperty( this.componentIndex[i] )){
+            viewerDict[this.componentIndex[i]] = i
+            viewerList.push(this.componentIndex[i])
+          }
+        }
+      }
+      //根据view组件进行遍历 获取有相连关系的组件
+      for(let i=0; i<viewerList.length; i++){
+        viewerTreeLink[viewerList[i]] = []
+        searchlink(viewerDict[viewerList[i]])
+
+        function searchlink(j){
+        for(let k=0; k<that.componentIndex.length; k++){
+          if(that.componentGraph[k][j] == 1){
+            let _source = that.componentIndex[k] //id
+            let _target = that.componentIndex[j] //id
+            //将相连的组件存起来 或者 直接遍历两个相连组件间的边
+            let _st = _source + "_" + _target
+            viewerTreeLink[viewerList[i]].push(_st)
+            searchlink(k)
+            }
+          }
+          return;
+        }
+      }
+
+    },
+    dynamicvstab(){
+
     }
   
   },
@@ -560,7 +847,6 @@ export default {
     //Monitor the positon's change of component
     blueComponents: {
       handler(curVal, oldVal) {
-
         let that = this
 
         if (curVal.length == oldVal.length) {
@@ -600,14 +886,17 @@ export default {
             let prePos = preEle.getPos();
 
             //Update all the line postion via the above positions
-            this.blueLines.forEach(function(line) {
-              line.parentPosUpdated(
-                curPos.dx, //delta of horizon postion
-                curPos.dy, //delta of vertical position
-                curEle.inPorts,
-                curEle.outPorts
-              );
-
+            this.blueLines.forEach(function(line,i) {
+              let _targetcomponent = that.getComponentById(line.targetId)
+              let _sourcecomponent = that.getComponentById(line.sourceId)
+              if(_targetcomponent.id == curEle.id || _sourcecomponent.id == curEle.id){
+                line.parentPosUpdated(
+                  curPos.dx, //delta of horizon postion
+                  curPos.dy, //delta of vertical position
+                  curEle.inPorts,
+                  curEle.outPorts
+                );
+              }
               //Reset all the delta postion
               curEle.resetDeltaPos();
               preEle.resetDeltaPos();
@@ -626,12 +915,13 @@ export default {
           if (curVal[tailNo].targetPort != "") {
             this.connections.push({
               source: curVal[tailNo].sourcePort,
-              target: curVal[tailNo].targetPort
+              target: curVal[tailNo].targetPort,
+              sourceId: curVal[tailNo].sourceId,
+              targetId: curVal[tailNo].targetId
             });
-
             this.connectionParse({
-              source: curVal[tailNo].sourcePort,
-              target: curVal[tailNo].targetPort
+                source: curVal[tailNo].sourcePort,
+                target: curVal[tailNo].targetPort
             });
           }
         }
@@ -653,9 +943,11 @@ export default {
     connections: {
 
       handler(curVal, oldVal) {
-
         //if (oldVal.length != curVal.length) {'
-        
+        let tailNo = curVal.length - 1;
+        //this.constructTransJson(curVal[tailNo])
+        //this.buildDFS(curVal[tailNo])
+        this.buildBlueGraph(curVal[tailNo])
         let that = this
 
           this.vegaObject.reset()
@@ -718,7 +1010,7 @@ export default {
       });
 
       that.blueComponents.forEach(function(com) {
-        com.animate();
+        //com.animate();
       });
     }, 20);
   }

@@ -2,7 +2,7 @@
 import * as d3 from 'd3'
 
 export default class BlueprintLine {
-    constructor(container, parent, point, source) {
+    constructor(container, parent, point, source, sourceid) {
 
         //points [x,y]
         this.sourcePoint = point
@@ -15,7 +15,7 @@ export default class BlueprintLine {
         this.circleCoordinatesY = '' //预览路径时末端端点Y
         this.pathCount = 0
         this.container = container
-        this.existingPort = []
+        //this.existingPort = []
         this.toUpdateSourcePoint = false // false -> update target point / true -> update source point
         this.count = 10000
         this.animateSpeed = 1
@@ -23,6 +23,8 @@ export default class BlueprintLine {
         this.baseLine = ''
         this.sourceParent = parent
         this.targetParent = ''
+        this.targetId = ''
+        this.sourceId = sourceid
         this.pathCount++
         this.isDeleted = false
     
@@ -61,15 +63,15 @@ export default class BlueprintLine {
     }
     setExstingPorts(ports) {
 
-        this.existingPort = ports;
+        //this.existingPort = ports;
     }
-    findNearestPoint(point) {
+    findNearestPoint(point, existingPort) {
 
         let that = this
-        if (this.existingPort.length > 0) {
+        if (existingPort.length > 0) {
 
             let nearPoints = []
-            this.existingPort.forEach(function (port) {
+            existingPort.forEach(function (port) {
 
                 let x = port.x + port.parentX
                 let y = port.y + port.parentY
@@ -78,7 +80,7 @@ export default class BlueprintLine {
                     (y - point[1]) * (y - point[1])
 
                 if (dis < 400) {
-                    nearPoints.push({ 'dis': dis, 'port': port, 'pos': [x, y]})
+                    nearPoints.push({ 'dis': dis, 'port': port, 'pos': [x, y], 'ID': port.id})
                 }
             })
 
@@ -87,18 +89,18 @@ export default class BlueprintLine {
             })
 
             if (nearPoints[0] != undefined && nearPoints[0] != null) {
-
                 that.container.on('mousemove.circle', null)
-              
                 that.targetPort = nearPoints[0].port
-                that.targetParent = nearPoints[0].port.parent
+                that.targetParent = nearPoints[0].port.id
                 that.storePoints[1] = nearPoints[0].pos
 
                 that.generateAnimateCoverCurveLine()
                 that.dynamicGenerateCurveLine()
             
                 that.isWaitPath == false
-                
+
+                that.targetId = nearPoints[0].ID
+
             }
 
         }

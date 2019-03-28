@@ -16,7 +16,7 @@
     "browserify-fs": "^1.0.0",
     "canvas": "^2.0.1",
     "canvas-to-image": "^2.0.0",
-    "d3": "^5.7.0",
+    "d3": "^5.9.2",
     "fs": "0.0.1-security",
     "jquery": "^3.3.1",
     "material-icons": "^0.2.3",

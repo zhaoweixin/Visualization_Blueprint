@@ -1,0 +1,78 @@
+{
+    children:[
+        {    "id":"id1",
+             "faid":"none",
+             "attr":{"attr1":["target", "target"], "attr2":[]},
+             "children":[
+                {   "id":"id4",
+                    "faid":"id1",
+                    "attr":{},
+                    "children": []
+                }
+        ]},
+        {"id":"id2", "faid":"none", "attr":{}, "children":[]},
+        {"id":"id3", "faid":"none", "attr":{}, "children":[]}
+    ]
+}
+
+{
+    "children":[
+        {   "id":"id1",
+            "sourceId": "",
+            "attr": [],
+            "children":[
+                {   "id":"id2", 
+                    "sourceId": "id1",
+                    "attr":[{"sourcePort":{}, "targetPort":{} }, {}, {}],
+                    "children":[]
+                }   
+            ], 
+        },
+        {},
+        {}
+    ]
+}
+
+//第一层到第二层是一条边 并且边连接信息存储在第二层attr内
+{
+    "width": 1372,
+    "height": 264,
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "field": "variety",
+                    "type": "ordinal"
+                },
+                "color": {
+                    "field": "variety",
+                    "type": "ordinal"
+                },
+                "x": {
+                    "field": "variety",
+                    "type": "ordinal"
+                }
+            },
+            "width": 1372,
+            "height": 264,
+            "mark": {
+                "type": "bar",
+                "fill": "#FCCA46",
+                "stroke": ""
+            }
+        }
+    ],
+    "background": "#ffffff",
+    "title": {
+        "text": "Test",
+        "anchor": "middle",
+        "fontSize": 20
+    }
+}
+
+给bluecomponent赋予id 根据blueline连线获取两端信息 构建json/type review 构建时通过遍历 再根据component类型 进行相关处理
+
+1.首先给每个bluecomponent赋予id 包括数据dimension和操作
+addClickEvent2Circle功能内没有找到targetid 现在查找建立componentid是否有误 是否放错地方
+
+

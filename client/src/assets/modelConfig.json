@@ -9,7 +9,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"out","text":"out","attr":"field","type":"out"}
         ],
         "type": "Chart",
         "maker": "bar"
@@ -23,7 +23,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"out","text":"out","attr":"field","type":"out"}
         ],
         "type":"Chart",
         "maker": "line"
@@ -37,7 +37,7 @@
             {"name":"size","text":"Size","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"out","text":"out","attr":"field","type":"out"}
         ],
         "type":"Chart",
         "maker": "point"
@@ -51,7 +51,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"out","text":"out","attr":"field","type":"out"}
         ],
         "type":"Chart",
         "maker": "tick"
@@ -65,7 +65,7 @@
             {"name":"row","text":"Row","attr":"encoding","type":"in"}
         ],
         "outPorts": [
-
+            {"name":"out","text":"out","attr":"field","type":"out"}
         ],
         "type":"Chart",
         "maker": "boxplot"
@@ -170,6 +170,12 @@
             {"name":"dim","text":"Dim","attr":"connector","type":"in"}
         ],
         "type":"Connector"
+    },
+    "Viewer":{
+        "inPorts":[
+            {"name":"dim","text":"Dim","attr":"viewer","type":"in"}
+        ],
+        "type":"Viewer"
     }
 
 }

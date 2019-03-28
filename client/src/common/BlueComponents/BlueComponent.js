@@ -25,6 +25,7 @@ export default class BlueComponent {
         this.dividingLine = ''
         this.time = 1
         this.isLoading = true
+        this.id = ''
 
         for(let key in options){
             this[key] = options[key] //Set the initial parameter
@@ -36,15 +37,14 @@ export default class BlueComponent {
         this.canvas = canvas
 
         this.container = canvas
-        .datum({'x': this.x, 'y': this.y})
-        .append('g')
-        .attr('transform', function(d){
-            return 'translate(' + d.x + ',' + d.y + ')'
-        })
-        .on('dblclick', function(d){
-
-            that.remove()
-        })
+            .datum({'x': this.x, 'y': this.y})
+            .append('g')
+            .attr('transform', function(d){
+                return 'translate(' + d.x + ',' + d.y + ')'
+            })
+            .on('dblclick', function(d){
+                that.remove()
+            })
 
         ////////////////////////////////
         ///Add drag event to component
@@ -144,18 +144,20 @@ export default class BlueComponent {
         this.redraw()
     }
     //Draw the back retangle
+
     drawBack(height){
+
         
         this.container
-        .append('rect')
-        .attr('class','back')
-        .attr("rx", 6)
-        .attr("ry", 6)
-        .attr('width', this.width)
-        .attr('height', height || this.height)
-        .attr('fill', this.fill)
-        .attr('stroke', this.stroke)
-        .attr('stroke-width', 2)
+            .append('rect')
+            .attr('class','back')
+            .attr("rx", 6)
+            .attr("ry", 6)
+            .attr('width', this.width)
+            .attr('height', height || this.height)
+            .attr('fill', this.fill)
+            .attr('stroke', this.stroke)
+            .attr('stroke-width', 2)
 
         //Container for the gradients
         var defs = this.container.append("defs");
@@ -317,27 +319,28 @@ export default class BlueComponent {
     dragstarted(node, d) {
        // d3.select(node).raise().classed("active", true);
     }
-    dragged(node, d){ 
-
+    dragged(node, d){
         let that = this
-
+        
+        //console.log("node, d, that.x that.y that.dx, that.dy",node,d, that.x, that.y, that.dx, that.dy)
         d3.select(node).attr("transform", function(q){
+            
             that.dx = d3.event.x - that.x
             that.dy = d3.event.y - that.y
             that.x = d.x = d3.event.x
             that.y = d.y = d3.event.y
             return 'translate(' + d.x + ',' + d.y + ')'
         });
-
+        
         this.container.selectAll('.port')
         .attr('none', function(d){
             d.parentX = that.x
             d.parentY = that.y
         })
-
+        
     }
     dragended(node,d) {
-        d3.select(node).classed("active", false);
+        //d3.select(node).classed("active", false);
     }
     //Get all the ports' circles
     getAllCircles(){
@@ -349,22 +352,23 @@ export default class BlueComponent {
 
         let that = this
         let ret = []
-
         ret['inPorts'] = this.inPorts
         ret['inPorts'].forEach(function(d){
-
+            
             d.parentX = that.x
             d.parentY = that.y
-            d.parent = that.name
+            d.parent = that.id
+            
             ret.push(d)
         })
 
         ret['outPorts'] = this.outPorts
         ret['outPorts'].forEach(function(d){
-
+            
             d.parentX = that.x
             d.parentY = that.y
-            d.parent = that.name
+            d.parent = that.id
+            
             ret.push(d)
         })
         return ret
@@ -537,7 +541,6 @@ export default class BlueComponent {
     addDataName2Ports(){
 
         this.outPorts.forEach(d => {
-
             d.name = d.parent + '&' + d.name;
         })
     }
