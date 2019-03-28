@@ -321,7 +321,7 @@ export default {
         //              }
         //         }, 'Edit')
             // ])
-        
+        //just test
         
         //this.state.coldata.push(actionObj)
         console.log(this.state.coldata)
