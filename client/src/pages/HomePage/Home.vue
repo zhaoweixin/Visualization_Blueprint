@@ -6,7 +6,7 @@
                 <data-previewer/>
             </vs-col>
             <vs-col vs-w="9.5" vs-h="12">
-                <data-list-viewer/>
+                <data-preview-table/>
             </vs-col>
         <!-- </vs-row> -->
       
@@ -17,12 +17,14 @@
 import DataListBar from '../../common/DataListBar/DataListBar'
 import DataPreviewer from '../../common/DataPreviewer/DataPreviewer'
 import DataListViewer from '../../common/DataPreviewer/DataListViewer'
+import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
 export default{
     name: 'homepage',
     components: {
         DataListBar,
         DataPreviewer,
-        DataListViewer
+        DataListViewer,
+        DataPreviewTable
     }
 }
 </script>

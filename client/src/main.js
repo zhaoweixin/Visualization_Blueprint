@@ -7,6 +7,8 @@ import * as d3 from 'd3'
 import ElementUI from 'element-ui'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
+import iView from 'iview'
+import 'iview/dist/styles/iview.css'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 import 'material-icons/iconfont/material-icons.css';
 
@@ -15,6 +17,7 @@ import BlueEditor from './pages/BluePage/BlueEditor'
 import DataManager from './common/DataManager'
 
 Vue.use(VueRouter)
+Vue.use(iView)
 Vue.use(Vuex)
 Vue.use(ElementUI)
 Vue.use(Vuesax, {
