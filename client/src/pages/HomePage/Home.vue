@@ -7,6 +7,7 @@
             </vs-col>
             <vs-col vs-w="9.5" vs-h="12">
                 <data-preview-table/>
+                <!-- <data-list-viewer /> -->
             </vs-col>
         <!-- </vs-row> -->
       
