@@ -40,113 +40,143 @@ export default {
             defIdToEdit:null,
             state:{
                 listdata:[
-                    {
-                        "id": 1,
-                        "name": "Leanne Graham",
-                        "username": "Bret",
-                        "email": "Sincere@april.biz",
-                        "website": "hildegard.org",
-                    },
-                    {
-                        "id": 2,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
-                    {
-                        "id": 3,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
-                    {
-                        "id": 54,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
-                    {
-                        "id": 3564,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
+                    // {
+                    //     "id": 1,
+                    //     "name": "Leanne Graham",
+                    //     "username": "Bret",
+                    //     "email": "Sincere@april.biz",
+                    //     "website": "hildegard.org",
+                    // },
+                    // {
+                    //     "id": 2,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
+                    // {
+                    //     "id": 3,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
+                    // {
+                    //     "id": 54,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
+                    // {
+                    //     "id": 3564,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
                    
-                    {
-                        "id": 4,
-                        "name": "Patricia Lebsack",
-                        "username": "Karianne",
-                        "email": "Julianne.OConner@kory.org",
-                        "website": "kale.biz",
-                    },
-                    {
-                        "id": 5,
-                        "name": "Chelsey Dietrich",
-                        "username": "Kamren",
-                        "email": "Lucio_Hettinger@annie.ca",
-                        "website": "demarco.info",
-                    },
-                    {
-                        "id": 6,
-                        "name": "Mrs. Dennis Schulist",
-                        "username": "Leopoldo_Corkery",
-                        "email": "Karley_Dach@jasper.info",
-                        "website": "ola.org",
-                    },
-                    {
-                        "id": 7,
-                        "name": "Kurtis Weissnat",
-                        "username": "Elwyn.Skiles",
-                        "email": "Telly.Hoeger@billy.biz",
-                        "website": "elvis.io",
-                    },
-                    {
-                        "id": 8,
-                        "name": "Nicholas Runolfsdottir V",
-                        "username": "Maxime_Nienow",
-                        "email": "Sherwood@rosamond.me",
-                        "website": "jacynthe.com",
-                    },
-                    {
-                        "id": 9,
-                        "name": "Glenna Reichert",
-                        "username": "Delphine",
-                        "email": "Chaim_McDermott@dana.io",
-                        "website": "conrad.com",
-                    },
-                    {
-                        "id": 10,
-                        "name": "Clementina DuBuque",
-                        "username": "Moriah.Stanton",
-                        "email": "Rey.Padberg@karina.biz",
-                        "website": "ambrose.net",
-                    },
-                    {
-                        "id": 42352,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
-                    {
-                        "id": 54362,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
+                    // {
+                    //     "id": 4,
+                    //     "name": "Patricia Lebsack",
+                    //     "username": "Karianne",
+                    //     "email": "Julianne.OConner@kory.org",
+                    //     "website": "kale.biz",
+                    // },
+                    // {
+                    //     "id": 5,
+                    //     "name": "Chelsey Dietrich",
+                    //     "username": "Kamren",
+                    //     "email": "Lucio_Hettinger@annie.ca",
+                    //     "website": "demarco.info",
+                    // },
+                    // {
+                    //     "id": 6,
+                    //     "name": "Mrs. Dennis Schulist",
+                    //     "username": "Leopoldo_Corkery",
+                    //     "email": "Karley_Dach@jasper.info",
+                    //     "website": "ola.org",
+                    // },
+                    // {
+                    //     "id": 7,
+                    //     "name": "Kurtis Weissnat",
+                    //     "username": "Elwyn.Skiles",
+                    //     "email": "Telly.Hoeger@billy.biz",
+                    //     "website": "elvis.io",
+                    // },
+                    // {
+                    //     "id": 8,
+                    //     "name": "Nicholas Runolfsdottir V",
+                    //     "username": "Maxime_Nienow",
+                    //     "email": "Sherwood@rosamond.me",
+                    //     "website": "jacynthe.com",
+                    // },
+                    // {
+                    //     "id": 9,
+                    //     "name": "Glenna Reichert",
+                    //     "username": "Delphine",
+                    //     "email": "Chaim_McDermott@dana.io",
+                    //     "website": "conrad.com",
+                    // },
+                    // {
+                    //     "id": 10,
+                    //     "name": "Clementina DuBuque",
+                    //     "username": "Moriah.Stanton",
+                    //     "email": "Rey.Padberg@karina.biz",
+                    //     "website": "ambrose.net",
+                    // },
+                    // {
+                    //     "id": 42352,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
+                    // {
+                    //     "id": 54362,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
                     
-                    {
-                        "id": 23,
+                    // {
+                    //     "id": 23,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // }
+                     {
                         "name": "Ervin Howell",
                         "username": "Antonette",
                         "email": "Shanna@melissa.tv",
                         "website": "anastasia.net",
-                    }
+                     },
+                     {
+                        "name": "Efew分well",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ervincdsfdsafll",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ergreegrell",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ervg5t5g5hll",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     }
                 ],
                 coldata:[{
                         title: 'Action',
@@ -165,7 +195,8 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.handleEdits(params.row.id)
+                                            //console.log(params)
+                                            this.handleEdits(params.row.id?params.row.id:params.row.default_id)
                                         }
                                     }
                                 }, "Edit"),
@@ -176,7 +207,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.row.id)
+                                            this.remove(params.row.id?params.row.id:params.row.default_id)
                                         }
                                     }
                                 }, 'Delete')
@@ -199,13 +230,15 @@ export default {
     methods:{
         remove(index){
             for(let i=0;i<this.state.listdata.length;i++){
-                if (index == this.state.listdata[i].id){
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id
+                if (index == id){
                     this.state.listdata.splice(i,1)
                 }
             }
             if(this.searchx){
                 for(let i=0;i<this.datax.length;i++){
-                    if (index == this.datax[i].id){
+                let id_2 = this.datax[i].id?this.datax[i].id:this.datax[i].default_id
+                    if (index == id_2){
                         this.datax.splice(i,1) 
                     }
                 }
@@ -262,13 +295,15 @@ export default {
         },
         changeData(){
             for(let i=0;i<this.state.listdata.length;i++){
-                if (this.defIdToEdit == this.state.listdata[i].id){
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id                
+                if (this.defIdToEdit == id){
                     this.state.listdata.splice(i,1,this.editMessage)
                 }
             }
             if(this.searchx){
                 for(let i=0;i<this.datax.length;i++){
-                if (this.defIdToEdit == this.datax[i].id){
+                let id_2 = this.datax[i].id?this.datax[i].id:this.datax[i].default_id
+                if (this.defIdToEdit == id_2){
                     this.datax.splice(i,1,this.editMessage)
                 }
             }
@@ -277,8 +312,10 @@ export default {
 
         },
         handleEdits(index){
+            
             for(let i=0;i<this.state.listdata.length;i++){
-                if((index) == this.state.listdata[i].id)
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id
+                if((index) == id)
                 {
                     this.defIdToEdit = index;
                     this.editMessage = Object.assign({},this.state.listdata[i])//this.state.listdata[i];
@@ -294,6 +331,7 @@ export default {
         this.loadData();
         let data = this.state.listdata;
         let templatedata = data[0];
+        let idId = 0;
         for(let index in templatedata){
             let obj = {};
             let flag = 0;
@@ -305,11 +343,27 @@ export default {
                     str = str + index[i].toLowerCase()
                 }
             }
-            obj.title = str;
-            obj.key = index;
-            obj.sortable = 'true'
-            this.state.coldata.splice(flag,0,obj)
-            flag = flag + 1
+            if(str != "Default_id"){
+                obj.title = str;
+                obj.key = index;
+                obj.sortable = 'true'
+                if(str === 'Id') {
+                    this.state.coldata.splice(0,0,obj)//保证id始终在第一个
+                    idId = 1
+                } 
+                else this.state.coldata.splice(1,0,obj)
+                flag = flag + 1
+            }
+        }
+        if(idId === 0){//如果没有id
+            let el = this.state.coldata[0];       //那就得把action移动到最后面去
+            this.state.coldata.splice(0,1);
+            let len = this.state.coldata.length;
+            this.state.coldata.splice(len,0,el)
+            for(let i=0;i<this.state.listdata.length;i++)
+            {
+                this.state.listdata[i].default_id = i  //全部加上default_id属性
+            }
         }
         if(this.datax.length>=20){
             this.heightDefault = 800
