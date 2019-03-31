@@ -147,7 +147,8 @@ export default {
       componentIndex:[],
       componentGraph:"",
       exstingPorts:[],
-      vegaObjectList:[]
+      vegaObjectObj:{},
+      viewerDataTree:{}
     };
   },
   methods: {
@@ -163,7 +164,7 @@ export default {
       this.container.append("g").attr("id", "grid_layer");
       this.chartResize(window.innerWidth * 0.65, window.innerHeight * 0.6);
       this.bluecomponentscountInit()
-      this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
+      //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
     },
 
     //Darwing the grids line in canvas which help user the recognize the canvas and components
@@ -257,7 +258,6 @@ export default {
       }
       
       let _com = new BlueComponent(this.container, properties);
-      console.log("_com", _com)
       this.addClickEvent2Circle(_com);
       this.blueComponents.push(_com);
       //if create viewer, create tab
@@ -321,13 +321,13 @@ export default {
           if (d.type == "in") {
             ports["outPorts"].forEach(function(k) {
               
-              k.parent = component.id
+              //k.parent = component.id
               k.id = component.id
               allPorts.push(k);
             });
           } else {
             ports["inPorts"].forEach(function(k) {
-              k.parent = component.id
+              //k.parent = component.id
               k.id = component.id
               allPorts.push(k);
             });
@@ -365,9 +365,12 @@ export default {
       this.dataList = origin;
 
       if (this.selectedData[source] != undefined) {
+        //如果存在该数据源
         if (this.selectedData[source][dim.name] != undefined) {
+          //如果存在该数据源该属性
           this.selectedData[source][dim.name] = "0";
         } else {
+          //如果存在该数据源不存在该属性
           this.selectedData[source][dim.name] = "1";
           this.dataComponent[source].addPort("out", {
             name: dim.name,
@@ -379,7 +382,8 @@ export default {
           this.addClickEvent2Circle(this.dataComponent[source]);
         }
       } else {
-        this.selectedData[source] = {};
+        //如果不存在该数据源 则初始化组件
+        this.selectedData[source] = {}; //记录该数据源
         this.selectedData[source][dim.name] = "1";
 
         let properties = this.modelConfig["Table"];
@@ -399,23 +403,23 @@ export default {
         this.dataComponent[source] = _com;
         this.addClickEvent2Circle(_com);
         this.blueComponents.push(_com);
-  
+
         if (!(source in this.loadedDatasets)){
 
           dataHelper.getDataDetail(source).then(function(response) {
-            that.vegaObject.setData(response.data.data.values);
+            //that.vegaObject.setData(response.data.data.values);
             //console.log('response', response)
             that.loadedDatasets[source] = response.data.data.values
           });
         }
       }
+      console.log("this.selectedData", this.selectedData)
     },
 
     //The configurariton change rules
-    async setVegaConfig(source, target) {
+    async setVegaConfig(source, target, vegaObjKey) {
       let that = this;
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
-      console.log("target~~~", target)
       if (source.attr == "field" && target.attr == "encoding") {
         let meta = {
           name: source.name,
@@ -425,8 +429,8 @@ export default {
         //console.log("that.modelConfig", that.modelConfig, target)
         let maker = that.modelConfig[target.parent].maker;
 
-        that.vegaObject.setEncoding(target.parent, meta);
-        that.vegaObject.setMark(target.parent, maker);
+        that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
+        that.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
       }
 
       // The case of source attribution is 「FIELD」 and target is 「OPERATOR」
@@ -437,17 +441,17 @@ export default {
           let result = {};
 
           if (target.parent == "Sum")
-            result = caculator_modules.sum(this.vegaObject.getData());
+            result = caculator_modules.sum(that.vegaObjectObj[vegaObjKey].getData());
           else if (target.parent == "Reduce")
-            result = caculator_modules.reduce(this.vegaObject.getData());
+            result = caculator_modules.reduce(that.vegaObjectObj[vegaObjKey].getData());
           else if (target.parent == "Multi")
-            result = caculator_modules.multiple(this.vegaObject.getData());
+            result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
 
           let newData = result.data,
             newName = result.name;
-          this.vegaObject.setData(newData);
+          that.vegaObjectObj[vegaObjKey].setData(newData);
           caculator_modules.resetOperators();
-          let _com = this.getComponentByName(target.parent);
+          let _com = getComponentByName(target.parent);
           _com.setFieldName(newName);
         }
       }
@@ -478,7 +482,7 @@ export default {
 
             if(target.parent == 'Left Join'){
               let newData = dataHelper.leftJoin(data1, data2)
-              this.vegaObject.setData(newData)
+              that.vegaObjectObj[vegaObjKey].setData(newData)
 
               let _com1 = this.getComponentByName(connectionNames[0])
               let _com2 = this.getComponentByName(connectionNames[1])
@@ -492,7 +496,7 @@ export default {
             else if (target.parent == 'Right Join'){
 
               let newData = dataHelper.rightJoin(data1, data2)
-              this.vegaObject.setData(newData)
+              that.vegaObjectObj[vegaObjKey].setData(newData)
 
               let _com1 = this.getComponentByName(connectionNames[0])
               let _com2 = this.getComponentByName(connectionNames[1])
@@ -506,7 +510,7 @@ export default {
             else if (target.parent == 'Inner Join'){
 
               let newData = dataHelper.innerJoin(data1, data2)
-              this.vegaObject.setData(newData)
+              that.vegaObjectObj[vegaObjKey].setData(newData)
 
               let _com1 = this.getComponentByName(connectionNames[0])
               let _com2 = this.getComponentByName(connectionNames[1])
@@ -520,7 +524,7 @@ export default {
             else{
 
               let newData = dataHelper.outerJoin(data1, data2)
-              this.vegaObject.setData(newData)
+              that.vegaObjectObj[vegaObjKey].setData(newData)
 
               let _com1 = this.getComponentByName(connectionNames[0])
               let _com2 = this.getComponentByName(connectionNames[1])
@@ -561,12 +565,12 @@ export default {
           _com.setFieldName(source.name);
         } else if (target.parent == "Log") {
           let result = caculator_modules.log(
-            this.vegaObject.getData(),
+            this.vegaObjectObj[vegaObjKey].getData(),
             sourcePortName,
             "e"
           );
 
-          this.vegaObject.setData(result.data);
+          this.vegaObjectObj[vegaObjKey].setData(result.data);
           let _com = this.getComponentByName(target.parent);
           _com.setFieldName(result.name);
         }
@@ -588,16 +592,16 @@ export default {
           let range = ret.range;
           let dimPreview = ret.dim;
           let result = processor_modules.filter(
-            this.vegaObject.getData(),
+            this.vegaObjectObj[vegaObjKey].getData(),
             range,
             dimPreview
           );
 
-          this.vegaObject.setData(result.data);
+          this.vegaObjectObj[vegaObjKey].setData(result.data);
           let maker = this.modelConfig[target.parent].maker;
 
-          this.vegaObject.setEncoding(target.parent, meta);
-          this.vegaObject.setMark(target.parent, maker);
+          this.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
+          this.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
         }
       }
     },
@@ -626,9 +630,9 @@ export default {
         that.setVegaConfig(source, target);
       }
 
-      let result = this.vegaObject.getOutputForced();
+      //let result = this.vegaObjectObj[vegaObjKey].getOutputForced();
       //Show the result in bottom canvas via vage compilier
-      vegaEmbed("#canvas", result, { theme: "default" });
+      //vegaEmbed("#canvas", result, { theme: "default" });
     },
     connectionRemove(connect){
       
@@ -776,6 +780,7 @@ export default {
 
     },
     buildBlueGraph(connect){
+      //每增加一条边就更新
       //首先处理componentIndex
       let that = this
       let linkname = connect.sourceId + "_" + connect.targetId
@@ -801,15 +806,16 @@ export default {
         }
       }
       for(let i=0; i<this.componentLink.length; i++){
-        let indexsource = this.componentIndex.indexOf(this.componentLink[i].split('_')[0])
-        let indextarget = this.componentIndex.indexOf(this.componentLink[i].split('_')[1])
+        let indexsource = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[0])
+        let indextarget = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[1])
         this.componentGraph[indexsource][indextarget] = 1
       }
-
+      
       //获取view组件
       let viewerDict = {}
       let viewerList = []
       let viewerTreeLink = {}
+
       for(let i=0 ;i<this.componentIndex.length; i++){
         if(this.getComponentById(this.componentIndex[i]).type == "Viewer"){
           if(!viewerDict.hasOwnProperty( this.componentIndex[i] )){
@@ -818,6 +824,20 @@ export default {
           }
         }
       }
+      //根据view组件建立vegaObjectObj 若有新view则增加 若没有则删除/ 先执行删除 再增加/ 遍历两遍
+      Object.keys(that.vegaObjectObj).forEach(function(d){
+        if(viewerList.indexOf(d) == -1){
+          //如果在viewerlist中没有该viewer,则该viewer已被删除,需从vegaObjectObj中去掉键值对
+          delete vegaObjectObj[d]
+        }
+      })
+      viewerList.forEach(function(d){
+        if(!(d in that.vegaObjectObj)){
+          //不存在则新建vegaobject
+          that.vegaObjectObj[d] = new VegaModel(parseInt(that.height / 2.3), parseInt(that.width * 1.1), d)
+        }
+      })
+      
       
       //根据view组件进行遍历 获取有相连关系的组件
       for(let i=0; i<viewerList.length; i++){
@@ -838,10 +858,75 @@ export default {
           return;
         }
       }
+
+      //绑定数据
+      //搜索viewer相关的数据组件进行setdata
+      //构建data component 根据是否新增数据而setdata
+      //找出新增加的组件 根据新增加的组件在viewer树中的位置 判断是否需要setdata
+      //建立viewer data tree
+      
+      let viewerTreeLinkKeys = Object.keys(viewerTreeLink)
+      viewerTreeLinkKeys.forEach(function(d){
+        let linkList = viewerTreeLink[d]
+
+        linkList.forEach(function(value){
+          let componentlist = value.split("_")
+          for(let i=0; i<componentlist.length; i++){
+            let com = componentlist[i]
+            if(that.getComponentById(com).type == "Data"){
+              if(that.viewerDataTree[d] == undefined){
+                that.viewerDataTree[d] = []
+                that.viewerDataTree[d].push(com)
+                let _loadedData = that.loadedDatasets[com]
+                that.vegaObjectObj[d].setData(_loadedData)
+              }
+              else{
+                if(that.viewerDataTree[d].indexOf(com) == -1){
+                  that.viewerDataTree[d].push(com)
+                  let _loadedData = that.loadedDatasets[com]
+                  that.vegaObjectObj[d].setData(_loadedData)
+                }
+              }
+            }
+          }
+
+        })
+      })
+
+
+      //构建component connections dict
+      
+      let connectionsDict = {}
+      for(let i=0; i<that.connections.length; i++){
+        let _name = that.connections[i].sourceId + '_' + that.connections[i].targetId
+        if(!(_name in connectionsDict)){
+          connectionsDict[_name] = []
+          connectionsDict[_name].push(that.connections[i])
+        }else{
+          connectionsDict[_name].push(that.connections[i])
+        }
+      }
       //根据view分组新建object 需要#list
       //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
       //vegaEmbed("#canvas", result, { theme: "default" });
+      for(let i=0; i<viewerList.length; i++){
+        let _viewer = viewerList[i]
+        let _componentLink = viewerTreeLink[_viewer]
 
+        for(let j=0; j<_componentLink.length; j++){
+          //component-component
+          let _name = _componentLink[j]
+          let _connections = connectionsDict[_name]
+
+          for(let k=0; k<_connections.length; k++){
+            //component port - component port
+            let _vegaObject = that.vegaObjectObj[_viewer]
+            let _sourcelink = _connections[k].source
+            let _targetlink = _connections[k].target
+            //that.setVegaConfig(_sourcelink, _targetlink, _vegaObject)
+          }
+        }
+      }
 
     },
     dynamicvstab(){
