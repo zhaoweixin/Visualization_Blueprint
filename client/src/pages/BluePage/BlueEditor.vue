@@ -22,20 +22,25 @@
       </vs-navbar-item>
     </vs-navbar>
 
-    <div class='toolbar' style='position:absolute;top:45px;right:18%'>
+    <div class='toolbar' style='position:absolute;top:45px;right:2%'>
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="timeline"></vs-button>
       <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
     </div>
-  
-     <vs-row vs-h="6">
-       <!--数据添加模块-->
-        <vs-col id='data_list_container' vs-type="flex" vs-justify="left" vs-align="top" vs-w="2" style="max-height:800px;overflow-y:scroll">
+    <vs-row style="height:1080px">
+      <!--整个高度为10-->
+
+      <vs-col id='data_list_container' vs-justify="left" vs-align="top" vs-w="2" style="max-height:1080px;overflow-y:scroll">
+        <!--该列放置数据和操作-->
+        <!--数据列-->
+
+        <vs-divider border-style="solid" color="dark" >DATALIST AREA</vs-divider>
+        <vs-row vs-h="5" style="display:block">
             
             <div id='data_list'>
               <vs-collapse accordion :key="index" v-for="(data, index) in dataList">
                 <vs-collapse-item style="background:rgb(142,170,255); border-radius:10px">
-                  <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px">
+                  <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px; font-size:15px">
                     {{data.name}}
                   </div>
                   <span style="color:white;padding:5px;float:right;font-size:15px">Length: {{data.length}}</span>
@@ -43,7 +48,7 @@
                   <div :key="index" v-for="(dim, index) in data.dimensions">
                     <vs-list-item>
                       <h3 style="float:left;color:white">{{dim.name}}</h3>
-                       <vs-select style="float:left;width:130px" v-model="dim.type">
+                       <vs-select style="float:left;width:80%" v-model="dim.type">
                         <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in dataTypes" />
                       </vs-select>
                         <vs-avatar style="float:right;margin:0px;margin-left:10px; background:rgb(167,189,255)" :color="dim.color" text="+" v-on:click="dimensionSelected(data.name, dim)"/>
@@ -52,17 +57,14 @@
                 </vs-collapse-item>
               </vs-collapse >
             </div>
-        </vs-col>
-      <!--蓝图编辑模块-->
-        <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="8">
-             <div id='preview' style="background:rgba(0,0,0,0.05)"><svg id ='editorborad'></svg></div>
-        </vs-col>
-      <!--蓝图功能模块-->
-        <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="2" style="max-height:800px;overflow-y:scroll">
+        </vs-row>
+        <!--功能列-->
+        <vs-divider border-style="solid" color="dark" >FUNCTION AREA</vs-divider>
+        <vs-row vs-h="5">
             <div id='editor'>
               <vs-collapse accordion :key="item.name" v-for="item in componentTypes">
                 <vs-collapse-item style="background:rgb(142,170,255); border-radius:10px">
-                  <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px">
+                  <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px; font-size:15px">
                     {{item.name}}
                   </div>
                   <vs-list :key="index" v-for="(meta, index) in item.childrens">
@@ -71,28 +73,38 @@
                   </vs-list>
                 </vs-collapse-item>
               </vs-collapse >
-              <vs-button style="width:50%; justify-content: right; float:right;margin-right:15%" color="rgb(142,170,255)" type="filled" icon="apps">Find more component</vs-button>
             </div>
-        </vs-col>
-    </vs-row>
+        </vs-row>
 
-    <vs-row vs-h="4">
-      <vs-col vs-type="flex" vs-justify="center" vs-align="top" vs-w="2">
-        <div id='infoPanel' style='height:450px'>
-          <vs-textarea style='height:450px' cols="100" rows="23" v-model="model_config_text" />
-        </div>
       </vs-col>
-      <vs-col vs-type="flex" vs-justify="left" vs-align="top" vs-w="10" id="preview_container">
-        <div>
-          <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in vsbuttonbox.button">
-            <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
+      
+
+      <vs-col vs-w="10">
+        
+        <vs-row>
+          <!--该列放置蓝图-->
+          <vs-col vs-align="center" vs-w="12">
+            <div id='preview' style="background:rgba(0,0,0,0.05)"><svg id ='editorborad'></svg></div>
+          </vs-col>
+        </vs-row>
+
+        <vs-row id="preview_container" vs-w="12">
+          <!--该列放置生成图-->
+          <vs-col vs-type="flex" vs-align="center" vs-w="12">
+            <div>
+              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in vsbuttonbox.button">
+                <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
+              </div>
           </div>
-        </div>
-        <div id='canvas'></div>
-      </vs-col>
-    </vs-row>
 
-    <vs-row vs-h="4"></vs-row>
+            <div id='canvas'></div>
+          </vs-col>
+          
+        </vs-row>
+
+      </vs-col>
+
+    </vs-row>
 
 </div>
 
@@ -164,7 +176,7 @@ export default {
       }
       this.container = d3.select("#editorborad");
       this.container.append("g").attr("id", "grid_layer");
-      this.chartResize(window.innerWidth * 0.65, window.innerHeight * 0.6);
+      this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
       this.bluecomponentscountInit()
       //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
     },
@@ -416,12 +428,10 @@ export default {
 
           dataHelper.getDataDetail(source).then(function(response) {
             //that.vegaObject.setData(response.data.data.values);
-            //console.log('response', response)
             that.loadedDatasets[source] = response.data.data.values
           });
         }
       }
-      //console.log("this.selectedData", this.selectedData)
     },
 
     //The configurariton change rules
@@ -434,7 +444,6 @@ export default {
           key: target.name,
           type: source.dimension_type
         };
-        //console.log("that.modelConfig", that.modelConfig, target)
         let maker = that.modelConfig[target.parent].maker;
 
         that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
@@ -645,7 +654,6 @@ export default {
       
     },
     buildBlueGraph(connect){
-      console.log(connect)
       let that = this
       let _source = connect.source
       let _target = connect.target
@@ -733,7 +741,9 @@ export default {
       viewerList.forEach(function(d){
         if(!(d in that.vegaObjectObj)){
           //不存在则新建vegaobject
-          that.vegaObjectObj[d] = new VegaModel(parseInt(that.height / 2.3), parseInt(that.width * 1.1), d)
+          let _height = window.innerHeight * 0.3
+          let _width = window.innerWidth * 0.68
+          that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d)
         }
       })
       
@@ -989,7 +999,7 @@ export default {
 
     //Add a listener for window's resize
     window.addEventListener("resize", () => {
-      this.chartResize(window.innerWidth * 0.65, window.innerHeight * 0.6);
+      this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
     });
 
     //Get the data candidates from server
