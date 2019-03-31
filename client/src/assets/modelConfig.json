@@ -173,7 +173,7 @@
     },
     "Viewer":{
         "inPorts":[
-            {"name":"dim","text":"Dim","attr":"viewer","type":"in"}
+            {"name":"dim","text":"input","attr":"viewer","type":"in"}
         ],
         "outPorts": [
             {"name":"output","text":"Output","attr":"field","type":"out"}

@@ -68,7 +68,7 @@
                   <vs-list :key="index" v-for="(meta, index) in item.childrens">
                     <vs-button style="width:80%; justify-content: left; margin-left:10%" color="rgb(167,189,255)" type="filled"  v-on:click="createNewComponent(item.name, meta)" icon="add_circle">{{meta}}</vs-button>
                     <vs-divider></vs-divider>
-                  </vs-list>  
+                  </vs-list>
                 </vs-collapse-item>
               </vs-collapse >
               <vs-button style="width:50%; justify-content: right; float:right;margin-right:15%" color="rgb(142,170,255)" type="filled" icon="apps">Find more component</vs-button>
@@ -85,7 +85,7 @@
       <vs-col vs-type="flex" vs-justify="left" vs-align="top" vs-w="10" id="preview_container">
         <div>
           <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in vsbuttonbox.button">
-            <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" >{{meta.content}}</vs-button>
+            <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
           </div>
         </div>
         <div id='canvas'></div>
@@ -148,7 +148,9 @@ export default {
       componentGraph:"",
       exstingPorts:[],
       vegaObjectObj:{},
-      viewerDataTree:{}
+      viewerDataTree:{},
+      layoutObj:{},
+      viewerlayout: {}
     };
   },
   methods: {
@@ -235,7 +237,7 @@ export default {
       //make sure that the viewer name equal to button content
       if(group == "Viewer"){
 
-        let propertiesname = 'Viewer' + this.viewer.count
+        let propertiesname = 'Viewer-' + this.viewer.count
 
         //update viewer set
         this.viewer.count = this.viewer.count + 1
@@ -262,6 +264,12 @@ export default {
       this.blueComponents.push(_com);
       //if create viewer, create tab
 
+    },
+    //generate chart
+    generateChart(id, meta){
+      let result = this.vegaObjectObj[meta["content"]].getOutputForced();
+      //Show the result in bottom canvas via vage compilier
+      vegaEmbed("#canvas", result, { theme: "default" });      
     },
 
     //find the component by the component's name
@@ -413,7 +421,7 @@ export default {
           });
         }
       }
-      console.log("this.selectedData", this.selectedData)
+      //console.log("this.selectedData", this.selectedData)
     },
 
     //The configurariton change rules
@@ -551,7 +559,6 @@ export default {
         console.log("source target", source, target)
         let sourcePortName = source.name;
 
-       // console.log(this.loadedDatasets, this.contextData)
 
         if (target.parent == "Filter") {
           this.getComponentByName(target.parent).showDataPreview(
@@ -637,152 +644,44 @@ export default {
     connectionRemove(connect){
       
     },
-    constructTransJson(connect){
-      //递归遍历 若遍历完毕没有targetid 和 sourceid 则直接在第一层添加
-      //若遍历完毕有sourceid没有targetid 则 在sourceid子节点添加
-      //若遍历完毕有sourceid和targetid 则 在sourceid内添加属性
-      var _sourceid = connect.sourceId
-      var _targetid = connect.targetId
-      var isExistSource = 0
-      var isExistTarget = 0
-      recursion(this.transjson.children)
-
-      function recursion(children){
-        //console.log(children)
-        if(children.length == 0) return;
-
-        children.forEach(function(d){
-          if(d.id == _targetid && d.sourceId == _sourceid){
-            isExistSource = 1
-            isExistTarget = 1
-          }
-          if(d.id == _sourceid && d.children.length == 0){
-            isExistSource = 1
-            isExistTarget = 0
-          }
-          if(d.sourceId == _targetid ){
-            isExistSource = 0
-            isExistTarget = 1
-          }
-          recursion(d["children"])
-        })
-      }
-      //当对象内有没有这条边并且不存在sourceid 和 targetid 时 即两个component没有连接过 直接更新本层id sourceid attr
-      if(isExistSource == 0 && isExistTarget == 0){
-        this.transjson.children.push({
-          "id": _targetid,
-          "sourceId": _sourceid,
-          "attr":[{"sourcePort": connect.source, "targetPort": connect.target}],
-          "children":[]
-        })
-      }
-      //当对象内没有这条边但是存在source 不存在target时
-      //即 source和ssource连接过 但是source没有和target连接过 需要增加source层下层边属性和增加source层本层孩子节点
-      
-      //attr只存储和上层连接的边属性
-      if(isExistSource == 1 && isExistTarget == 0){
-        recursion_add_10(this.transjson.children)
-        function recursion_add_10(children){
-          children.forEach(function(d){
-            if(d.id == _sourceid){
-
-              d.children.push({
-                "id": _targetid,
-                "sourceId": _sourceid,
-                "attr": [{
-                "sourcePort": connect.source,
-                "targetPort": connect.target
-                }],
-                "children": []
-              })
-              return;
-            }
-            recursion_add_10(d.children)
-          })
-        }
-        
-      }
-      //当对象内有这条边 存在source和target时 
-      //即source和target已经连接过 只需要source本层属性和source层本层孩子节点
-      if(isExistSource == 1 && isExistTarget == 1){
-        recursion_add_11(this.transjson.children)
-        function recursion_add_11(children){
-          children.forEach(function(d){
-            if(d.id == _targetid && d.sourceId == _sourceid){
-              d.attr.push({
-                "sourcePort": connect.source,
-                "targetPort": connect.target
-              })
-              /*
-              d.children.push({
-                "id": _targetid,
-                "sourceId": _sourceid,
-                "attr": [],
-                "children": []
-              })
-              */
-              return;
-            }
-            recursion_add_11(d.children)
-          })
-        }
-      }
-      //当对象内没有这条边，不存在source但存在target时
-      //在transjson中添加父节点，在父节点添加id sourceid attr 在子节点中添加sourceid
-      if(isExistSource == 0 && isExistTarget == 1){
-        
-        recursion_add_01(this.transjson.children) 
-        function recursion_add_01(children){
-          children.forEach(function(d){
-            if(d.sourceId == _targetid){
-              //填充
-              var tempd = JSON.parse(JSON.stringify(d));
-              //d.id = _targetid
-              d.id = _targetid
-              d.sourceId = _sourceid
-              d.attr = [{"sourcePort": connect.source, "targetPort": connect.target}]
-              d.children = [tempd]
-              return;
-            }
-            recursion_add_01(d.children)
-          })
-        }
-
-      }
-      
-    },
-    buildDFS(connect){
-      const _id = connect.sourceId + "_" + connect.targetId
-      if(!this.componentLink.dict.hasOwnProperty(_id)){
-        const temp = [connect.sourceId, connect.targetId]
-        this.componentLink.dict[_id] = temp
-        this.componentLink.list.push({"source": connect.sourceId, "target": connect.targetId})
-        const root = [] //{"name": "root", "children": []}
-        //add component to link
-        
-        if(this.componentLink.hierarchy.length = 0){
-
-          this.componentLink.hierarchy.push(
-            {"name": connect.sourceId, 
-              "children": [{ "name": connect.targetId, "children": [] }]
-            }
-            )
-        }
-
-        function addId(){
-          
-        }
-        
-        console.log(root)
-      }else{
-
-      }
-
-    },
     buildBlueGraph(connect){
+      console.log(connect)
+      let that = this
+      let _source = connect.source
+      let _target = connect.target
+
+      //更新that.layoutObj viewer- layout-0_chartA parentid + "_" + text
+      
+      if(_target.attr == "Layout"){
+        //建立索引 用于更新layout-port
+        if(that.viewerlayout[_source["parentid"]] == undefined){
+          that.viewerlayout[_source["parentid"]] = []
+          let _name = _target.id + "_" + _target.text
+          that.viewerlayout[_source["parentid"]].push(_name)
+        }else{
+          let _name = _target.id + "_" + _target.text
+          that.viewerlayout[_source["parentid"]].push(_name)
+        }
+
+        //更新layoutObj 用于存储layout-port- config
+        if(that.layoutObj[_target["id"]] == undefined){
+          that.layoutObj[_target["id"]] = {}
+
+          that.layoutObj[_target["id"]][_target["text"]] = ""
+          that.layoutObj[_target["id"]][_target["text"]] = that.vegaObjectObj[_source["parentid"]]
+
+        }else{
+          if(that.layoutObj[_target["id"]][_target["text"]] == undefined){
+
+            that.layoutObj[_target["id"]][_target["text"]] = ""
+            that.layoutObj[_target["id"]][_target["text"]] = that.vegaObjectObj[_source["parentid"]]
+
+          }
+        }
+      }
       //每增加一条边就更新
       //首先处理componentIndex
-      let that = this
+
       let linkname = connect.sourceId + "_" + connect.targetId
       let addId = [connect.sourceId, connect.targetId]
       addId.forEach(function(d){
@@ -923,11 +822,20 @@ export default {
             let _vegaObject = that.vegaObjectObj[_viewer]
             let _sourcelink = _connections[k].source
             let _targetlink = _connections[k].target
-            //that.setVegaConfig(_sourcelink, _targetlink, _vegaObject)
+            that.setVegaConfig(_sourcelink, _targetlink, _viewer)
           }
         }
       }
-
+    
+      //更新layout/chart/vegamodel
+       let _viewerlayoutKeys = Object.keys(that.viewerlayout)
+       _viewerlayoutKeys.forEach(function(d){
+         that.viewerlayout[d].forEach(function(v){
+           let _targetid = v.split("_")[0]
+           let _targettext = v.split("_")[1]
+           that.layoutObj[_targetid][_targettext] = that.vegaObjectObj[d]
+         })
+       })       
     },
     dynamicvstab(){
 
@@ -1010,10 +918,12 @@ export default {
               sourceId: curVal[tailNo].sourceId,
               targetId: curVal[tailNo].targetId
             });
+            /*
             this.connectionParse({
                 source: curVal[tailNo].sourcePort,
                 target: curVal[tailNo].targetPort
             });
+           */ 
           }
         }
 
@@ -1036,17 +946,17 @@ export default {
       handler(curVal, oldVal) {
         //if (oldVal.length != curVal.length) {'
         let tailNo = curVal.length - 1;
-        //this.constructTransJson(curVal[tailNo])
-        //this.buildDFS(curVal[tailNo])
         this.buildBlueGraph(curVal[tailNo])
         let that = this
 
+          /*
           this.vegaObject.reset()
 
           this.connections.forEach(function(conn){
 
             that.connectionParse(conn)
           })
+          */
 
           //let result = this.vegaObject.getOutputForced();
           //vegaEmbed("#canvas", result, { theme: "dark" });

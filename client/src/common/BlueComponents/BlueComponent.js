@@ -59,7 +59,6 @@ export default class BlueComponent {
             .on("end", function(d){
                 that.dragended(this, d)
             }));
-        console.log(this.type);
         this.draw(this.type)
     }
     //Get the current position and delta translation
