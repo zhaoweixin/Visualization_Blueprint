@@ -96,14 +96,10 @@
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
           </div>
-
             <div id='canvas'></div>
           </vs-col>
-          
         </vs-row>
-
       </vs-col>
-
     </vs-row>
 
 </div>
@@ -123,7 +119,6 @@ import modelConfig from "../../assets/modelConfig.json";
 import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import vsbutton from "../../assets/vsbuttonbox.json";
-import Transjson from "../../assets/transJson.json"
 import { keys } from 'd3';
 
 
@@ -147,22 +142,18 @@ export default {
       dataTypes: config.typesPrefab, //Store all the data type which supported by vega-lite
       model_config_text: "", //The text which translated by vega-lite model
       dataConnection:{},
-      loadedDatasets:{},
-      vsbuttonbox:vsbutton,
-      viewer:{
-        'count':0,
-        "list":[]
-      },
-      blueComponentsCount:{},
-      transjson: Transjson,
-      componentLink:[],
-      componentIndex:[],
-      componentGraph:"",
-      exstingPorts:[],
-      vegaObjectObj:{},
-      viewerDataTree:{},
-      layoutObj:{},
-      viewerlayout: {}
+      loadedDatasets:{}, //accroding datacomponent to loaded datasets
+      vsbuttonbox:vsbutton, //store/init the viewer review button
+      viewer:{'count':0, "list":[]}, // store existing viewer component
+      blueComponentsCount:{}, //store the count of component according to different type
+      componentLink:[], // store the links between components
+      componentIndex:[], //the index made of componentid
+      componentGraph:"", //two dimensional matrix of storage blueprint connection logic
+      exstingPorts:[], //all of the component port in blueprint
+      vegaObjectObj:{}, //vegaobject is used to generate graph throgh
+      viewerDataTree:{}, //store the data in different viewer
+      layoutObj:{}, //layout is the preset typesetting
+      viewerlayout: {} //store the vegaobject in different viewer
     };
   },
   methods: {
@@ -178,9 +169,10 @@ export default {
       this.container.append("g").attr("id", "grid_layer");
       this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
       this.bluecomponentscountInit()
-      //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
+      setTimeout(function(){
+        that.notifications({'title':'Congratulations', 'text': 'drag and click to start your amazing work~', 'color': 'rgb(31,116,225)'})
+      }, 3000)
     },
-
     //Darwing the grids line in canvas which help user the recognize the canvas and components
     drawGrids() {
       let lineData = [];
@@ -281,7 +273,9 @@ export default {
     generateChart(id, meta){
       let result = this.vegaObjectObj[meta["content"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
-      vegaEmbed("#canvas", result, { theme: "default" });      
+      console.log(result)
+      vegaEmbed("#canvas", result, { theme: "default" });
+      this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
     },
 
     //find the component by the component's name
@@ -654,6 +648,7 @@ export default {
       
     },
     buildBlueGraph(connect){
+
       let that = this
       let _source = connect.source
       let _target = connect.target
@@ -847,8 +842,16 @@ export default {
          })
        })       
     },
-    dynamicvstab(){
-
+    dynamicvstab(message){
+      
+    },
+    notifications(message){
+      this.$vs.notify({
+        title:message.title,
+        text:message.text,
+        color:message.color,
+        position:'bottom-right'
+      })
     }
   
   },
