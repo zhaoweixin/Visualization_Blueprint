@@ -1,6 +1,7 @@
 <template>
    <div id="bigContainner" :style="containnerStyles">
-   <Table stripe :columns="state.coldata" :data="state.listdata"  id="table"></Table>
+    <Input prefix="ios-search" clearable style="width:auto" id="searchInput" placeholder="Search..." v-model="searchx"/>
+   <Table stripe :height="heightDefault" :columns="state.coldata" :data="datax"  id="table"></Table>
    <!-- <edit-bar :message="editMessage" v-show="toShow"></edit-bar> -->
    <div v-show="toShow" id="EditContainner" style="background-color: #cde6c7">
        <template  v-for="(item,index) in editMessage">
@@ -18,7 +19,7 @@
 </template>
 <script>
 import Vue from 'vue'
- import editBar from './editBar'
+import editBar from './editBar'
 import DataManager from '../DataManager'
 import * as d3 from "d3"
 import { stack } from 'd3';
@@ -31,125 +32,151 @@ export default {
     data:function(){
         return {
             editMessage:{},
+            searchx:null,
             toShow:false,
+            datax:[],
+            heightDefault:null,
             containnerStyles:{},
             defIdToEdit:null,
             state:{
                 listdata:[
-                    {
-                        "id": 1,
-                        "name": "Leanne Graham",
-                        "username": "Bret",
-                        "email": "Sincere@april.biz",
-                        "website": "hildegard.org",
-                    },
-                    {
-                        "id": 2,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
-                    {
-                        "id": 3,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
-                    {
-                        "id": 54,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
-                    {
-                        "id": 3564,
-                        "name": "Clementine Bauch",
-                        "username": "Samantha",
-                        "email": "Nathan@yesenia.net",
-                        "website": "ramiro.info",
-                    },
+                    // {
+                    //     "id": 1,
+                    //     "name": "Leanne Graham",
+                    //     "username": "Bret",
+                    //     "email": "Sincere@april.biz",
+                    //     "website": "hildegard.org",
+                    // },
+                    // {
+                    //     "id": 2,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
+                    // {
+                    //     "id": 3,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
+                    // {
+                    //     "id": 54,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
+                    // {
+                    //     "id": 3564,
+                    //     "name": "Clementine Bauch",
+                    //     "username": "Samantha",
+                    //     "email": "Nathan@yesenia.net",
+                    //     "website": "ramiro.info",
+                    // },
                    
-                    {
-                        "id": 4,
-                        "name": "Patricia Lebsack",
-                        "username": "Karianne",
-                        "email": "Julianne.OConner@kory.org",
-                        "website": "kale.biz",
-                    },
-                    {
-                        "id": 5,
-                        "name": "Chelsey Dietrich",
-                        "username": "Kamren",
-                        "email": "Lucio_Hettinger@annie.ca",
-                        "website": "demarco.info",
-                    },
-                    {
-                        "id": 6,
-                        "name": "Mrs. Dennis Schulist",
-                        "username": "Leopoldo_Corkery",
-                        "email": "Karley_Dach@jasper.info",
-                        "website": "ola.org",
-                    },
-                    {
-                        "id": 7,
-                        "name": "Kurtis Weissnat",
-                        "username": "Elwyn.Skiles",
-                        "email": "Telly.Hoeger@billy.biz",
-                        "website": "elvis.io",
-                    },
-                    {
-                        "id": 8,
-                        "name": "Nicholas Runolfsdottir V",
-                        "username": "Maxime_Nienow",
-                        "email": "Sherwood@rosamond.me",
-                        "website": "jacynthe.com",
-                    },
-                    {
-                        "id": 9,
-                        "name": "Glenna Reichert",
-                        "username": "Delphine",
-                        "email": "Chaim_McDermott@dana.io",
-                        "website": "conrad.com",
-                    },
-                    {
-                        "id": 10,
-                        "name": "Clementina DuBuque",
-                        "username": "Moriah.Stanton",
-                        "email": "Rey.Padberg@karina.biz",
-                        "website": "ambrose.net",
-                    },
-                    {
-                        "id": 42352,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
-                    {
-                        "id": 54362,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
-                    {
-                        "id": 43252,
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                    },
+                    // {
+                    //     "id": 4,
+                    //     "name": "Patricia Lebsack",
+                    //     "username": "Karianne",
+                    //     "email": "Julianne.OConner@kory.org",
+                    //     "website": "kale.biz",
+                    // },
+                    // {
+                    //     "id": 5,
+                    //     "name": "Chelsey Dietrich",
+                    //     "username": "Kamren",
+                    //     "email": "Lucio_Hettinger@annie.ca",
+                    //     "website": "demarco.info",
+                    // },
+                    // {
+                    //     "id": 6,
+                    //     "name": "Mrs. Dennis Schulist",
+                    //     "username": "Leopoldo_Corkery",
+                    //     "email": "Karley_Dach@jasper.info",
+                    //     "website": "ola.org",
+                    // },
+                    // {
+                    //     "id": 7,
+                    //     "name": "Kurtis Weissnat",
+                    //     "username": "Elwyn.Skiles",
+                    //     "email": "Telly.Hoeger@billy.biz",
+                    //     "website": "elvis.io",
+                    // },
+                    // {
+                    //     "id": 8,
+                    //     "name": "Nicholas Runolfsdottir V",
+                    //     "username": "Maxime_Nienow",
+                    //     "email": "Sherwood@rosamond.me",
+                    //     "website": "jacynthe.com",
+                    // },
+                    // {
+                    //     "id": 9,
+                    //     "name": "Glenna Reichert",
+                    //     "username": "Delphine",
+                    //     "email": "Chaim_McDermott@dana.io",
+                    //     "website": "conrad.com",
+                    // },
+                    // {
+                    //     "id": 10,
+                    //     "name": "Clementina DuBuque",
+                    //     "username": "Moriah.Stanton",
+                    //     "email": "Rey.Padberg@karina.biz",
+                    //     "website": "ambrose.net",
+                    // },
+                    // {
+                    //     "id": 42352,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
+                    // {
+                    //     "id": 54362,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // },
                     
-                    {
-                        "id": 23,
+                    // {
+                    //     "id": 23,
+                    //     "name": "Ervin Howell",
+                    //     "username": "Antonette",
+                    //     "email": "Shanna@melissa.tv",
+                    //     "website": "anastasia.net",
+                    // }
+                     {
                         "name": "Ervin Howell",
                         "username": "Antonette",
                         "email": "Shanna@melissa.tv",
                         "website": "anastasia.net",
-                    }
+                     },
+                     {
+                        "name": "Efew分well",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ervincdsfdsafll",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ergreegrell",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     },
+                     {
+                        "name": "Ervg5t5g5hll",
+                        "username": "Antonette",
+                        "email": "Shanna@melissa.tv",
+                        "website": "anastasia.net",
+                     }
                 ],
                 coldata:[{
                         title: 'Action',
@@ -168,8 +195,8 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.handleEdits(params.row.id)
-                                            console.log(params)
+                                            //console.log(params)
+                                            this.handleEdits(params.row.id?params.row.id:params.row.default_id)
                                         }
                                     }
                                 }, "Edit"),
@@ -180,7 +207,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.index)
+                                            this.remove(params.row.id?params.row.id:params.row.default_id)
                                         }
                                     }
                                 }, 'Delete')
@@ -195,22 +222,72 @@ export default {
     watch: {
         tableMsg: function(val){
             this.generateTable()
+        },
+        searchx(){
+            this.loadData()
         }
     },
     methods:{
         remove(index){
-            this.state.listdata.splice(index,1)
-            console.log(this.state.listdata)
+            for(let i=0;i<this.state.listdata.length;i++){
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id
+                if (index == id){
+                    this.state.listdata.splice(i,1)
+                }
+            }
+            if(this.searchx){
+                for(let i=0;i<this.datax.length;i++){
+                let id_2 = this.datax[i].id?this.datax[i].id:this.datax[i].default_id
+                    if (index == id_2){
+                        this.datax.splice(i,1) 
+                    }
+                }
+            }
         },
-        handleEdit (row) {
-            this.$set(row, '$isEdit', true)             
-        }, 
-        handleSave (row) {
-            this.$set(row, '$isEdit', false)
+        loadData(){
+            if(!this.searchx)  this.datax = this.state.listdata
+            else this.datax = this.getItemsSearch()
         },
-        // changeOfContainner(){
-           
-        // },
+        getItemsSearch(){
+            let dataBase = this.state.listdata
+            let filterx = dataBase.filter((tr)=>{
+                let values = this.getValues(tr).toString().toLowerCase()
+                return values.indexOf(this.searchx.toLowerCase()) != -1
+            })
+            let items = []
+            filterx.forEach((item, index) => {                
+                items.push(item)              
+            })
+            return items
+        },
+        getValues(obj) {
+            let valuesx = Object.values(obj)
+            let strings = []
+            function getStrings (obj) {
+                if(Array.isArray(obj)) {
+                strings = [...strings,...obj]
+                obj.forEach((item) => {
+                    getStrings(item)
+                })
+                } else if (typeof obj == 'object' && obj != null) {
+                let subObj = Object.values(obj)
+                strings = [...strings,...subObj]
+                getStrings(subObj)
+                }
+            }
+            getStrings(valuesx)
+            strings = strings.filter(item => typeof item == 'string' || typeof item == 'number')
+            return valuesx
+        },
+        getStrings(obj, valuesx) {
+            let stringsx = Object.values(obj)
+            valuesx.forEach((item) => {
+                if (item && typeof item == 'object') {
+                valuesx = [...valuesx,...Object.values(item)]
+                }
+            })
+            return stringsx
+        },
         unchangeData(){
             this.toShow = false
             this.defIdToEdit = null
@@ -218,43 +295,44 @@ export default {
         },
         changeData(){
             for(let i=0;i<this.state.listdata.length;i++){
-                if (this.defIdToEdit == this.state.listdata[i].id){
-                    //this.state.listdata[i] = this.editMessage
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id                
+                if (this.defIdToEdit == id){
                     this.state.listdata.splice(i,1,this.editMessage)
-                    console.log("success")
-                    console.log(this.state.listdata)
                 }
+            }
+            if(this.searchx){
+                for(let i=0;i<this.datax.length;i++){
+                let id_2 = this.datax[i].id?this.datax[i].id:this.datax[i].default_id
+                if (this.defIdToEdit == id_2){
+                    this.datax.splice(i,1,this.editMessage)
+                }
+            }
             }
             this.toShow = false
 
         },
         handleEdits(index){
-            //console.log(index)
+            
             for(let i=0;i<this.state.listdata.length;i++){
-                if((index) == this.state.listdata[i].id)
+                let id = this.state.listdata[i].id?this.state.listdata[i].id:this.state.listdata[i].default_id
+                if((index) == id)
                 {
                     this.defIdToEdit = index;
                     this.editMessage = Object.assign({},this.state.listdata[i])//this.state.listdata[i];
                     this.toShow = true;
-                    
-                    //console.log(this.editMessage)
                 }
             }
-             //d3.select("#bigContainner").attr("background-color","red")
-             this.containnerStyles.backgroundColor = 'red';
         }
     },
     created:function(){
         //console.log(typeof(this.state.listdata))
         //为iview构建一个用于填充表的对象数组
+        //this.datax = this.state.listdata;
+        this.loadData();
         let data = this.state.listdata;
         let templatedata = data[0];
-        // for(let index in data){
-        //     console.log(data[index]);
-        // }
-        //console.log(templatedata)
+        let idId = 0;
         for(let index in templatedata){
-            //console.log(index);
             let obj = {};
             let flag = 0;
             let str = ''
@@ -265,71 +343,36 @@ export default {
                     str = str + index[i].toLowerCase()
                 }
             }
-            obj.title = str;
-            obj.key = index;
-            obj.sortable = 'true'
-            // obj.editable = true
-            // obj.render = function(h,params){
-            //     for(let key in params.row){
-            //     if(params.row.$isEdit){
-                    
-            //         return h('input',{
-            //             domProps:{
-            //                 value:params.row.key
-            //             },
-            //             on :{
-            //                 input:function(event){
-            //                     params.row.key = event.target.value
-            //                 }
-            //             }
-            //         });
-            //     }else{
-            //         return h('div',params.row.key);
-            //     }
-            //     }
-            // //     console.log(params);
-            // //     console.log(h)
-            //  }
-            this.state.coldata.splice(flag,0,obj)
-            flag = flag + 1
+            if(str != "Default_id"){
+                obj.title = str;
+                obj.key = index;
+                obj.sortable = 'true'
+                if(str === 'Id') {
+                    this.state.coldata.splice(0,0,obj)//保证id始终在第一个
+                    idId = 1
+                } 
+                else this.state.coldata.splice(1,0,obj)
+                flag = flag + 1
+            }
         }
-        //let that = this
-        // let actionObj = {}
-        // actionObj.title = "Action"
-        // actionObj.key = 'action'
-        // actionObj.fixed = 'right'
-        // actionObj.render = function(h,params,that){
-        //     return h('div',[
-        //         h('Button',{
-        //             props:{
-        //                 type:'text',
-        //                 size:'small'
-        //             },
-        //             on: {
-                        
-        //                 click:()=>{
-        //                 //console.log(params)
-        //                 this.remove(params.index)
-        //                 // window.clickId = params.row.id
-        //                 }
-        //             }
-        //         },'Delete'),
-        //         h('Button', {
-        //             props: {
-        //                 type: 'text',
-        //                 size: 'small'
-        //              }
-        //         }, 'Edit')
-            // ])
-        //just test
-        
-        //this.state.coldata.push(actionObj)
-        console.log(this.state.coldata)
+        if(idId === 0){//如果没有id
+            let el = this.state.coldata[0];       //那就得把action移动到最后面去
+            this.state.coldata.splice(0,1);
+            let len = this.state.coldata.length;
+            this.state.coldata.splice(len,0,el)
+            for(let i=0;i<this.state.listdata.length;i++)
+            {
+                this.state.listdata[i].default_id = i  //全部加上default_id属性
+            }
+        }
+        if(this.datax.length>=20){
+            this.heightDefault = 800
+        }
     },
     mounted:function(){
         if(this.state.listdata.length>=20){
             d3.select("#table").attr("height","800")
-            console.log(">")
+            
         }
     }
 }
@@ -356,6 +399,12 @@ export default {
 .inputs{
     position: fixed;
     left: 30%;
+}
+#searchInput{
+    position: relative;
+    /* //left: 80%; */
+    /* //left: -18px; */
+    /* padding: 5px 10px */
 }
 </style>
 
