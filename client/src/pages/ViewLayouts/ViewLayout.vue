@@ -69,7 +69,7 @@ export default{
 .layout{
     width: 100%;
     margin: 0 auto;
-    height: 800px;
+    height: 1080px;
 }
 .header{
     height: 12.5%;

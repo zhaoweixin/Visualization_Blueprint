@@ -23,9 +23,7 @@
     </vs-navbar>
 
     <div class='toolbar' style='position:absolute;top:45px;right:2%'>
-      <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
-      <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="timeline"></vs-button>
-      <vs-button class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
+      <vs-button @click="popupActivo4=true" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
     </div>
     <vs-row style="height:1080px">
       <!--整个高度为10-->
@@ -101,6 +99,9 @@
         </vs-row>
       </vs-col>
     </vs-row>
+    <vs-popup fullscreen title="Preview" :active.sync="popupActivo4">
+      <ViewLayout></ViewLayout>
+    </vs-popup>
 
 </div>
 
@@ -120,6 +121,7 @@ import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import vsbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
+import ViewLayout from "../ViewLayouts/ViewLayout"
 
 
 export default {
@@ -153,8 +155,12 @@ export default {
       vegaObjectObj:{}, //vegaobject is used to generate graph throgh
       viewerDataTree:{}, //store the data in different viewer
       layoutObj:{}, //layout is the preset typesetting
-      viewerlayout: {} //store the vegaobject in different viewer
-    };
+      viewerlayout: {}, //store the vegaobject in different viewer
+      popupActivo4: false
+    }
+  },
+  components:{
+      ViewLayout
   },
   methods: {
 
