@@ -23,7 +23,7 @@
     </vs-navbar>
 
     <div class='toolbar' style='position:absolute;top:45px;right:2%'>
-      <vs-button @click="popupActivo4=true" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
+      <vs-button v-on:click="graphPreview" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
     </div>
     <vs-row style="height:1080px">
       <!--整个高度为10-->
@@ -100,7 +100,7 @@
       </vs-col>
     </vs-row>
     <vs-popup fullscreen title="Preview" :active.sync="popupActivo4">
-      <ViewLayout></ViewLayout>
+      <ViewLayout ref="msg"></ViewLayout>
     </vs-popup>
 
 </div>
@@ -154,8 +154,8 @@ export default {
       exstingPorts:[], //all of the component port in blueprint
       vegaObjectObj:{}, //vegaobject is used to generate graph throgh
       viewerDataTree:{}, //store the data in different viewer
-      layoutObj:{}, //layout is the preset typesetting
-      viewerlayout: {}, //store the vegaobject in different viewer
+      layoutObj:{}, //store the vegaobject in different viewer
+      viewerlayout: {}, //layout is the preset typesetting
       popupActivo4: false
     }
   },
@@ -279,7 +279,6 @@ export default {
     generateChart(id, meta){
       let result = this.vegaObjectObj[meta["content"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
-      console.log(result)
       vegaEmbed("#canvas", result, { theme: "default" });
       this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
     },
@@ -677,13 +676,13 @@ export default {
           that.layoutObj[_target["id"]] = {}
 
           that.layoutObj[_target["id"]][_target["text"]] = ""
-          that.layoutObj[_target["id"]][_target["text"]] = that.vegaObjectObj[_source["parentid"]]
+          that.layoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
 
         }else{
           if(that.layoutObj[_target["id"]][_target["text"]] == undefined){
 
             that.layoutObj[_target["id"]][_target["text"]] = ""
-            that.layoutObj[_target["id"]][_target["text"]] = that.vegaObjectObj[_source["parentid"]]
+            that.layoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
 
           }
         }
@@ -745,6 +744,7 @@ export default {
           let _height = window.innerHeight * 0.3
           let _width = window.innerWidth * 0.68
           that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d)
+          console.log(that.vegaObjectObj[d])
         }
       })
       
@@ -844,9 +844,9 @@ export default {
          that.viewerlayout[d].forEach(function(v){
            let _targetid = v.split("_")[0]
            let _targettext = v.split("_")[1]
-           that.layoutObj[_targetid][_targettext] = that.vegaObjectObj[d]
+           that.layoutObj[_targetid][_targettext] = JSON.parse(JSON.stringify(that.vegaObjectObj[d]))
          })
-       })       
+       })
     },
     dynamicvstab(message){
       
@@ -858,6 +858,21 @@ export default {
         color:message.color,
         position:'bottom-right'
       })
+    },
+    graphPreview(){
+      //check which layout
+      //only allowed to exist one layout in blueEditor
+      let that = this
+      let key = Object.keys(that.layoutObj)
+      if(key.length == 0){
+        //alert notice that user should choose one layout
+        
+      } else{
+        console.log("~", that.layoutObj[key[0]])
+        this.$refs.msg.getModularInfo({"config": that.layoutObj[key[0]], "layoutname": key[0]})
+        this.popupActivo4=!this.popupActivo4
+      }
+      
     }
   
   },
@@ -984,6 +999,14 @@ export default {
       },
       deep:false
     },
+    vegaObjectObj:{
+
+      handler(cur, old){
+        console.log('vegaO')
+        console.log(cur)
+      },
+      deep: true
+    },
 
     //Monitor the vegaObject, if it updated, the model configuration text will be updated
     vegaObject: {
@@ -1000,7 +1023,7 @@ export default {
   mounted() {
     let that = this;
     this.chartInit("#preview");
-
+    
     //Set the init setting of textarea
     d3.selectAll("textarea")
       .style("color", "grey")
@@ -1033,6 +1056,7 @@ export default {
         //com.animate();
       });
     }, 20);
+
   }
 };
 </script>

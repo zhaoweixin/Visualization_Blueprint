@@ -5,18 +5,20 @@
         </div>
         <div class="mutiItem">
             <div class="left">
-                <div class="item_one">
-                    <p id="t1"></p>
+                <div id=" t1">
+                    <div id="chartA"></div>
                 </div>
-                <div class="item_two">
-                    <p id="t2"></p>
+                <div id="t2">
+                    <div id="chartB"></div>
                 </div>
-                <div class="item_three">
-                    <p id="t3"></p>
+                <div id="t3">
+                    <div id="chartC"></div>
                 </div>
             </div>
-            <div id='item_four'>
-                <p id="t4"></p>
+            <div class="right">
+                <div id='t4'>
+                    <div id="chartD"></div>
+                </div>
             </div>
             <!--图表 4-->
         </div>
@@ -24,41 +26,82 @@
 </template>
 
 <script>
-//import item_one from ''//引用图表一
-//import item_two from //引用图表二
-//import item_three from //引用图标三
-//import item_four from //引用图表四
+//import chartA from ''//引用图表一
+//import chartB from //引用图表二
+//import chartC from //引用图标三
+//import chartD from //引用图表四
 
 import vegaEmbed from "vega-embed";
 import tableData from "../../assets/table.json";
 import t1 from "../../assets/t1.json";
+import * as d3 from "d3";
 
 export default{
     data() {
         return {
+            ModularInfo:{},
+            chartStyle:{"chartA":{"width": 510,"height": 300},
+                    "chartB":{"width": 510,"height": 300},
+                    "chartC":{"width": 510,"height": 300},
+                    "chartD":{"width": 1200,"height": 900}
+                    },
+            layoutObj:{}
         }
     },
-    methods: {
-        //在这里实现功能
-        showtables(){
-            var tablejson = tableData;
-            var tD1 = t1;
-            vegaEmbed("#item_four",tablejson);
-            vegaEmbed("#t1",tD1);
-            vegaEmbed("#t2",tD1);
-            vegaEmbed("#t3",tD1);
-
-        }
-    },
+    props:["layout"],
     components: {
         //图表组件
-        //item_one,
-        //item_two,
-        //item_three,
-        //item_four
+        //chartA,
+        //chartB,
+        //chartC,
+        //chartD
+    },
+    watch:{
+        layout:{
+            handler(curval){
+                console.log(curval)
+            },
+            deep: true            
+        }
     },
     mounted(){
-        this.showtables();
+    },
+    methods:{
+        getModularInfo(m){
+            let that = this
+            this.layoutObj = JSON.parse(JSON.stringify(m))
+            this.adaptWidthHeight()
+            
+        },
+        adaptWidthHeight(){
+            //this.layoutObj.[chartA].data.height/width
+            let that = this
+            let chartList = Object.keys(that.chartStyle)
+
+            chartList.forEach(function(d){
+                if(that.layoutObj["config"][d] != undefined){
+                    //用vega model 自带的set方法
+                    that.layoutObj["config"][d]["data"]["height"] = that.chartStyle[d]["height"]
+                    that.layoutObj["config"][d]["data"]["width"] = that.chartStyle[d]["width"]
+                    let _layer = that.layoutObj["config"][d]["data"]["layer"]
+                    //console.log("_layer", _layer)
+                    _layer.forEach(function(v){
+                        v.height = that.chartStyle[d]["height"]
+                        v.width = that.chartStyle[d]["width"]
+                    })
+                }
+            })
+            
+            this.generateGraph()  
+        },
+        generateGraph(){
+            let that = this
+            let charts = Object.keys(that.layoutObj["config"])
+            charts.forEach(function(d){
+                vegaEmbed("#" + d, that.layoutObj["config"][d]["data"])
+            })
+            //vegaEmbed("#chartD",);
+        }
     }
     
 }
@@ -67,16 +110,16 @@ export default{
 <style type="text/css">
 
 .layout{
-    width: 100%;
+    width: 1900px;
     margin: 0 auto;
-    height: 1080px;
+    height: 1000px;
 }
 .header{
-    height: 12.5%;
+    height: 7.5%;
     background:deepskyblue;
 }
 .mutiItem{
-    height: 77.5%;
+    height: 92.5%;
     background: orange;
 }
 .left{
@@ -84,22 +127,15 @@ export default{
     height: 100%;
     float: left;
 }
-.item_one,.item_two,.item_three{
-    height: 33.333333333% ;
-}
-.item_one{
-    background: lightcoral;
-}
-.item_two{
-    background: lightslategray;
-}
-.item_three{
-    background: lightblue;
-}
-item_four{
+.right{
     width: 65%;
     height: 100%;
     float: left;
+}
+#chartA,#chartB,#chartC{
+    height: 33.333333333% ;
+}
+#chartD{
     background: lightsalmon;
 }
 </style>

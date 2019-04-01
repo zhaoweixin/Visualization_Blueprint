@@ -57,8 +57,6 @@ export default class VegaModel {
             this.data.layer.push(this.layers[parent])
         
         }
-
-        console.log(this.data.layer)
         
     }
     setDescription(text){
@@ -115,8 +113,6 @@ export default class VegaModel {
 
     //Output vega configuration and without check
     getOutputForced(){
-
-        console.log(this.data)
 
         return this.data
     }
