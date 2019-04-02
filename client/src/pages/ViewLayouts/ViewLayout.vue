@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <div class="header">
-            头部内容
+            System Preview
         </div>
         <div class="mutiItem">
             <div class="left">
@@ -11,11 +11,11 @@
                 <div id="t2">
                     <div id="chartB"></div>
                 </div>
+            </div>
+            <div class="right">
                 <div id="t3">
                     <div id="chartC"></div>
                 </div>
-            </div>
-            <div class="right">
                 <div id='t4'>
                     <div id="chartD"></div>
                 </div>
@@ -40,10 +40,10 @@ export default{
     data() {
         return {
             ModularInfo:{},
-            chartStyle:{"chartA":{"width": 510,"height": 300},
-                    "chartB":{"width": 510,"height": 300},
-                    "chartC":{"width": 510,"height": 300},
-                    "chartD":{"width": 1200,"height": 900}
+            chartStyle:{"chartA":{"width": 750,"height": 380},
+                    "chartB":{"width": 750,"height": 380},
+                    "chartC":{"width": 750,"height": 380},
+                    "chartD":{"width": 750,"height": 380}
                     },
             layoutObj:{}
         }
@@ -100,7 +100,6 @@ export default{
             charts.forEach(function(d){
                 vegaEmbed("#" + d, that.layoutObj["config"][d]["data"])
             })
-            //vegaEmbed("#chartD",);
         }
     }
     
@@ -110,34 +109,37 @@ export default{
 <style type="text/css">
 
 .layout{
-    width: 1900px;
+    width: 1800px;
     margin: 0 auto;
     height: 1000px;
 }
 .header{
-    height: 7.5%;
+    height: 5%;
     background:deepskyblue;
+    padding-left:50%;
+    padding-top:0.5%;
+    font-size: 20px;
+    color:white;
 }
 .mutiItem{
-    height: 92.5%;
-    background: orange;
+    height: 95%;
 }
 .left{
-    width: 35%;
-    height: 100%;
+    width: 50%;
+    height: 95%;
     float: left;
 }
 .right{
-    width: 65%;
-    height: 100%;
+    width: 50%;
+    height: 95%;
     float: left;
 }
-#chartA,#chartB,#chartC{
-    height: 33.333333333% ;
+#chartA,#chartB,#chartC,#chartD{
+    height: 47.5% ;
+    padding-top: 2%;
+    padding-left: 1%;
 }
-#chartD{
-    background: lightsalmon;
-}
+
 </style>
 <style media="screen">
     /* Add space between Vega-Embed links  */
