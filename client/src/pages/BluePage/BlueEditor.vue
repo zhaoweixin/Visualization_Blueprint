@@ -100,7 +100,8 @@
       </vs-col>
     </vs-row>
     <vs-popup fullscreen title="Preview" :active.sync="popupActivo4">
-      <ViewLayout ref="msg"></ViewLayout>
+      <TemplateA v-if="A" ref='msg-A'></TemplateA>
+      <TemplateB v-if="B" ref='msg-B'></TemplateB>
     </vs-popup>
 
 </div>
@@ -121,8 +122,8 @@ import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import vsbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
-import ViewLayout from "../ViewLayouts/ViewLayout"
-
+import TemplateA from "../ViewLayouts/TemplateA"
+import TemplateB from "../ViewLayouts/TemplateB"
 
 export default {
   name: "blue-editor",
@@ -156,11 +157,16 @@ export default {
       viewerDataTree:{}, //store the data in different viewer
       layoutObj:{}, //store the vegaobject in different viewer
       viewerlayout: {}, //layout is the preset typesetting
-      popupActivo4: false
+      popupActivo4: false,
+      layoutIdName:{}, //{"layout-0": "Template A"}
+      layoutlist: ["A", "B"],
+      A: false,
+      B: false
     }
   },
   components:{
-      ViewLayout
+      TemplateA,
+      TemplateB
   },
   methods: {
 
@@ -270,6 +276,12 @@ export default {
       }
       
       let _com = new BlueComponent(this.container, properties);
+      if(_com.type == "Layout"){
+        this.layoutIdName[_com.id] = {}
+        this.layoutIdName[_com.id]["name"] = _com.name
+        this.layoutIdName[_com.id]["ref"] = "msg" + "-" + _com.name.split(" ")[1]
+      }
+      console.log("_com", this.layoutIdName, _com)
       this.addClickEvent2Circle(_com);
       this.blueComponents.push(_com);
       //if create viewer, create tab
@@ -866,11 +878,25 @@ export default {
       let key = Object.keys(that.layoutObj)
       if(key.length == 0){
         //alert notice that user should choose one layout
-        
-      } else{
-        console.log("~", that.layoutObj[key[0]])
-        this.$refs.msg.getModularInfo({"config": that.layoutObj[key[0]], "layoutname": key[0]})
-        this.popupActivo4=!this.popupActivo4
+        that.notifications({'title':'Notice', 'text': 'Please select a layout', 'color': 'danger'})
+      } else if(key.length == 1){
+        that.layoutlist.forEach(function(d){
+          if(d == that.layoutIdName[key[0]]["name"].split(" ")[1]){
+            that[d] = true
+            let _ref = that.layoutIdName[key[0]]["ref"]
+            
+            //owing to vue life circle, when the first click, the that.$refs[_ref] haven't loaded
+            //when the second click, the that.$refs[_ref] have loaded
+            if(that.$refs[_ref] != undefined){
+              that.$refs[_ref].getModularInfo({"config": that.layoutObj[key[0]], "layoutname": key[0]})
+              that.popupActivo4=!that.popupActivo4
+            }
+          }else{
+            that[d] = false
+          }
+        })
+      } else if(key.length == 2){
+        that.notifications({'title':'Notice', 'text': 'Please choose one layout. You have now chosen two layouts.', 'color': 'danger'})
       }
       
     }

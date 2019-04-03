@@ -21,8 +21,6 @@
 
 <script>
 import vegaEmbed from "vega-embed";
-import tableData from "../../assets/table.json";
-import t1 from "../../assets/t1.json";
 import * as d3 from "d3";
 
 export default{
@@ -44,14 +42,6 @@ export default{
         //chartB,
         //chartC,
         //chartD
-    },
-    watch:{
-        layout:{
-            handler(curval){
-                console.log(curval)
-            },
-            deep: true            
-        }
     },
     mounted(){
     },

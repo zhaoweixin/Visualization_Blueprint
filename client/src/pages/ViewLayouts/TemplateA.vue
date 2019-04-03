@@ -32,8 +32,6 @@
 //import chartD from //引用图表四
 
 import vegaEmbed from "vega-embed";
-import tableData from "../../assets/table.json";
-import t1 from "../../assets/t1.json";
 import * as d3 from "d3";
 
 export default{
