@@ -152,6 +152,8 @@ dataProcess = {
                 jsonAddId(rawdata);
                 createIndex(rawdata, dataName);
                 console.log(dataName + "." + dataType + " successful loading~")
+                // console.log(dataNames)
+                console.log(rawdata)
             })
         } else if(dataType == 'json'){
             //使用fs读入json

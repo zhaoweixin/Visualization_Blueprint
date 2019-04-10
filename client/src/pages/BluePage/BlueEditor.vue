@@ -41,6 +41,7 @@
                   <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px; font-size:15px">
                     {{data.name}}
                   </div>
+                  <vs-button type="line" @click="initTable(data.name)">Preview</vs-button>
                   <span style="color:white;padding:5px;float:right;font-size:15px">Length: {{data.length}}</span>
                   <vs-divider style="margin:3px"></vs-divider>
                   <div :key="index" v-for="(dim, index) in data.dimensions">
@@ -94,7 +95,11 @@
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
           </div>
-            <div id='canvas'></div>
+            <div v-if="!isTable" id='canvas'></div>
+            <div v-if="isTable">
+              <data-preview-table >
+              </data-preview-table >
+            </div>
           </vs-col>
         </vs-row>
       </vs-col>
@@ -122,8 +127,10 @@ import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import vsbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
-import TemplateA from "../ViewLayouts/TemplateA"
-import TemplateB from "../ViewLayouts/TemplateB"
+import TemplateA from "../ViewLayouts/TemplateA";
+import TemplateB from "../ViewLayouts/TemplateB";
+import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
+
 
 export default {
   name: "blue-editor",
@@ -161,12 +168,15 @@ export default {
       layoutIdName:{}, //{"layout-0": "Template A"}
       layoutlist: ["A", "B"],
       A: false,
-      B: false
+      B: false,
+      tableData:null,
+      isTable:false
     }
   },
   components:{
       TemplateA,
-      TemplateB
+      TemplateB,
+      DataPreviewTable
   },
   methods: {
 
@@ -310,7 +320,12 @@ export default {
         }
       }
     },
-
+    initTable(name){
+      dataHelper.getDataDetail(name).then(res=>{
+        // console.log(res.data.data.values)
+        this.tableData = res.data.data.values
+      })
+    },
     //boundind the click event to the circles which represent the ports in component
     addClickEvent2Circle(com) {
       let that = this;
@@ -1059,7 +1074,9 @@ export default {
     window.addEventListener("resize", () => {
       this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
     });
-
+    // dataHelper.getDataDetail('cars').then(res=>{
+    //   console.log(res)
+    // })
     //Get the data candidates from server
     dataHelper.getDataList().then(response => {
       this.dataList = response.data;
