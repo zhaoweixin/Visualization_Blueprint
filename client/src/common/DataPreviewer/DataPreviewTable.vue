@@ -1,7 +1,7 @@
 <template>
    <div id="bigContainner" :style="containnerStyles">
     <Input prefix="ios-search" clearable style="width:auto" id="searchInput" placeholder="Search..." v-model="searchx"/>
-   <Table stripe :height="heightDefault" :columns="state.coldata" :data="datax"  id="table"></Table>
+   <Table stripe width="2650" height="500" :columns="state.coldata" :data="datax"  id="table"></Table>
    <!-- <edit-bar :message="editMessage" v-show="toShow"></edit-bar> -->
    <div v-show="toShow" id="EditContainner" style="background-color: #cde6c7">
        <template  v-for="(item,index) in editMessage">
@@ -29,6 +29,7 @@ export default {
     components:{
         editBar
     },
+    props: ['tableMsg','tabledata'],
     data:function(){
         return {
             editMessage:{},
@@ -39,145 +40,7 @@ export default {
             containnerStyles:{},
             defIdToEdit:null,
             state:{
-                listdata:[
-                    // {
-                    //     "id": 1,
-                    //     "name": "Leanne Graham",
-                    //     "username": "Bret",
-                    //     "email": "Sincere@april.biz",
-                    //     "website": "hildegard.org",
-                    // },
-                    // {
-                    //     "id": 2,
-                    //     "name": "Ervin Howell",
-                    //     "username": "Antonette",
-                    //     "email": "Shanna@melissa.tv",
-                    //     "website": "anastasia.net",
-                    // },
-                    // {
-                    //     "id": 3,
-                    //     "name": "Clementine Bauch",
-                    //     "username": "Samantha",
-                    //     "email": "Nathan@yesenia.net",
-                    //     "website": "ramiro.info",
-                    // },
-                    // {
-                    //     "id": 54,
-                    //     "name": "Clementine Bauch",
-                    //     "username": "Samantha",
-                    //     "email": "Nathan@yesenia.net",
-                    //     "website": "ramiro.info",
-                    // },
-                    // {
-                    //     "id": 3564,
-                    //     "name": "Clementine Bauch",
-                    //     "username": "Samantha",
-                    //     "email": "Nathan@yesenia.net",
-                    //     "website": "ramiro.info",
-                    // },
-                   
-                    // {
-                    //     "id": 4,
-                    //     "name": "Patricia Lebsack",
-                    //     "username": "Karianne",
-                    //     "email": "Julianne.OConner@kory.org",
-                    //     "website": "kale.biz",
-                    // },
-                    // {
-                    //     "id": 5,
-                    //     "name": "Chelsey Dietrich",
-                    //     "username": "Kamren",
-                    //     "email": "Lucio_Hettinger@annie.ca",
-                    //     "website": "demarco.info",
-                    // },
-                    // {
-                    //     "id": 6,
-                    //     "name": "Mrs. Dennis Schulist",
-                    //     "username": "Leopoldo_Corkery",
-                    //     "email": "Karley_Dach@jasper.info",
-                    //     "website": "ola.org",
-                    // },
-                    // {
-                    //     "id": 7,
-                    //     "name": "Kurtis Weissnat",
-                    //     "username": "Elwyn.Skiles",
-                    //     "email": "Telly.Hoeger@billy.biz",
-                    //     "website": "elvis.io",
-                    // },
-                    // {
-                    //     "id": 8,
-                    //     "name": "Nicholas Runolfsdottir V",
-                    //     "username": "Maxime_Nienow",
-                    //     "email": "Sherwood@rosamond.me",
-                    //     "website": "jacynthe.com",
-                    // },
-                    // {
-                    //     "id": 9,
-                    //     "name": "Glenna Reichert",
-                    //     "username": "Delphine",
-                    //     "email": "Chaim_McDermott@dana.io",
-                    //     "website": "conrad.com",
-                    // },
-                    // {
-                    //     "id": 10,
-                    //     "name": "Clementina DuBuque",
-                    //     "username": "Moriah.Stanton",
-                    //     "email": "Rey.Padberg@karina.biz",
-                    //     "website": "ambrose.net",
-                    // },
-                    // {
-                    //     "id": 42352,
-                    //     "name": "Ervin Howell",
-                    //     "username": "Antonette",
-                    //     "email": "Shanna@melissa.tv",
-                    //     "website": "anastasia.net",
-                    // },
-                    // {
-                    //     "id": 54362,
-                    //     "name": "Ervin Howell",
-                    //     "username": "Antonette",
-                    //     "email": "Shanna@melissa.tv",
-                    //     "website": "anastasia.net",
-                    // },
-                    
-                    // {
-                    //     "id": 23,
-                    //     "name": "Ervin Howell",
-                    //     "username": "Antonette",
-                    //     "email": "Shanna@melissa.tv",
-                    //     "website": "anastasia.net",
-                    // }
-                     {
-                        "name": "Ervin Howell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                     },
-                     {
-                        "name": "Efew分well",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                     },
-                     {
-                        "name": "Ervincdsfdsafll",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                     },
-                     {
-                        "name": "Ergreegrell",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                     },
-                     {
-                        "name": "Ervg5t5g5hll",
-                        "username": "Antonette",
-                        "email": "Shanna@melissa.tv",
-                        "website": "anastasia.net",
-                     }
-                ],
+                listdata:this.$store.state.tableData,
                 coldata:[{
                         title: 'Action',
                         key: 'action',
@@ -218,7 +81,7 @@ export default {
             
         }
     },
-    props: ['tableMsg'],
+    
     watch: {
         tableMsg: function(val){
             this.generateTable()
@@ -365,15 +228,15 @@ export default {
                 this.state.listdata[i].default_id = i  //全部加上default_id属性
             }
         }
-        if(this.datax.length>=20){
-            this.heightDefault = 800
-        }
+        // if(this.datax.length>=20){
+        //     this.heightDefault = 800
+        // }
     },
     mounted:function(){
-        if(this.state.listdata.length>=20){
-            d3.select("#table").attr("height","800")
+        // if(this.state.listdata.length>=20){
+        //     d3.select("#table").attr("height","800")
             
-        }
+        // }
     }
 }
 </script>
@@ -401,7 +264,7 @@ export default {
     left: 30%;
 }
 #searchInput{
-    position: relative;
+    /* position: relative; */
     /* //left: 80%; */
     /* //left: -18px; */
     /* padding: 5px 10px */
