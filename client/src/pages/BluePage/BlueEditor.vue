@@ -1071,7 +1071,9 @@ export default {
         });
       });
     });
-
+    dataHelper.getAllData().then(response => {
+      console.log(response)
+    })
     //Global control the animation of line or others
     setInterval(function() {
       that.blueLines.forEach(function(line) {
