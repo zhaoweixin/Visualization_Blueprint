@@ -11,9 +11,11 @@ import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 import 'material-icons/iconfont/material-icons.css';
+//import store from './store'
 
 import Entrance from './pages/HomePage/Home'
 import BlueEditor from './pages/BluePage/BlueEditor'
+import AutoPage from './pages/AutoBoard/AutoPage'
 import DataManager from './common/DataManager'
 
 Vue.use(VueRouter)
@@ -35,7 +37,8 @@ Vue.use(Vuesax, {
 const routes = [
 	{ path: '/', redirect: '/blue' },
   { path: '/home', name: 'home', component: Entrance},
-  { path: '/blue', name: 'blue', component: BlueEditor}
+  { path: '/blue', name: 'blue', component: BlueEditor},
+  { path: '/page', name: 'page', component: AutoPage}
 ]
 
 const router = new VueRouter({
@@ -52,7 +55,8 @@ const store = new Vuex.Store({
       {"title": ""}
     ],
     fileAttrList:[''],
-    checkboxes:[]
+    checkboxes:[],
+    tableData : null
   },
   mutations: {
     getFilesListData (state, payload) {
@@ -74,10 +78,16 @@ const store = new Vuex.Store({
         arr.splice(index, 1)
         state.checkboxes = arr
       }
+    },
+    changeTableData(state,tableData){
+      state.tableData = tableData
     }
   },
   getters: {},
   actions: {
+    changeTableData(ctx,tableData){
+      ctx.commit('changeTableData',tableData)
+    },
     getFilesListData (context) {
       //获取文件数据列表
       DataManager.getDataInfo().then(response => {
@@ -111,4 +121,3 @@ new Vue({
     this.$store.dispatch('getFilesListData') // init listdata
   }
 }).$mount('#app')
-

@@ -10,6 +10,9 @@ export default class dataHelper {
         return axios.post('http://localhost:3000/api/getData?dataname=' + dataname);
     }
 
+    static getAllData(){
+        return axios.post('http://localhost:3000/api/getData');
+    }
     static fakeDataBaseProcess = {
 
         // innerJoin = _inner

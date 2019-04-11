@@ -41,6 +41,7 @@
                   <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px; font-size:15px">
                     {{data.name}}
                   </div>
+                  <vs-button type="line" @click="initTable(data.name)">{{buttonName}}</vs-button>
                   <span style="color:white;padding:5px;float:right;font-size:15px">Length: {{data.length}}</span>
                   <vs-divider style="margin:3px"></vs-divider>
                   <div :key="index" v-for="(dim, index) in data.dimensions">
@@ -86,7 +87,7 @@
           </vs-col>
         </vs-row>
 
-        <vs-row id="preview_container" vs-w="12">
+        <vs-row v-if="!isTable" id="preview_container" vs-w="12">
           <!--该列放置生成图-->
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <div>
@@ -94,7 +95,15 @@
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
           </div>
-            <div id='canvas'></div>
+            <div  id='canvas'></div>
+            
+                         
+            
+          </vs-col>
+        </vs-row>
+        <vs-row v-if="isTable" vs-w="12">
+          <vs-col vs-type="flex" vs-align="center" vs-w="12">
+            <data-preview-table :tabledata="tableData"></data-preview-table>   
           </vs-col>
         </vs-row>
       </vs-col>
@@ -102,6 +111,7 @@
     <vs-popup fullscreen title="Preview" :active.sync="popupActivo4">
       <TemplateA v-if="A" ref='msg-A'></TemplateA>
       <TemplateB v-if="B" ref='msg-B'></TemplateB>
+      <AutoPage></AutoPage>
     </vs-popup>
 
 </div>
@@ -124,11 +134,14 @@ import { keys } from 'd3';
 import TemplateA from "../ViewLayouts/TemplateA"
 import TemplateB from "../ViewLayouts/TemplateB"
 import BlueprintLine from "../../common/BlueComponents/BlueprintLine"
+import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
+//import AutoPage from "../AutoBoard/AutoPage";
 
 export default {
   name: "blue-editor",
   data() {
     return {
+      buttonName:"Preview",
       dataList: [], //data candidates list
       componentTypes: blueComponentTypes, // components' types of blueprint
       container: "", //canvas to drawing blueprint
@@ -160,12 +173,15 @@ export default {
       layoutIdName:{}, //{"layout-0": "Template A"}
       layoutlist: ["A", "B"],
       A: false,
-      B: false
+      B: false,
+      tableData:null,
+      isTable:false
     }
   },
   components:{
       TemplateA,
-      TemplateB
+      TemplateB,
+      DataPreviewTable
   },
   methods: {
 
@@ -324,7 +340,21 @@ export default {
         }
       }
     },
+    initTable(name){
+      dataHelper.getDataDetail(name).then(res=>{
+        // console.log(res.data.data.values)
+        this.tableData = res.data.data.values
 
+        this.$store.state.tableData = res.data.data.values
+        console.log(this.tableData)
+        this.isTable = !this.isTable
+        if(this.buttonName==='Preview')
+          this.buttonName = 'CloseTable'
+        else
+          this.buttonName = 'Preview'
+      })
+      
+    },
     //boundind the click event to the circles which represent the ports in component
     addClickEvent2Circle(com) {
       let that = this;
@@ -1022,7 +1052,9 @@ export default {
     window.addEventListener("resize", () => {
       this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
     });
-
+    // dataHelper.getDataDetail('cars').then(res=>{
+    //   console.log(res)
+    // })
     //Get the data candidates from server
     dataHelper.getDataList().then(response => {
       this.dataList = response.data;
@@ -1034,7 +1066,9 @@ export default {
         });
       });
     });
-
+    dataHelper.getAllData().then(response => {
+      console.log(response)
+    })
     //Global control the animation of line or others
     setInterval(function() {
       that.blueLines.forEach(function(line) {
