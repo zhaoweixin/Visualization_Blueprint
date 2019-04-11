@@ -107,6 +107,7 @@
     <vs-popup fullscreen title="Preview" :active.sync="popupActivo4">
       <TemplateA v-if="A" ref='msg-A'></TemplateA>
       <TemplateB v-if="B" ref='msg-B'></TemplateB>
+      <AutoPage></AutoPage>
     </vs-popup>
 
 </div>
@@ -130,7 +131,7 @@ import { keys } from 'd3';
 import TemplateA from "../ViewLayouts/TemplateA";
 import TemplateB from "../ViewLayouts/TemplateB";
 import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
-
+//import AutoPage from "../AutoBoard/AutoPage";
 
 export default {
   name: "blue-editor",

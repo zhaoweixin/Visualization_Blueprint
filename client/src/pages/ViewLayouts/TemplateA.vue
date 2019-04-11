@@ -110,10 +110,11 @@ export default{
     width: 1800px;
     margin: 0 auto;
     height: 1000px;
+    background-color: #171C30;
 }
 .header{
     height: 5%;
-    background:deepskyblue;
+    background:#20283F;
     padding-left:50%;
     padding-top:0.5%;
     font-size: 20px;
@@ -121,6 +122,7 @@ export default{
 }
 .mutiItem{
     height: 95%;
+    background-color: #242E47;
 }
 .left{
     width: 50%;

@@ -14,6 +14,7 @@ import 'material-icons/iconfont/material-icons.css';
 
 import Entrance from './pages/HomePage/Home'
 import BlueEditor from './pages/BluePage/BlueEditor'
+import AutoPage from './pages/AutoBoard/AutoPage'
 import DataManager from './common/DataManager'
 
 Vue.use(VueRouter)
@@ -35,7 +36,8 @@ Vue.use(Vuesax, {
 const routes = [
 	{ path: '/', redirect: '/blue' },
   { path: '/home', name: 'home', component: Entrance},
-  { path: '/blue', name: 'blue', component: BlueEditor}
+  { path: '/blue', name: 'blue', component: BlueEditor},
+  { path: '/page', name: 'page', component: AutoPage}
 ]
 
 const router = new VueRouter({
@@ -111,4 +113,3 @@ new Vue({
     this.$store.dispatch('getFilesListData') // init listdata
   }
 }).$mount('#app')
-
