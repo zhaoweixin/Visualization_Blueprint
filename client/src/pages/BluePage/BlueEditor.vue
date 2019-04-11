@@ -118,12 +118,12 @@ import BlueComponent from "../../common/BlueComponents/BlueComponent";
 import * as d3 from "d3";
 import blueComponentTypes from "../../assets/blueComponentTypes.json";
 import modelConfig from "../../assets/modelConfig.json";
-import BlueprintLine from "../../common/BlueComponents/BlueprintLine";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import vsbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
 import TemplateA from "../ViewLayouts/TemplateA"
 import TemplateB from "../ViewLayouts/TemplateB"
+import BlueprintLine from "../../common/BlueComponents/BlueprintLine"
 
 export default {
   name: "blue-editor",
@@ -136,8 +136,7 @@ export default {
       selectedData: {}, //The dimensions in dataset which been selected by user
       dataComponent: {}, //The exsiting components in canvas (used to check the exsiting)
       blueComponents: [], //The exsiting components in canvas (used to store the exsiting)
-      blueLines: [], //The exsiting line in canvas which connected to any component
-      connections: [], //Store the connections between component which connected by curve
+      blueLines: [], //Store the connections between component which connected by curve
       mouseAction: "", //mouse action label which used to change the mouse action state
       drawingLine: "", //The line which is being darwing by user
       vegaObject: '', //The vege model configuration
@@ -245,24 +244,40 @@ export default {
       let properties = this.modelConfig[name];
       properties["fill"] = this.componentTypes[group].color;
       properties["name"] = name;
-      //according to this.blueComponentsCount construct id and add 1
       properties['id'] = properties.type + '-' + this.blueComponentsCount[properties.type]
+      properties['x'] = 300 * Math.random() + 100
+      properties['y'] = 300 * Math.random() + 100
+      for(let i=0; i<properties.inPorts.length; i++){
+        properties.inPorts[i]["parentX"] = properties['x']
+        properties.inPorts[i]["parentY"] = properties['y']
+        properties.inPorts[i]["parent"] = properties['name']
+        properties.inPorts[i]["parentid"] = properties['id']
+      }
+      if(properties.type != "Layout"){
+        //layout do not have layout
+        for(let i=0; i<properties.outPorts.length; i++){
+          properties.outPorts[i]["parentX"] = properties['x']
+          properties.outPorts[i]["parentY"] = properties['y']
+          properties.outPorts[i]["parent"] = properties['name']
+          properties.outPorts[i]["parentid"] = properties['id']
+        }
+      }
+      
+      //according to this.blueComponentsCount construct id and add 1
       this.blueComponentsCount[properties.type] = this.blueComponentsCount[properties.type] + 1
+
+      //make inports outports full
       
 
       //make sure that the viewer name equal to button content
       if(group == "Viewer"){
-
         let propertiesname = 'Viewer-' + this.viewer.count
-
         //update viewer set
         this.viewer.count = this.viewer.count + 1
         this.viewer.list.push(propertiesname)
-        
         //create tab
         this.vsbuttonbox.button.every(function(d,i){
           if(d['style'] == 'none'){
-
             d['style'] = 'block'
             d['content'] = propertiesname
             properties["name"] = propertiesname; 
@@ -276,17 +291,16 @@ export default {
       }
       
       let _com = new BlueComponent(this.container, properties);
+      this.blueComponents.push(_com)      
       if(_com.type == "Layout"){
         this.layoutIdName[_com.id] = {}
         this.layoutIdName[_com.id]["name"] = _com.name
         this.layoutIdName[_com.id]["ref"] = "msg" + "-" + _com.name.split(" ")[1]
       }
-      console.log("_com", this.layoutIdName, _com)
       this.addClickEvent2Circle(_com);
-      this.blueComponents.push(_com);
-      //if create viewer, create tab
-
+      
     },
+
     //generate chart
     generateChart(id, meta){
       let result = this.vegaObjectObj[meta["content"]].getOutputForced();
@@ -305,7 +319,7 @@ export default {
     },
     getComponentById(id) { //by id
       for (let i = 0; i < this.blueComponents.length; i++) {
-        if (id == this.blueComponents[i].id) {
+        if (id == this.blueComponents[i].getId()) {
           return this.blueComponents[i];
         }
       }
@@ -314,65 +328,69 @@ export default {
     //boundind the click event to the circles which represent the ports in component
     addClickEvent2Circle(com) {
       let that = this;
-      //darwing the connection line accroding to the mouse real-time position
-      this.container.on("mousemove", function(d) {
-        if (
-          that.mouseAction == "drawing_line" &&
-          that.drawingLine.targetPort == ""
-        ) {
-          let coordinates = d3.mouse(this);
-          that.drawingLine.dynamicGenerateCurveLine(coordinates);
-          that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
-
-        }
-      });
       
       //after click the circle, there will new a line in canvas
       
       com.getAllCircles().on("click", function(d) {
+        let params = com.getParmas()
         let x = d.parentX + d.x;
         let y = d.parentY + d.y;
-        let sourceid = com.id
-
+        let sourceid = params.id
         let line = (that.drawingLine = new BlueprintLine(
           that.container,
-          com.name,
+          params.name,
           [x, y],
           d,
           sourceid
         ));
-        
         that.blueLines.push(line);
         that.mouseAction = "drawing_line";
         
         let allPorts = [];
 
         that.blueComponents.forEach(function(component,i) {
-          let ports = component.getAllPorts();
+          //let ports = component.getAllPorts();
+          let parmas = component.getParmas()
+          let _inPorts = parmas["inPorts"]
+          let _outPorts = parmas["outPorts"]
+          let _id = parmas["id"]
           if (d.type == "in") {
-            ports["outPorts"].forEach(function(k) {
-              
+            _outPorts.forEach(function(k) {
               //k.parent = component.id
-              k.id = component.id
+              k.id = _id
               allPorts.push(k);
             });
           } else {
-            ports["inPorts"].forEach(function(k) {
+            _inPorts.forEach(function(k) {
               //k.parent = component.id
-              k.id = component.id
+              k.id = _id
               allPorts.push(k);
             });
           }
         });
 
-        that.exstingPorts = new Array()
+        that.exstingPorts = []
         that.exstingPorts = allPorts
-        
         //line.setExstingPorts(allPorts);
+        that.addLineEvent(com, line)
       });
-      
     },
 
+    addLineEvent(com){
+      let that = this
+      //darwing the connection line accroding to the mouse real-time position
+      this.container.on("mousemove", function(d) {
+        if (
+          that.mouseAction == "drawing_line" &&
+          that.drawingLine.getConnectInfo()["target"] == ""
+        ) {
+          let coordinates = d3.mouse(this);
+          that.drawingLine.dynamicGenerateCurveLine(coordinates);
+          that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
+        }
+      });
+    },
+    
     ///////////////////////////////
     // Add dimension to context data from candicate dataset
     // IF the component is exsit:
@@ -421,7 +439,7 @@ export default {
         properties["outPorts"] = [
           {
             name: dim.name,
-            text: dim.name,
+            text: dim.name,BlueComponent,
             dimension_type: dim.type,
             type: "out",
             attr: "field"
@@ -429,7 +447,10 @@ export default {
         ];
         properties["name"] = source;
         properties["id"] = source;
-        
+        properties['x'] = 300 * Math.random() + 100;
+        properties['y'] = 300 * Math.random() + 100;
+        properties["fill"] = "#F6BB42";
+
         let _com = new BlueComponent(this.container, properties);
         this.dataComponent[source] = _com;
         this.addClickEvent2Circle(_com);
@@ -664,9 +685,24 @@ export default {
     connectionRemove(connect){
       
     },
-    buildBlueGraph(connect){
-
+    catchConnect(connect){
+      // catch ConnectInfo
       let that = this
+      let interval = function(){
+        let i = 0;
+        let intr = setInterval(function() {
+          if (connect.getConnectInfo().targetId != ""){
+            clearInterval(intr);
+            that.buildBlueGraph(connect)
+          }
+        }, 500)
+      }
+      interval()
+    }
+    ,
+    buildBlueGraph(con){
+      let that = this
+      let connect = con.getConnectInfo()
       let _source = connect.source
       let _target = connect.target
 
@@ -695,7 +731,6 @@ export default {
 
             that.layoutObj[_target["id"]][_target["text"]] = ""
             that.layoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
-
           }
         }
       }
@@ -736,10 +771,12 @@ export default {
       let viewerTreeLink = {}
 
       for(let i=0 ;i<this.componentIndex.length; i++){
-        if(this.getComponentById(this.componentIndex[i]).type == "Viewer"){
+        if(this.componentIndex[i] != ""){
+          if(this.getComponentById(this.componentIndex[i]).getType() == "Viewer"){
           if(!viewerDict.hasOwnProperty( this.componentIndex[i] )){
             viewerDict[this.componentIndex[i]] = i
             viewerList.push(this.componentIndex[i])
+            }
           }
         }
       }
@@ -756,7 +793,6 @@ export default {
           let _height = window.innerHeight * 0.3
           let _width = window.innerWidth * 0.68
           that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d)
-          console.log(that.vegaObjectObj[d])
         }
       })
       
@@ -819,13 +855,14 @@ export default {
       //构建component connections dict
       
       let connectionsDict = {}
-      for(let i=0; i<that.connections.length; i++){
-        let _name = that.connections[i].sourceId + '_' + that.connections[i].targetId
+      for(let i=0; i<that.blueLines.length; i++){
+        let lineInfo = that.blueLines[i].getConnectInfo()
+        let _name = lineInfo.sourceId + '_' + lineInfo.targetId
         if(!(_name in connectionsDict)){
           connectionsDict[_name] = []
-          connectionsDict[_name].push(that.connections[i])
+          connectionsDict[_name].push(lineInfo)
         }else{
-          connectionsDict[_name].push(that.connections[i])
+          connectionsDict[_name].push(lineInfo)
         }
       }
       //根据view分组新建object 需要#list
@@ -839,7 +876,6 @@ export default {
           //component-component
           let _name = _componentLink[j]
           let _connections = connectionsDict[_name]
-
           for(let k=0; k<_connections.length; k++){
             //component port - component port
             let _vegaObject = that.vegaObjectObj[_viewer]
@@ -907,59 +943,46 @@ export default {
     blueComponents: {
       handler(curVal, oldVal) {
         let that = this
-
-        if (curVal.length == oldVal.length) {
-          for (let i = 0; i < this.blueComponents.length; i++) {
+        if(curVal.length == oldVal.length){
+          for (let i = 0; i < this.blueComponents.length; i++){
             if(this.blueComponents[i].isDelete){
-
-              //console.log(this.blueLines)
-
               let filterID = this.blueLines.filter(function(line, j){
-
                 if(line.remove(that.blueComponents[i].name)){
-
                   that.connections.splice(j,1)
-
                   return true
                 }
-
                 return false
               })
-
               filterID.forEach(d => {
-
                 this.blueLines.splice(d,1)
               })
-
-              //console.log(this.blueLines)
-
               this.blueComponents.splice(i,1)
               break;
             }
-
+            
             let curEle = curVal[i];
             let preEle = oldVal[i];
-
             //Obtain the newest postion of each component
             let curPos = curEle.getPos();
             let prePos = preEle.getPos();
 
-            //Update all the line postion via the above positions
-            this.blueLines.forEach(function(line,i) {
-              let _targetcomponent = that.getComponentById(line.targetId)
-              let _sourcecomponent = that.getComponentById(line.sourceId)
-              if(_targetcomponent.id == curEle.id || _sourcecomponent.id == curEle.id){
-                line.parentPosUpdated(
-                  curPos.dx, //delta of horizon postion
-                  curPos.dy, //delta of vertical position
-                  curEle.inPorts,
-                  curEle.outPorts
-                );
-              }
-              //Reset all the delta postion
-              curEle.resetDeltaPos();
-              preEle.resetDeltaPos();
-            });
+            if(this.blueLines.length > 0){
+              this.blueLines.forEach(function(line, i){
+                //寻找与组件相关的blueLines
+                let connectInfo = line.getConnectInfo()
+                if(connectInfo.sourceId == curEle.getId() || connectInfo.targetId == curEle.getId()){
+                  line.parentPosUpdated(
+                    curPos.dx, //delta of horizon postion
+                    curPos.dy, //delta of vertical position
+                    curEle.inPorts,
+                    curEle.outPorts,
+                    curEle.id
+                  )
+                }
+                curEle.resetDeltaPos();
+                preEle.resetDeltaPos();
+              })
+            }
           }
         }
       },
@@ -969,71 +992,11 @@ export default {
     //Monitor the bluelines' length, if length increased, the new connection will be parsed
     blueLines: {
       handler(curVal, oldVal) {
-        if (this.connections.length < curVal.length) {
-          let tailNo = curVal.length - 1;
-          if (curVal[tailNo].targetPort != "") {
-            this.connections.push({
-              source: curVal[tailNo].sourcePort,
-              target: curVal[tailNo].targetPort,
-              sourceId: curVal[tailNo].sourceId,
-              targetId: curVal[tailNo].targetId
-            });
-            /*
-            this.connectionParse({
-                source: curVal[tailNo].sourcePort,
-                target: curVal[tailNo].targetPort
-            });
-           */ 
-          }
-        }
-
-        /*if(this.connections.length == curVal.length){
-          for (let i = 0; i < this.blueLines.length; i++) {
-             if(this.blueLines[i].isDelete){
-              this.blueLines.splice(i,1)
-
-              break;
-            }
-          }
-        }*/
-      },
-      deep: true
-    },
-
-    //Monitor the connections' change
-    connections: {
-
-      handler(curVal, oldVal) {
-        //if (oldVal.length != curVal.length) {'
         let tailNo = curVal.length - 1;
-        this.buildBlueGraph(curVal[tailNo])
-        let that = this
-
-          /*
-          this.vegaObject.reset()
-
-          this.connections.forEach(function(conn){
-
-            that.connectionParse(conn)
-          })
-          */
-
-          //let result = this.vegaObject.getOutputForced();
-          //vegaEmbed("#canvas", result, { theme: "dark" });
-
-        //}
-      },
-      deep:false
-    },
-    vegaObjectObj:{
-
-      handler(cur, old){
-        console.log('vegaO')
-        console.log(cur)
+        this.catchConnect(curVal[tailNo])
       },
       deep: true
     },
-
     //Monitor the vegaObject, if it updated, the model configuration text will be updated
     vegaObject: {
       handler(curVal, oldVal) {

@@ -6,7 +6,7 @@ export default class BlueComponent {
         
         let that = this
         this.frame = 2
-        this.fill = '#F6BB42' 
+        this.fill = '#F6BB42'
         this.stroke = 'none'
         this.name = 'UNAMED'
         this.type = 'default' 
@@ -28,9 +28,45 @@ export default class BlueComponent {
         this.id = ''
 
         for(let key in options){
-            this[key] = options[key] //Set the initial parameter 设置初始参数
+            //deep copy
+            if(key == "inPorts" || key == "outPorts"){
+                let _ports = options[key]
+                _ports.forEach(function(d){
+                    that[key].push(JSON.parse(JSON.stringify(d)))
+                })
+            }
+            else{
+                that[key] = options[key]
+            }
+             //Set the initial parameter 设置初始参数
+        }
+        
+        /*
+        if(this.inPorts.length > 0){
+            for(let i = 0; this.inPorts.length > i; i++) {
+                const d = {}
+                d["parentX"] = this.x
+                d["parentY"] = this.y
+                d["parent"] = this.name
+                d["parentid"] = this.id
+                this.inPorts[i] = {...this.inPorts[i], ...d}
+
+            }
         }
 
+        if(this.outPorts.length > 0){
+            for(let i = 0; this.outPorts.length > i; i++) {
+                const d = {}
+                d["parentX"] = this.x
+                d["parentY"] = this.y
+                d["parent"] = this.name
+                d["parentid"] = this.id
+                this.outPorts[i] = {...this.outPorts[i], ...d}
+
+            }
+        }
+        */
+        
         this.width = this.name.length > 15 ? this.name.length * 10 : 180 
         this.height = this.inPorts.length > this.outPorts.length ? 50 + this.inPorts.length * 30 : 50 + this.outPorts.length * 30
 
@@ -49,6 +85,7 @@ export default class BlueComponent {
         ////////////////////////////////
         ///Add drag event to component
         ///////////////////////////////
+        
         this.container.call(d3.drag()
             .on("start", function(d){
                 that.dragstarted(this, d)
@@ -59,7 +96,26 @@ export default class BlueComponent {
             .on("end", function(d){
                 that.dragended(this, d)
             }));
+        
         this.draw(this.type)
+        
+    }
+    //force to solve the unknown error through deep copy
+    getParmas() {
+        let that = this
+        let paramslist = ["frame", "fill", "stroke", "name",
+         "type", "width", "dx", "dy", "x", "y", "dimPreview",
+        "filterRange", "isDelete", "delta", "dividingLine", 
+        "time", "isLoading", "id"]
+        let params = {
+            inPorts: [...that.inPorts],
+            outPorts: [...that.outPorts],
+        }
+        let paramsT = new Object()
+        paramslist.forEach(function(d){
+            params[d] = that[d]
+        })
+        return {...params}
     }
     //Get the current position and delta translation
     getPos(){
@@ -121,7 +177,6 @@ export default class BlueComponent {
             this.outPorts[0].dimension_type = 'quantitative'
         }
 
-    
        /* if(this.outPorts.length == 1){
             this.outPorts[0].text = this.outPorts[0].name[0].toUpperCase() + 
             this.outPorts[0].name.slice(1, this.outPorts[0].name.length)
@@ -132,7 +187,6 @@ export default class BlueComponent {
     addPort(type, port){
 
         port.text = port.text[0].toUpperCase() + port.text.slice(1, port.text.length)//array.slice:数组切片
-
         if(type == 'in'){
             this.inPorts.push(port)
         }
@@ -215,7 +269,7 @@ export default class BlueComponent {
             d.y = 20 + (i+1) * 30
             return d.y
         })
-        .attr('r', 6)
+        .attr('r', 9)
 
 
         this.container
@@ -257,7 +311,7 @@ export default class BlueComponent {
             d.y = 20 + (i+1) * 30
             return d.y
         })
-        .attr('r', 6)
+        .attr('r', 9)
         
         this.container
         .selectAll('portname')
@@ -469,15 +523,19 @@ export default class BlueComponent {
         
         d3.select(node).attr("transform", function(q){
             
+            //console.log("d3.event.x y, that.x,y", d3.event.x, d3.event.y, that.x, that.y)
             that.dx = d3.event.x - that.x
             that.dy = d3.event.y - that.y
-            that.x = d.x = d3.event.x
-            that.y = d.y = d3.event.y
+            that.x  = d3.event.x
+            that.y  = d3.event.y
+            d.x = d3.event.x
+            d.y = d3.event.y
             return 'translate(' + d.x + ',' + d.y + ')'
         });
         
+        
         this.container.selectAll('.port')
-        .attr('none', function(d){
+            .attr('none', function(d){
             d.parentX = that.x
             d.parentY = that.y
         })
@@ -495,26 +553,31 @@ export default class BlueComponent {
     getAllPorts(){
 
         let that = this
-        let ret = []
-        ret['inPorts'] = this.inPorts
-        ret['inPorts'].forEach(function(d){
-            d.parentX = that.x
-            d.parentY = that.y
-            d.parent = that.name
-            d.parentid = that.id
-            ret.push(d)
-        })
+        let ret = new Object()
+        ret['inPorts'] = JSON.parse(JSON.stringify(this.inPorts))
+        /*
+        this.inPorts.forEach(function(d){
 
-        ret['outPorts'] = this.outPorts
-        ret['outPorts'].forEach(function(d){
+            d.parentX = that.x
+            d.parentY = that.y
+            d.parent = that.name
+            d.parentid = that.id
+            ret.push(d)
+
+        })
+        */
+
+        ret['outPorts'] = JSON.parse(JSON.stringify(this.outPorts))
+        /*
+        this.outPorts.forEach(function(d){
             
             d.parentX = that.x
             d.parentY = that.y
             d.parent = that.name
             d.parentid = that.id
-            
             ret.push(d)
         })
+        */
         return ret
     }
     //Shows the data distribution in component
@@ -689,12 +752,14 @@ export default class BlueComponent {
         })
     }
     remove(){
-
         this.container.selectAll('*').remove()
         this.container.remove()
         this.isDelete = true
-
     }
-   
-
+    getId(){
+        return this.id
+    }
+    getType(){
+        return this.type
+    }
 }
