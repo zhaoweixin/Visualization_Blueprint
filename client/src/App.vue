@@ -25,7 +25,7 @@ export default {
 
 body{
 
-  position: relative;
+  position: absolute;
   width: 100%;
   height: 100%;
   min-height:800px;
@@ -35,3 +35,4 @@ body .vs-table colgroup.gutter{
     display: table-cell!important;
 }
 </style>
+
