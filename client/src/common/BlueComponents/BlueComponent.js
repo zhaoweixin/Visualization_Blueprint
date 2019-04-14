@@ -41,32 +41,6 @@ export default class BlueComponent {
              //Set the initial parameter 设置初始参数
         }
         
-        /*
-        if(this.inPorts.length > 0){
-            for(let i = 0; this.inPorts.length > i; i++) {
-                const d = {}
-                d["parentX"] = this.x
-                d["parentY"] = this.y
-                d["parent"] = this.name
-                d["parentid"] = this.id
-                this.inPorts[i] = {...this.inPorts[i], ...d}
-
-            }
-        }
-
-        if(this.outPorts.length > 0){
-            for(let i = 0; this.outPorts.length > i; i++) {
-                const d = {}
-                d["parentX"] = this.x
-                d["parentY"] = this.y
-                d["parent"] = this.name
-                d["parentid"] = this.id
-                this.outPorts[i] = {...this.outPorts[i], ...d}
-
-            }
-        }
-        */
-        
         this.width = this.name.length > 15 ? this.name.length * 10 : 180 
         this.height = this.inPorts.length > this.outPorts.length ? 50 + this.inPorts.length * 30 : 50 + this.outPorts.length * 30
 
@@ -79,7 +53,7 @@ export default class BlueComponent {
                 return 'translate(' + d.x + ',' + d.y + ')'
             })
             .on('dblclick', function(d){
-                that.remove()
+                that.setDelete()
             })
 
         ////////////////////////////////
@@ -158,7 +132,7 @@ export default class BlueComponent {
         //linePoint[8].y = 30 - this.frame * 2
 
         this.dividingLine
-        .attr('d',lineGenerator(linePoint))
+            .attr('d',lineGenerator(linePoint))
         
     }
     //reset the delta translation
@@ -169,19 +143,10 @@ export default class BlueComponent {
     }
     //After been connected by curve, the port name 
     setFieldName(name){
-
         if(this.outPorts.length > 0){
-
             this.outPorts[0].name = name
-
             this.outPorts[0].dimension_type = 'quantitative'
         }
-
-       /* if(this.outPorts.length == 1){
-            this.outPorts[0].text = this.outPorts[0].name[0].toUpperCase() + 
-            this.outPorts[0].name.slice(1, this.outPorts[0].name.length)
-            this.outPorts[0].dimension_type = 'quantitative'
-        }*/
     }
     //Add a new port to component
     addPort(type, port){
@@ -199,8 +164,6 @@ export default class BlueComponent {
     //Draw the back retangle
 
     drawBack(height){
-
-        
         this.container
             .append('rect')
             .attr('class','back')
@@ -236,7 +199,6 @@ export default class BlueComponent {
         .style("filter", "url(#glow)");
     }
     redraw(){
-        
         this.container
         .selectAll('.port').remove()
 
@@ -555,29 +517,8 @@ export default class BlueComponent {
         let that = this
         let ret = new Object()
         ret['inPorts'] = JSON.parse(JSON.stringify(this.inPorts))
-        /*
-        this.inPorts.forEach(function(d){
-
-            d.parentX = that.x
-            d.parentY = that.y
-            d.parent = that.name
-            d.parentid = that.id
-            ret.push(d)
-
-        })
-        */
-
         ret['outPorts'] = JSON.parse(JSON.stringify(this.outPorts))
-        /*
-        this.outPorts.forEach(function(d){
-            
-            d.parentX = that.x
-            d.parentY = that.y
-            d.parent = that.name
-            d.parentid = that.id
-            ret.push(d)
-        })
-        */
+
         return ret
     }
     //Shows the data distribution in component
@@ -746,15 +687,16 @@ export default class BlueComponent {
     }
     //After data joined, add the data name to the ports' name 
     addDataName2Ports(){
-
         this.outPorts.forEach(d => {
             d.name = d.parent + '&' + d.name;
         })
     }
-    remove(){
+    setDelete(){
+        this.isDelete = !this.isDelete
+    }
+    removeGraph(){
         this.container.selectAll('*').remove()
         this.container.remove()
-        this.isDelete = true
     }
     getId(){
         return this.id

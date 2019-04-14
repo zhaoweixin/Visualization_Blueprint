@@ -348,6 +348,11 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         }
         return false
     }
+    this.forceRemove = function(){
+        attribu.baseLine.remove()
+        attribu.coverLine.remove()
+        attribu.isDeleted = true
+    }
     this.setExstingPorts = function(ports){
         attribu.existingPort = ports;
     }

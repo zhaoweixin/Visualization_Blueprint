@@ -50,7 +50,7 @@
                        <vs-select style="float:left;width:80%" v-model="dim.type">
                         <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in dataTypes" />
                       </vs-select>
-                        <vs-avatar style="float:right;margin:0px;margin-left:10px; background:rgb(167,189,255)" :color="dim.color" text="+" v-on:click="dimensionSelected(data.name, dim)"/>
+                        <vs-avatar style="float:right;margin:0px;margin-left:10px; background:rgb(167,189,255)" :color="dim.color" text="+" v-on:click="createNewComponent(data.name, dim)"/>
                     </vs-list-item>
                   </div>
                 </vs-collapse-item>
@@ -67,7 +67,7 @@
                     {{item.name}}
                   </div>
                   <vs-list :key="index" v-for="(meta, index) in item.childrens">
-                    <vs-button style="width:80%; justify-content: left; margin-left:10%" color="rgb(167,189,255)" type="filled"  v-on:click="createNewComponent(item.name, meta)" icon="add_circle">{{meta}}</vs-button>
+                    <vs-button style="width:80%; justify-content: left; margin-left:10%" color="rgb(167,189,255)" type="filled"  v-on:click="createNewComponent(meta)" icon="add_circle">{{meta}}</vs-button>
                     <vs-divider></vs-divider>
                   </vs-list>
                 </vs-collapse-item>
@@ -96,9 +96,6 @@
               </div>
           </div>
             <div  id='canvas'></div>
-            
-                         
-            
           </vs-col>
         </vs-row>
         <vs-row v-if="isTable" vs-w="12">
@@ -152,18 +149,14 @@ export default {
       blueLines: [], //Store the connections between component which connected by curve
       mouseAction: "", //mouse action label which used to change the mouse action state
       drawingLine: "", //The line which is being darwing by user
-      vegaObject: '', //The vege model configuration
       contextData: "", //Shows which dataset which is using in blueprint
       dataTypes: config.typesPrefab, //Store all the data type which supported by vega-lite
-      model_config_text: "", //The text which translated by vega-lite model
       dataConnection:{},
       loadedDatasets:{}, //accroding datacomponent to loaded datasets
       vsbuttonbox:vsbutton, //store/init the viewer review button
-      viewer:{'count':0, "list":[]}, // store existing viewer component
       blueComponentsCount:{}, //store the count of component according to different type
       componentLink:[], // store the links between components
       componentIndex:[], //the index made of componentid
-      componentGraph:"", //two dimensional matrix of storage blueprint connection logic
       exstingPorts:[], //all of the component port in blueprint
       vegaObjectObj:{}, //vegaobject is used to generate graph throgh
       viewerDataTree:{}, //store the data in different viewer
@@ -201,9 +194,8 @@ export default {
       }, 3000)
     },
     //Darwing the grids line in canvas which help user the recognize the canvas and components
-    drawGrids() {
+    drawGrids(){
       let lineData = [];
-
       for (let i = 10; i < this.width; i += 20) {
         lineData.push({ x1: i, y1: 0, x2: i, y2: this.height });
       }
@@ -255,70 +247,140 @@ export default {
       }
     },
     //create a new component to canvas which need a component type and a unique name
-    createNewComponent(group, name) {
-      //init generate properties
-      let properties = this.modelConfig[name];
-      properties["fill"] = this.componentTypes[group].color;
-      properties["name"] = name;
-      properties['id'] = properties.type + '-' + this.blueComponentsCount[properties.type]
-      properties['x'] = 300 * Math.random() + 100
-      properties['y'] = 300 * Math.random() + 100
-      for(let i=0; i<properties.inPorts.length; i++){
-        properties.inPorts[i]["parentX"] = properties['x']
-        properties.inPorts[i]["parentY"] = properties['y']
-        properties.inPorts[i]["parent"] = properties['name']
-        properties.inPorts[i]["parentid"] = properties['id']
+    createNewComponent(){
+      let that = this,
+        property = null,
+        _com = null;
+      //func
+      const constructproperty = function(that, property, name){
+        let obj = JSON.parse(JSON.stringify(property))
+        
+        //according to this.blueComponentsCount construct id and add 1
+        //make inports outports full
+        //make sure that the viewer name equal to button content
+        obj["fill"] = that.componentTypes[obj.type].color;
+        obj["name"] = name;
+        obj['id'] = obj.type + '-' + that.blueComponentsCount[obj.type];
+        obj['x'] = 300 * Math.random() + 100;
+        obj['y'] = 300 * Math.random() + 100;
+
+        for(let i=0; i<obj.inPorts.length; i++){
+          obj.inPorts[i]["parentX"] = obj['x'];
+          obj.inPorts[i]["parentY"] = obj['y'];
+          obj.inPorts[i]["parent"] = obj['name'];
+          obj.inPorts[i]["parentid"] = obj['id'];
+        }
+        if(obj.type != "Layout"){
+          //layout do not have layout
+          for(let i=0; i<obj.outPorts.length; i++){
+            obj.outPorts[i]["parentX"] = obj['x'];
+            obj.outPorts[i]["parentY"] = obj['y'];
+            obj.outPorts[i]["parent"] = obj['name'];
+            obj.outPorts[i]["parentid"] = obj['id'];
+          }
+        }
+        if(obj.type == "Viewer"){
+          let propertiesname = 'Viewer-' + that.blueComponentsCount[obj.type];
+          //create tab
+          that.vsbuttonbox.button.every(function(d,i){
+            if(d['style'] == 'none'){
+              d['style'] = 'block'
+              d['content'] = propertiesname
+              obj["name"] = propertiesname; 
+              return false
+            }else{
+              return true
+            }
+          })
+        }
+        if(obj.type == "Layout"){
+          that.layoutIdName[obj.id] = {}
+          that.layoutIdName[obj.id]["name"] = obj.name
+          that.layoutIdName[obj.id]["ref"] = "msg" + "-" + obj.name.split(" ")[1]
+        }
+        that.blueComponentsCount[obj.type] = that.blueComponentsCount[obj.type] + 1
+        _com = new BlueComponent(that.container, obj);
+        that.blueComponents.push(_com);
+        that.addClickEvent2Circle(_com);
       }
-      if(properties.type != "Layout"){
-        //layout do not have layout
-        for(let i=0; i<properties.outPorts.length; i++){
-          properties.outPorts[i]["parentX"] = properties['x']
-          properties.outPorts[i]["parentY"] = properties['y']
-          properties.outPorts[i]["parent"] = properties['name']
-          properties.outPorts[i]["parentid"] = properties['id']
+      const dimensionSelected = function(that, source, dim){
+        dim.checked = !dim.checked;
+        if (dim.checked == true) dim.color = "#808080";
+        else dim.color = "#202020";
+
+        //forced update datalist to re-rendering
+        let origin = that.dataList;
+        that.dataList = [];
+        that.dataList = origin;
+
+        if (that.selectedData[source] != undefined) {
+          //如果存在该数据源
+          if (that.selectedData[source][dim.name] != undefined) {
+            //如果存在该数据源该属性
+            that.selectedData[source][dim.name] = "0";
+          } else {
+            //如果存在该数据源不存在该属性
+            that.selectedData[source][dim.name] = "1";
+            that.dataComponent[source].addPort("out", {
+              name: dim.name,
+              text: dim.name,
+              dimension_type: dim.type,
+              type: "out",
+              attr: "field"
+            });
+            that.addClickEvent2Circle(that.dataComponent[source]);
+          }
+        } else {
+          //如果不存在该数据源 则初始化组件
+          that.selectedData[source] = {}; //记录该数据源记录该数据源
+          that.selectedData[source][dim.name] = "1";
+
+          let properties = that.modelConfig["Table"];
+          console.log(properties)
+          properties["outPorts"] = [
+            {
+              name: dim.name,
+              text: dim.name,
+              dimension_type: dim.type,
+              type: "out",
+              attr: "field"
+            }
+          ];
+          properties["fill"] = "#F6BB42";
+          properties["name"] = source;
+          properties["id"] = source;
+          properties['x'] = 300 * Math.random() + 100;
+          properties['y'] = 300 * Math.random() + 100;
+          
+
+          let _com = new BlueComponent(that.container, properties);
+          that.dataComponent[source] = _com;
+          that.addClickEvent2Circle(_com);
+          that.blueComponents.push(_com);
+
+          if (!(source in that.loadedDatasets)){
+            dataHelper.getDataDetail(source).then(function(response) {
+              //that.vegaObject.setData(response.data.data.values);
+              that.loadedDatasets[source] = response.data.data.values
+            });
+          }
         }
       }
-      
-      //according to this.blueComponentsCount construct id and add 1
-      this.blueComponentsCount[properties.type] = this.blueComponentsCount[properties.type] + 1
 
-      //make inports outports full
-      
-
-      //make sure that the viewer name equal to button content
-      if(group == "Viewer"){
-        let propertiesname = 'Viewer-' + this.viewer.count
-        //update viewer set
-        this.viewer.count = this.viewer.count + 1
-        this.viewer.list.push(propertiesname)
-        //create tab
-        this.vsbuttonbox.button.every(function(d,i){
-          if(d['style'] == 'none'){
-            d['style'] = 'block'
-            d['content'] = propertiesname
-            properties["name"] = propertiesname; 
-            return false
-
-          }else{
-            return true
-          }
-        })
-
+      //logic
+      //init generate property
+      if(arguments.length == 1){
+        //create function component
+        let _name = arguments[0]
+        constructproperty(that, that.modelConfig[_name], _name)
+      } else if(arguments.length == 2){
+        //create or add data component
+        dimensionSelected(that, arguments[0], arguments[1])
       }
-      
-      let _com = new BlueComponent(this.container, properties);
-      this.blueComponents.push(_com)      
-      if(_com.type == "Layout"){
-        this.layoutIdName[_com.id] = {}
-        this.layoutIdName[_com.id]["name"] = _com.name
-        this.layoutIdName[_com.id]["ref"] = "msg" + "-" + _com.name.split(" ")[1]
-      }
-      this.addClickEvent2Circle(_com);
-      
     },
-
     //generate chart
     generateChart(id, meta){
+      console.log(meta["content"], this.vegaObjectObj, this.vegaObjectObj[meta["content"]])
       let result = this.vegaObjectObj[meta["content"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
@@ -344,23 +406,19 @@ export default {
       dataHelper.getDataDetail(name).then(res=>{
         // console.log(res.data.data.values)
         this.tableData = res.data.data.values
-
         this.$store.state.tableData = res.data.data.values
-        console.log(this.tableData)
         this.isTable = !this.isTable
         if(this.buttonName==='Preview')
           this.buttonName = 'CloseTable'
         else
           this.buttonName = 'Preview'
       })
-      
     },
     //boundind the click event to the circles which represent the ports in component
     addClickEvent2Circle(com) {
       let that = this;
       
       //after click the circle, there will new a line in canvas
-      
       com.getAllCircles().on("click", function(d) {
         let params = com.getParmas()
         let x = d.parentX + d.x;
@@ -428,73 +486,6 @@ export default {
     // ELSE
     //     Add a new component contain this port
     ////////////////////////////////
-
-    //data component
-    dimensionSelected(source, dim) {
-      dim.checked = !dim.checked;
-
-      let that = this
-
-      if (dim.checked == true) dim.color = "#808080";
-      else dim.color = "#202020";
-
-      //forced update datalist to re-rendering
-      let origin = this.dataList;
-      this.dataList = [];
-      this.dataList = origin;
-
-      if (this.selectedData[source] != undefined) {
-        //如果存在该数据源
-        if (this.selectedData[source][dim.name] != undefined) {
-          //如果存在该数据源该属性
-          this.selectedData[source][dim.name] = "0";
-        } else {
-          //如果存在该数据源不存在该属性
-          this.selectedData[source][dim.name] = "1";
-          this.dataComponent[source].addPort("out", {
-            name: dim.name,
-            text: dim.name,
-            dimension_type: dim.type,
-            type: "out",
-            attr: "field"
-          });
-          this.addClickEvent2Circle(this.dataComponent[source]);
-        }
-      } else {
-        //如果不存在该数据源 则初始化组件
-        this.selectedData[source] = {}; //记录该数据源
-        this.selectedData[source][dim.name] = "1";
-
-        let properties = this.modelConfig["Table"];
-        properties["outPorts"] = [
-          {
-            name: dim.name,
-            text: dim.name,BlueComponent,
-            dimension_type: dim.type,
-            type: "out",
-            attr: "field"
-          }
-        ];
-        properties["name"] = source;
-        properties["id"] = source;
-        properties['x'] = 300 * Math.random() + 100;
-        properties['y'] = 300 * Math.random() + 100;
-        properties["fill"] = "#F6BB42";
-
-        let _com = new BlueComponent(this.container, properties);
-        this.dataComponent[source] = _com;
-        this.addClickEvent2Circle(_com);
-        this.blueComponents.push(_com);
-
-        if (!(source in this.loadedDatasets)){
-
-          dataHelper.getDataDetail(source).then(function(response) {
-            //that.vegaObject.setData(response.data.data.values);
-            that.loadedDatasets[source] = response.data.data.values
-          });
-        }
-      }
-    },
 
     //The configurariton change rules
     async setVegaConfig(source, target, vegaObjKey) {
@@ -683,35 +674,6 @@ export default {
         }
       }
     },
-
-    //If a new connection is built, the vega-lite configuration will be update
-    connectionParse(connect) {
-      let that = this;
-
-      //If there is none vegaObject created, new one
-    
-      let source = connect.source;
-      let target = connect.target;
-      let dataNameDict = {};
-      that.dataList.forEach(function(d) {
-        dataNameDict[d.name] = 1; 
-      });
-
-      if (source.parent in dataNameDict 
-      && source.parent != this.contextData 
-      && this.contextData.split('.').length < 2) {
-
-        this.contextData = source.parent;
-        that.setVegaConfig(source, target);
-    
-      } else {
-        that.setVegaConfig(source, target);
-      }
-
-      //let result = this.vegaObjectObj[vegaObjKey].getOutputForced();
-      //Show the result in bottom canvas via vage compilier
-      //vegaEmbed("#canvas", result, { theme: "default" });
-    },
     connectionRemove(connect){
       
     },
@@ -721,7 +683,8 @@ export default {
       let interval = function(){
         let i = 0;
         let intr = setInterval(function() {
-          if (connect.getConnectInfo().targetId != ""){
+          let conInfo = connect.getConnectInfo()
+          if (conInfo.targetId != ""){
             clearInterval(intr);
             that.buildBlueGraph(connect)
           }
@@ -735,6 +698,7 @@ export default {
       let connect = con.getConnectInfo()
       let _source = connect.source
       let _target = connect.target
+      let componentGraph = new Array() //two dimensional matrix of storage blueprint connection logic
 
       //更新that.layoutObj viewer- layout-0_chartA parentid + "_" + text
       
@@ -779,20 +743,19 @@ export default {
         this.componentLink.push(linkname)
       }
       //建立根据componentIndex覆盖更新二维数组
-      this.componentGraph = new Array()
       this.componentIndex.forEach(function(d, i){
-        that.componentGraph[i] = new Array()
+        componentGraph[i] = new Array()
       })
       //graph init
       for(let i=0; i<this.componentIndex.length; i++){
         for(let j=0; j<this.componentIndex.length; j++){
-          this.componentGraph[i][j] = 0
+          componentGraph[i][j] = 0
         }
       }
       for(let i=0; i<this.componentLink.length; i++){
         let indexsource = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[0])
         let indextarget = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[1])
-        this.componentGraph[indexsource][indextarget] = 1
+        componentGraph[indexsource][indextarget] = 1
       }
       
       //获取view组件
@@ -834,7 +797,7 @@ export default {
 
         function searchlink(j){
         for(let k=0; k<that.componentIndex.length; k++){
-          if(that.componentGraph[k][j] == 1){
+          if(componentGraph[k][j] == 1){
             let _source = that.componentIndex[k] //id
             let _target = that.componentIndex[j] //id
             //将相连的组件存起来 或者 直接遍历两个相连组件间的边
@@ -877,7 +840,6 @@ export default {
               }
             }
           }
-
         })
       })
 
@@ -926,9 +888,6 @@ export default {
          })
        })
     },
-    dynamicvstab(message){
-      
-    },
     notifications(message){
       this.$vs.notify({
         title:message.title,
@@ -964,7 +923,41 @@ export default {
       } else if(key.length == 2){
         that.notifications({'title':'Notice', 'text': 'Please choose one layout. You have now chosen two layouts.', 'color': 'danger'})
       }
-      
+    },
+    remove(com){
+      //find line connected with removedComponent
+      //Cancellation bluecomponent and blueline methods: = null / delete in array
+      //delete related variable
+      let that = this
+      let comid = com.getId()
+      //first removeGraph bluecomponent
+      com.removeGraph()
+      //second find connected blueline/ removed graph/ delete in array
+      for(let i=0; i<that.blueLines.length; i++){
+        let lineinfo = that.blueLines[i].getConnectInfo()
+        let _source = lineinfo.sourceId;
+        let _target = lineinfo.targetId;
+        if(comid == _source || comid == _target){
+          that.blueLines[i].forceRemove();
+          that.blueLines[i] = null;
+          that.blueLines.splice(i, 1);
+          i--;
+        }
+      }
+      //third delete component in array
+      for(let i=0; i<this.blueComponents.length; i++){
+        if(comid == this.blueComponents[i].getId()){
+          this.blueComponents[i] = null;
+          this.blueComponents.splice(i, 1);
+          break;
+        }
+      }
+      //remove ports
+      for(let i=0; i<that.exstingPorts.length; i++){
+        if(comid == that.exstingPorts[i].parentid){
+          this.exstingPorts.splice(i, 1);
+        }
+      }
     }
   
   },
@@ -973,20 +966,12 @@ export default {
     blueComponents: {
       handler(curVal, oldVal) {
         let that = this
+
         if(curVal.length == oldVal.length){
           for (let i = 0; i < this.blueComponents.length; i++){
             if(this.blueComponents[i].isDelete){
-              let filterID = this.blueLines.filter(function(line, j){
-                if(line.remove(that.blueComponents[i].name)){
-                  that.connections.splice(j,1)
-                  return true
-                }
-                return false
-              })
-              filterID.forEach(d => {
-                this.blueLines.splice(d,1)
-              })
-              this.blueComponents.splice(i,1)
+              console.log(this.blueComponents[i])
+              that.remove(this.blueComponents[i])
               break;
             }
             
@@ -1024,17 +1009,6 @@ export default {
       handler(curVal, oldVal) {
         let tailNo = curVal.length - 1;
         this.catchConnect(curVal[tailNo])
-      },
-      deep: true
-    },
-    //Monitor the vegaObject, if it updated, the model configuration text will be updated
-    vegaObject: {
-      handler(curVal, oldVal) {
-        this.model_config_text = JSON.stringify(
-          this.vegaObject.getConfig(),
-          null,
-          4
-        );
       },
       deep: true
     }
@@ -1079,7 +1053,6 @@ export default {
         //com.animate();
       });
     }, 20);
-
   }
 };
 </script>
