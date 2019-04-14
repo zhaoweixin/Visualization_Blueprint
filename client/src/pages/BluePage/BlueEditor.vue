@@ -181,6 +181,14 @@ export default {
     //Intialized the blueprint canvas
     chartInit(container, props) {
       let that = this;
+      let bluecomponentscountInit = function(that){
+        //init blue componets counts
+        for(const key in that.componentTypes){
+          if(!that.blueComponentsCount.hasOwnProperty(key)){
+            that.blueComponentsCount[key] = 0
+          }
+        }
+      }
 
       for (let key in props) {
         this.data[key] = props[key];
@@ -188,70 +196,124 @@ export default {
       this.container = d3.select("#editorborad");
       this.container.append("g").attr("id", "grid_layer");
       this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
-      this.bluecomponentscountInit()
+      bluecomponentscountInit(that)
       setTimeout(function(){
         that.notifications({'title':'Congratulations', 'text': 'drag and click to start your amazing work~', 'color': 'rgb(31,116,225)'})
       }, 3000)
     },
-    //Darwing the grids line in canvas which help user the recognize the canvas and components
-    drawGrids(){
-      let lineData = [];
-      for (let i = 10; i < this.width; i += 20) {
-        lineData.push({ x1: i, y1: 0, x2: i, y2: this.height });
-      }
-
-      for (let i = 10; i < this.height; i += 20) {
-        lineData.push({ x1: 0, y1: i, x2: this.width, y2: i });
-      }
-
-      if (this.container != "") {
-        this.container
-          .select("#grid_layer")
-          .selectAll("*")
-          .remove();
-
-        this.container
-          .select("#grid_layer")
-          .selectAll(".grid_lines")
-          .data(lineData)
-          .enter()
-          .append("line")
-          .attr("x1", d => d.x1)
-          .attr("x2", d => d.x2)
-          .attr("y1", d => d.y1)
-          .attr("y2", d => d.y2)
-          .attr("stroke", "#00000030");
-      }
-    },
 
     //Resize the canvas after window's size has been updated
     chartResize(innerWidth, innerHeight) {
+      let that = this
       let height = innerHeight > innerWidth * 2 ? innerWidth * 2 : innerHeight;
       let width = innerWidth;
       this.width = width;
       this.height = height;
 
+      let drawGrids = function(that){
+        //Darwing the grids line in canvas which help user the recognize the canvas and components        
+        let lineData = [];
+        for (let i = 10; i < that.width; i += 20) {
+          lineData.push({ x1: i, y1: 0, x2: i, y2: that.height });
+        }
+
+        for (let i = 10; i < that.height; i += 20) {
+          lineData.push({ x1: 0, y1: i, x2: that.width, y2: i });
+        }
+
+        if (that.container != "") {
+          that.container
+            .select("#grid_layer")
+            .selectAll("*")
+            .remove();
+
+          that.container
+            .select("#grid_layer")
+            .selectAll(".grid_lines")
+            .data(lineData)
+            .enter()
+            .append("line")
+            .attr("x1", d => d.x1)
+            .attr("x2", d => d.x2)
+            .attr("y1", d => d.y1)
+            .attr("y2", d => d.y2)
+            .attr("stroke", "#00000030");
+        }
+      }
+
       d3.select("#editorborad")
         .attr("width", this.width)
         .attr("height", this.height);
 
-      this.drawGrids();
+      drawGrids(that);
     },
 
-    //init blue componets counts
-    bluecomponentscountInit(){
-      for(const key in this.componentTypes){
-        if(!this.blueComponentsCount.hasOwnProperty(key)){
-          this.blueComponentsCount[key] = 0
-        }
-      }
-    },
     //create a new component to canvas which need a component type and a unique name
     createNewComponent(){
       let that = this,
         property = null,
         _com = null;
       //func
+      const addLineEvent = function(that, com){
+        //darwing the connection line accroding to the mouse real-time position
+        that.container.on("mousemove", function(d) {
+          if (
+            that.mouseAction == "drawing_line" &&
+            that.drawingLine.getConnectInfo()["target"] == ""
+          ) {
+            let coordinates = d3.mouse(this);
+            that.drawingLine.dynamicGenerateCurveLine(coordinates);
+            that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
+          }
+        });
+      }
+      const addClickEvent2Circle = function(that, com){
+        //boundind the click event to the circles which represent the ports in component
+        //after click the circle, there will new a line in canvas
+        com.getAllCircles().on("click", function(d) {
+          let params = com.getParmas()
+          let x = d.parentX + d.x;
+          let y = d.parentY + d.y;
+          let sourceid = params.id
+          let line = (that.drawingLine = new BlueprintLine(
+            that.container,
+            params.name,
+            [x, y],
+            d,
+            sourceid
+          ));
+          that.blueLines.push(line);
+          that.mouseAction = "drawing_line";
+          
+          let allPorts = [];
+
+          that.blueComponents.forEach(function(component,i) {
+            //let ports = component.getAllPorts();
+            let parmas = component.getParmas()
+            let _inPorts = parmas["inPorts"]
+            let _outPorts = parmas["outPorts"]
+            let _id = parmas["id"]
+            if (d.type == "in") {
+              _outPorts.forEach(function(k) {
+                //k.parent = component.id
+                k.id = _id
+                allPorts.push(k);
+              });
+            } else {
+              _inPorts.forEach(function(k) {
+                //k.parent = component.id
+                k.id = _id
+                allPorts.push(k);
+              });
+            }
+          });
+
+          that.exstingPorts = []
+          that.exstingPorts = allPorts
+          //line.setExstingPorts(allPorts);
+          addLineEvent(that, com)
+        });
+      }
       const constructproperty = function(that, property, name){
         let obj = JSON.parse(JSON.stringify(property))
         
@@ -301,7 +363,7 @@ export default {
         that.blueComponentsCount[obj.type] = that.blueComponentsCount[obj.type] + 1
         _com = new BlueComponent(that.container, obj);
         that.blueComponents.push(_com);
-        that.addClickEvent2Circle(_com);
+        addClickEvent2Circle(that, _com);
       }
       const dimensionSelected = function(that, source, dim){
         dim.checked = !dim.checked;
@@ -328,7 +390,7 @@ export default {
               type: "out",
               attr: "field"
             });
-            that.addClickEvent2Circle(that.dataComponent[source]);
+            addClickEvent2Circle(that, that.dataComponent[source]);
           }
         } else {
           //如果不存在该数据源 则初始化组件
@@ -336,7 +398,6 @@ export default {
           that.selectedData[source][dim.name] = "1";
 
           let properties = that.modelConfig["Table"];
-          console.log(properties)
           properties["outPorts"] = [
             {
               name: dim.name,
@@ -355,7 +416,7 @@ export default {
 
           let _com = new BlueComponent(that.container, properties);
           that.dataComponent[source] = _com;
-          that.addClickEvent2Circle(_com);
+          addClickEvent2Circle(that, _com);
           that.blueComponents.push(_com);
 
           if (!(source in that.loadedDatasets)){
@@ -378,13 +439,18 @@ export default {
         dimensionSelected(that, arguments[0], arguments[1])
       }
     },
+
     //generate chart
     generateChart(id, meta){
-      console.log(meta["content"], this.vegaObjectObj, this.vegaObjectObj[meta["content"]])
       let result = this.vegaObjectObj[meta["content"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
       this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
+    },
+    //store litte function
+    
+    storeFunc(){
+      
     },
 
     //find the component by the component's name
@@ -413,70 +479,6 @@ export default {
         else
           this.buttonName = 'Preview'
       })
-    },
-    //boundind the click event to the circles which represent the ports in component
-    addClickEvent2Circle(com) {
-      let that = this;
-      
-      //after click the circle, there will new a line in canvas
-      com.getAllCircles().on("click", function(d) {
-        let params = com.getParmas()
-        let x = d.parentX + d.x;
-        let y = d.parentY + d.y;
-        let sourceid = params.id
-        let line = (that.drawingLine = new BlueprintLine(
-          that.container,
-          params.name,
-          [x, y],
-          d,
-          sourceid
-        ));
-        that.blueLines.push(line);
-        that.mouseAction = "drawing_line";
-        
-        let allPorts = [];
-
-        that.blueComponents.forEach(function(component,i) {
-          //let ports = component.getAllPorts();
-          let parmas = component.getParmas()
-          let _inPorts = parmas["inPorts"]
-          let _outPorts = parmas["outPorts"]
-          let _id = parmas["id"]
-          if (d.type == "in") {
-            _outPorts.forEach(function(k) {
-              //k.parent = component.id
-              k.id = _id
-              allPorts.push(k);
-            });
-          } else {
-            _inPorts.forEach(function(k) {
-              //k.parent = component.id
-              k.id = _id
-              allPorts.push(k);
-            });
-          }
-        });
-
-        that.exstingPorts = []
-        that.exstingPorts = allPorts
-        //line.setExstingPorts(allPorts);
-        that.addLineEvent(com, line)
-      });
-    },
-
-    addLineEvent(com){
-      let that = this
-      //darwing the connection line accroding to the mouse real-time position
-      this.container.on("mousemove", function(d) {
-        if (
-          that.mouseAction == "drawing_line" &&
-          that.drawingLine.getConnectInfo()["target"] == ""
-        ) {
-          let coordinates = d3.mouse(this);
-          that.drawingLine.dynamicGenerateCurveLine(coordinates);
-          that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
-        }
-      });
     },
     
     ///////////////////////////////
@@ -673,9 +675,6 @@ export default {
           this.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
         }
       }
-    },
-    connectionRemove(connect){
-      
     },
     catchConnect(connect){
       // catch ConnectInfo
@@ -966,11 +965,9 @@ export default {
     blueComponents: {
       handler(curVal, oldVal) {
         let that = this
-
         if(curVal.length == oldVal.length){
           for (let i = 0; i < this.blueComponents.length; i++){
             if(this.blueComponents[i].isDelete){
-              console.log(this.blueComponents[i])
               that.remove(this.blueComponents[i])
               break;
             }
