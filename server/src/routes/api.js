@@ -9,7 +9,6 @@ const dataProcess = dataProcessFunc.dataProcess
 const dataBuffer = dataProcessFunc.dataBuffer
 const fakeDataBaseProcess = dataProcessFunc.fakeDataBaseProcess
 
-
 //api
     //上传并保存数据
 router.post('/changeAvatar', upload.single(), function(req, res){
@@ -51,20 +50,6 @@ router.post('/getDataInfo', function(req, res, next){
         })
 
     })
-    /*
-    let resdata = []
-    
-    for(let key in dataDimensions){
-        let dataCounts = dataBuffer.getDataLength(key)
-        let pagesCounts = dataBuffer.getDataPagesCount(key)
-        resdata.push({
-            'dimensions': dataDimensions[key],
-            'name': key,
-            'pages': pagesCounts,
-            'dataCounts': dataCounts
-        })
-    }
-    */
     res.setHeader('Content-Type', 'application/json');
     res.json(resdata)
 })
@@ -187,7 +172,7 @@ router.post('/getData' ,function(req, res, next){
 
     //暂时使用默认存入数据功能
 const storeDefaultData = function(){
-    fs.readdir(process.cwd() + "/upload", function(err, files){
+    fs.readdir(process.cwd() + "/src/upload", function(err, files){
         //file -> list
         if (err) {
             console.log(err);

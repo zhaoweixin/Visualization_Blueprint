@@ -168,7 +168,6 @@ dataProcess = {
                 
                 let rawdata = JSON.parse(data);
                 let columns = Object.keys(flatten(rawdata[0]))
-
                 addRawDataToBuffer(rawdata, dataName);
                 generateDimensions(columns, dataName);
                 jsonAddId(rawdata);
