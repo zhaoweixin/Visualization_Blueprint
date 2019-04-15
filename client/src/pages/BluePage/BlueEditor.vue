@@ -24,6 +24,7 @@
 
     <div class='toolbar' style='position:absolute;top:45px;right:2%'>
       <vs-button v-on:click="graphPreview" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
+      <vs-button v-on:click="cleanPanel" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
     </div>
     <vs-row style="height:1080px">
       <!--整个高度为10-->
@@ -91,7 +92,7 @@
           <!--该列放置生成图-->
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <div>
-              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in vsbuttonbox.button">
+              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox.button">
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
           </div>
@@ -126,7 +127,7 @@ import * as d3 from "d3";
 import blueComponentTypes from "../../assets/blueComponentTypes.json";
 import modelConfig from "../../assets/modelConfig.json";
 import VegaModel from "../../common/BlueComponents/vegaModel";
-import vsbutton from "../../assets/vsbuttonbox.json";
+import viewerbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
 import TemplateA from "../ViewLayouts/TemplateA"
 import TemplateB from "../ViewLayouts/TemplateB"
@@ -141,8 +142,10 @@ export default {
       buttonName:"Preview",
       dataList: [], //data candidates list
       componentTypes: blueComponentTypes, // components' types of blueprint
-      container: "", //canvas to drawing blueprint
       modelConfig: modelConfig, //configuration detail of each component model
+      dataTypes: config.typesPrefab, //Store all the data type which supported by vega-lite
+      viewerbuttonbox:viewerbutton, //store/init the viewer review button
+      container: "", //canvas to drawing blueprint
       selectedData: {}, //The dimensions in dataset which been selected by user
       dataComponent: {}, //The exsiting components in canvas (used to check the exsiting)
       blueComponents: [], //The exsiting components in canvas (used to store the exsiting)
@@ -150,16 +153,14 @@ export default {
       mouseAction: "", //mouse action label which used to change the mouse action state
       drawingLine: "", //The line which is being darwing by user
       contextData: "", //Shows which dataset which is using in blueprint
-      dataTypes: config.typesPrefab, //Store all the data type which supported by vega-lite
-      dataConnection:{},
+      dataConnection:{}, //unknown function
       loadedDatasets:{}, //accroding datacomponent to loaded datasets
-      vsbuttonbox:vsbutton, //store/init the viewer review button
-      blueComponentsCount:{}, //store the count of component according to different type
-      componentLink:[], // store the links between components
-      componentIndex:[], //the index made of componentid
+      blueComponentsTypeCount:{}, //store the count of component according to different type
+      blueLinesName:[], // store the links between components
+      blueComponentNameList:[], //the index made of componentid
       exstingPorts:[], //all of the component port in blueprint
       vegaObjectObj:{}, //vegaobject is used to generate graph throgh
-      viewerDataTree:{}, //store the data in different viewer
+      viewerData:{}, //store the data in different viewer
       layoutObj:{}, //store the vegaobject in different viewer
       viewerlayout: {}, //layout is the preset typesetting
       popupActivo4: false,
@@ -184,8 +185,8 @@ export default {
       let bluecomponentscountInit = function(that){
         //init blue componets counts
         for(const key in that.componentTypes){
-          if(!that.blueComponentsCount.hasOwnProperty(key)){
-            that.blueComponentsCount[key] = 0
+          if(!that.blueComponentsTypeCount.hasOwnProperty(key)){
+            that.blueComponentsTypeCount[key] = 0
           }
         }
       }
@@ -317,12 +318,12 @@ export default {
       const constructproperty = function(that, property, name){
         let obj = JSON.parse(JSON.stringify(property))
         
-        //according to this.blueComponentsCount construct id and add 1
+        //according to this.blueComponentsTypeCount construct id and add 1
         //make inports outports full
         //make sure that the viewer name equal to button content
         obj["fill"] = that.componentTypes[obj.type].color;
         obj["name"] = name;
-        obj['id'] = obj.type + '-' + that.blueComponentsCount[obj.type];
+        obj['id'] = obj.type + '-' + that.blueComponentsTypeCount[obj.type];
         obj['x'] = 300 * Math.random() + 100;
         obj['y'] = 300 * Math.random() + 100;
 
@@ -342,12 +343,13 @@ export default {
           }
         }
         if(obj.type == "Viewer"){
-          let propertiesname = 'Viewer-' + that.blueComponentsCount[obj.type];
+          let propertiesname = 'Viewer-' + that.blueComponentsTypeCount[obj.type];
           //create tab
-          that.vsbuttonbox.button.every(function(d,i){
+          
+          that.viewerbuttonbox.button.every(function(d,i){
             if(d['style'] == 'none'){
-              d['style'] = 'block'
-              d['content'] = propertiesname
+              d['style'] = 'block';
+              d['content'] = propertiesname;
               obj["name"] = propertiesname; 
               return false
             }else{
@@ -360,7 +362,7 @@ export default {
           that.layoutIdName[obj.id]["name"] = obj.name
           that.layoutIdName[obj.id]["ref"] = "msg" + "-" + obj.name.split(" ")[1]
         }
-        that.blueComponentsCount[obj.type] = that.blueComponentsCount[obj.type] + 1
+        that.blueComponentsTypeCount[obj.type] = that.blueComponentsTypeCount[obj.type] + 1
         _com = new BlueComponent(that.container, obj);
         that.blueComponents.push(_com);
         addClickEvent2Circle(that, _com);
@@ -531,24 +533,16 @@ export default {
       // The case of source attribution is 「FIELD」 and target is 「CONNECTOR」
 
       if (source.attr == "field" && target.attr == "connector") {
-
         if(this.loadedDatasets[source.parent] == undefined){
-          
           await dataHelper.getDataDetail(source.parent).then(function(response) {
-
             that.loadedDatasets[source.parent] = response.data.data.values
           });
-          
         }
 
         if (this.dataConnection[source.parent] == undefined){
-
           this.dataConnection[source.parent] = {'data': this.loadedDatasets[source.parent], 'dataName':source.parent, 'dim':source.name}
-
           let connectionNames = d3.keys(this.dataConnection);
-
           if (connectionNames.length == 2){
-
             let data1 = this.dataConnection[connectionNames[0]];
             let data2 = this.dataConnection[connectionNames[1]];
 
@@ -609,7 +603,6 @@ export default {
             }
           }
           else if(d3.keys(this.dataConnection).length > 2){
-            
             this.dataConnection[source.parent] = {}
             this.dataConnection[source.parent] = {'data': this.loadedDatasets[source.parent], 'dataName':source.parent, 'dim':source.name}
           }
@@ -733,27 +726,27 @@ export default {
       let linkname = connect.sourceId + "_" + connect.targetId
       let addId = [connect.sourceId, connect.targetId]
       addId.forEach(function(d){
-        if(that.componentIndex.indexOf(d) == -1){
-          that.componentIndex.push(d)
+        if(that.blueComponentNameList.indexOf(d) == -1){
+          that.blueComponentNameList.push(d)
         }
       })
       //存入link
-      if(this.componentLink.indexOf(linkname) == -1){
-        this.componentLink.push(linkname)
+      if(this.blueLinesName.indexOf(linkname) == -1){
+        this.blueLinesName.push(linkname)
       }
       //建立根据componentIndex覆盖更新二维数组
-      this.componentIndex.forEach(function(d, i){
+      this.blueComponentNameList.forEach(function(d, i){
         componentGraph[i] = new Array()
       })
       //graph init
-      for(let i=0; i<this.componentIndex.length; i++){
-        for(let j=0; j<this.componentIndex.length; j++){
+      for(let i=0; i<this.blueComponentNameList.length; i++){
+        for(let j=0; j<this.blueComponentNameList.length; j++){
           componentGraph[i][j] = 0
         }
       }
-      for(let i=0; i<this.componentLink.length; i++){
-        let indexsource = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[0])
-        let indextarget = this.componentIndex.indexOf(String(this.componentLink[i]).split('_')[1])
+      for(let i=0; i<this.blueLinesName.length; i++){
+        let indexsource = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split('_')[0])
+        let indextarget = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split('_')[1])
         componentGraph[indexsource][indextarget] = 1
       }
       
@@ -762,12 +755,12 @@ export default {
       let viewerList = []
       let viewerTreeLink = {}
 
-      for(let i=0 ;i<this.componentIndex.length; i++){
-        if(this.componentIndex[i] != ""){
-          if(this.getComponentById(this.componentIndex[i]).getType() == "Viewer"){
-          if(!viewerDict.hasOwnProperty( this.componentIndex[i] )){
-            viewerDict[this.componentIndex[i]] = i
-            viewerList.push(this.componentIndex[i])
+      for(let i=0 ;i<this.blueComponentNameList.length; i++){
+        if(this.blueComponentNameList[i] != ""){
+          if(this.getComponentById(this.blueComponentNameList[i]).getType() == "Viewer"){
+          if(!viewerDict.hasOwnProperty( this.blueComponentNameList[i] )){
+            viewerDict[this.blueComponentNameList[i]] = i
+            viewerList.push(this.blueComponentNameList[i])
             }
           }
         }
@@ -776,7 +769,7 @@ export default {
       Object.keys(that.vegaObjectObj).forEach(function(d){
         if(viewerList.indexOf(d) == -1){
           //如果在viewerlist中没有该viewer,则该viewer已被删除,需从vegaObjectObj中去掉键值对
-          delete vegaObjectObj[d]
+          delete that.vegaObjectObj[d]
         }
       })
       viewerList.forEach(function(d){
@@ -795,10 +788,10 @@ export default {
         searchlink(viewerDict[viewerList[i]])
 
         function searchlink(j){
-        for(let k=0; k<that.componentIndex.length; k++){
+        for(let k=0; k<that.blueComponentNameList.length; k++){
           if(componentGraph[k][j] == 1){
-            let _source = that.componentIndex[k] //id
-            let _target = that.componentIndex[j] //id
+            let _source = that.blueComponentNameList[k] //id
+            let _target = that.blueComponentNameList[j] //id
             //将相连的组件存起来 或者 直接遍历两个相连组件间的边
             let _st = _source + "_" + _target
             viewerTreeLink[viewerList[i]].push(_st)
@@ -824,15 +817,15 @@ export default {
           for(let i=0; i<componentlist.length; i++){
             let com = componentlist[i]
             if(that.getComponentById(com).type == "Data"){
-              if(that.viewerDataTree[d] == undefined){
-                that.viewerDataTree[d] = []
-                that.viewerDataTree[d].push(com)
+              if(that.viewerData[d] == undefined){
+                that.viewerData[d] = []
+                that.viewerData[d].push(com)
                 let _loadedData = that.loadedDatasets[com]
                 that.vegaObjectObj[d].setData(_loadedData)
               }
               else{
-                if(that.viewerDataTree[d].indexOf(com) == -1){
-                  that.viewerDataTree[d].push(com)
+                if(that.viewerData[d].indexOf(com) == -1){
+                  that.viewerData[d].push(com)
                   let _loadedData = that.loadedDatasets[com]
                   that.vegaObjectObj[d].setData(_loadedData)
                 }
@@ -927,36 +920,95 @@ export default {
       //find line connected with removedComponent
       //Cancellation bluecomponent and blueline methods: = null / delete in array
       //delete related variable
-      let that = this
-      let comid = com.getId()
+      let that = this,
+        comid = com.getId(),
+        comtype = com.getType()
+
       //first removeGraph bluecomponent
       com.removeGraph()
       //second find connected blueline/ removed graph/ delete in array
       for(let i=0; i<that.blueLines.length; i++){
         let lineinfo = that.blueLines[i].getConnectInfo()
-        let _source = lineinfo.sourceId;
-        let _target = lineinfo.targetId;
+        let _source = lineinfo.sourceId,
+            _target = lineinfo.targetId,
+            linkname = _source + "_" + _target
+
         if(comid == _source || comid == _target){
           that.blueLines[i].forceRemove();
           that.blueLines[i] = null;
           that.blueLines.splice(i, 1);
           i--;
+
+          let index = that.blueLinesName.indexOf(linkname)
+          that.blueLinesName.splice(index, 1)
         }
       }
+      
       //third delete component in array
       for(let i=0; i<this.blueComponents.length; i++){
         if(comid == this.blueComponents[i].getId()){
           this.blueComponents[i] = null;
           this.blueComponents.splice(i, 1);
+          
           break;
         }
       }
+      
       //remove ports
       for(let i=0; i<that.exstingPorts.length; i++){
         if(comid == that.exstingPorts[i].parentid){
           this.exstingPorts.splice(i, 1);
         }
       }
+      
+      if(comtype == "Data"){
+        delete that.selectedData[comid]
+        delete that.dataComponent[comid]
+      }else if(comtype == "Viewer"){
+        let index = comid.split("-")[1]
+        that.viewerbuttonbox.button[index]["content"] = "button" + index
+        that.viewerbuttonbox.button[index]["style"] = "none"
+        that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] + 1
+      }
+      that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] - 1
+      // if exist viewer, "delete" remove button
+      if(that.blueComponentNameList.length > 0){
+        that.blueComponentNameList.splice(that.blueComponentNameList.indexOf(comid), 1)
+      }
+    },
+    cleanPanel(){
+      let that = this
+      if(this.blueComponents.length == 0){
+        this.notifications({'title':'Notice', 'text': 'There are no components here.', 'color': 'danger'})
+        return;
+      }
+      //make sure remove all of the bluecomponents
+      this.blueComponents.forEach(function(d,i){
+        that.remove(d)
+      })
+      if(that.blueComponents[0] != null){
+        this.remove(that.blueComponents[0]);
+      }
+      
+      this.selectedData = {};
+      this.dataComponent = {};
+      this.blueComponents = [];
+      this.blueLines = [];
+      this.mouseAction = "";
+      this.drawingLine = "";
+      this.contextData = "";
+      this.dataConnection = {};
+      this.blueLinesName = [];
+      this.blueComponentNameList = [];
+      this.exstingPorts = [];
+      this.vegaObjectObj = {};
+      this.viewerData = {};
+      this.layoutObj = {};
+      this.viewerlayout = {};
+      for(let key in this.blueComponentsTypeCount){
+        this.blueComponentsTypeCount[key] = 0
+      }
+      this.notifications({'title':'Notice', 'text': 'clean panel success~', 'color': 'rgb(31,116,225)'})
     }
   
   },
@@ -1004,8 +1056,10 @@ export default {
     //Monitor the bluelines' length, if length increased, the new connection will be parsed
     blueLines: {
       handler(curVal, oldVal) {
-        let tailNo = curVal.length - 1;
-        this.catchConnect(curVal[tailNo])
+        if(curVal.length != 0){
+          let tailNo = curVal.length - 1;
+          this.catchConnect(curVal[tailNo])
+        }
       },
       deep: true
     }
