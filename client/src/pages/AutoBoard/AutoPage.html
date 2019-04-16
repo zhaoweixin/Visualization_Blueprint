@@ -1,32 +1,41 @@
-<template lang="html">
-    <div class="autoboard">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OpenVis</title>
+    <link rel="stylesheet" type="text/css" href="./AutoPage.css">
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.3.5/build/vega.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.2.0/build/vega-lite.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.0.0/build/vega-embed.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+    <div id="autoboard">
         <div class="flex-container column">
-            <div class="item one" @click="clickChart('1')" style="transform: translate(-28.4%, -33.5%) scale(0.33)">
-                <div class="one"></div>
+            <div class="item one" @click="clickChart('1')" style="transform: translate(-27.4%, -33.5%) scale(0.33)">
                 <!--视图1-->
             </div>
-            <div class="item two" @click="clickChart('2')" style="transform: translate(-28.4%, 0.5%) scale(0.33)">
-                <div class="two"></div>
+            <div class="item two" @click="clickChart('2')" style="transform: translate(-27.4%, 0.5%) scale(0.33)">
                 <!--视图2-->
             </div>
-            <div class="item three" @click="clickChart('3')" style="transform: translate(-28.4%, 34.5%) scale(0.33)">
-                <div class="three"></div>
+            <div class="item three" @click="clickChart('3')" style="transform: translate(-27.4%, 34.5%) scale(0.33)">
                 <!--视图3-->
             </div>
             <div class="item four active" @click="clickChart('4')" style="transform: translate(38.7%, 0) scale(1)">
-                <div class="four"></div>
                 <!--视图4-->
             </div>
         </div>
     </div>
-</template>
+</body>
 <script>
-// import 视图的json文件
-import vegaEmbed from "vega-embed";
-export default {
+    var app = new Vue({
+    el: '#autoboard',
     data() {
         return {
-            items: []
+            items: [],
+            //Dtable:table
         }
     },
     mounted() {
@@ -44,6 +53,8 @@ export default {
             for (let i = 0; i < this.items.length; i++) {
                 this.items[i].dataset.order = i + 1;
             }
+            this.requsetJson();
+            
         },
         clickChart(chartIndex) {
             let activeItem = document.querySelector('.flex-container .active')
@@ -65,6 +76,39 @@ export default {
         /*setgraph() {
             vegaEmbed("#one",json);
         }*/
+        requsetJson(){
+            /*
+            var jsonObj
+            $.ajax({
+                type: "get",//请求方式
+                url: "./table.json",//地址，就是json文件的请求路径
+                dataType: "json",//数据类型可以为 text xml json  script  jsonp
+                async: false,
+                success: function(data){//返回的参数就是 action里面所有的有get和set方法的参数
+                    jsonObj = data;
+                }
+            });
+            vegaEmbed("#item",jsonObj);
+            */
+            let requestURL = './table.json';
+            //创建一个HTTP请求对象
+            let request = new XMLHttpRequest();
+            //使用open（）打开一个新请求
+            request.open('GET', requestURL);
+            //设置XHR访问JSON格式数据，然后发送请求
+            // request.responseType = 'json';
+            //设置XHR访问text格式数据
+            request.responseType = 'text';
+            request.send();
+ 
+            //处理来自服务器的数据
+            request.onload = function() {
+                let jsonObjText = request.response;
+                let jsonObj = JSON.parse(superHeroesText);
+                vegaEmbed("#item", jsonObj);
+                // let superHeroes = request.response;
+    };
+        },
         getJsonInfo(m) {
             let that = this
             this.layoutObj = JSON.parse(JSON.stringify(m))
@@ -98,43 +142,6 @@ export default {
     components: {
 
     }
-}
+    })
 </script>
-<style lang="stylus" scoped>
-*
-  box-sizing: border-box;
-.one,.two,.three,.four
-  height 100%!important
-  width 100%!important
-.item
-    padding: 0px;
-    margin: 0px;
-    width: 68%;
-    height: 100%;
-    position absolute
-    transform scale(0.33)
-    text-align: center;
-    transition:all 0.8s;
-    background rgba(36, 46, 71, 0.5)
-.autoboard
-    position relative
-    width 100%
-    height 100%
-    margin:0px;
-    padding:0px;
-    padding-top 5%
-    background-color #171C30
-    background-size 100% 100%
-.flex-container.column
-    position relative
-    height: 90%;
-    width: 90%;
-    overflow: hidden;
-    margin:  0 auto 100px auto;
-    box-sizing: content-box;
-.active
-    height 100%
-    width: 69%;
-    margin-left: 10px;
-    line-height: 300px;
-</style>
+</html>

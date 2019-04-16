@@ -1,0 +1,45 @@
+* {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial;
+    margin: 0;
+  }
+  .item {
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    width: 68%;
+    height: 100%;
+    transform: scale(0.33);
+    text-align: center;
+    transition: all 0.8s;
+    background: rgba(32,32,35,0.5);
+  }
+  #autoboard {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 5%;
+    background-color: #171c30;
+    background-size: 100% 100%;
+  }
+  .flex-container.column {
+    position: relative;
+    height: 95%;
+    width: 95%;
+    overflow: hidden;
+    margin: 0 auto 50px auto;
+    box-sizing: content-box;
+  }
+  .active {
+    height: 100%;
+    width: 69%;
+    margin-left: 10px;
+    line-height: 300px;
+  }
+  .item:hover {
+    background-color: blueviolet;
+  }

@@ -111,6 +111,7 @@ export default{
     margin: 0 auto;
     height: 1000px;
     background-color: #171C30;
+    border-radius:5px
 }
 .header{
     height: 5%;
@@ -119,6 +120,7 @@ export default{
     padding-top:0.5%;
     font-size: 20px;
     color:white;
+    border-radius:5px;
 }
 .mutiItem{
     height: 95%;
@@ -138,6 +140,8 @@ export default{
     height: 47.5% ;
     padding-top: 2%;
     padding-left: 1%;
+    opacity: 0.6;
+    border-radius: 3px;
 }
 
 </style>
