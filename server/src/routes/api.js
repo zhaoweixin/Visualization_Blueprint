@@ -8,6 +8,7 @@ const dataProcessFunc = require('../models/dataprocess');
 const dataProcess = dataProcessFunc.dataProcess
 const dataBuffer = dataProcessFunc.dataBuffer
 const fakeDataBaseProcess = dataProcessFunc.fakeDataBaseProcess
+const dataInitFDB = dataProcessFunc.dataInitFDB
 
 //api
     //上传并保存数据
@@ -170,6 +171,12 @@ router.post('/getData' ,function(req, res, next){
     res.json(resData)
 })
 
+router.get("/testdata", function(req, res, next){
+    res.setHeader("Content-Type", "application/json");
+    //console.log(dataProcess.getDataFromDB())
+    res.json(dataProcess.getDataFromDB())
+})
+
     //暂时使用默认存入数据功能
 const storeDefaultData = function(){
     fs.readdir(process.cwd() + "/src/upload", function(err, files){
@@ -184,6 +191,25 @@ const storeDefaultData = function(){
         })
     })
 }
-storeDefaultData();
+
+const dataPrepare = function(isUseDB){
+    if(isUseDB){
+        /* callback function
+        dataProcess.getDataFromDB(function(err,doc){
+            if(err){
+                console.log(err)
+            }else{
+                //console.log(doc)
+            }
+        })
+        */
+       storeDefaultData()
+    }else{
+        dataInitFDB.init()
+    }
+}
+
+dataPrepare(0) //switch prepare data function 0 DB 1 local
+//storeDefaultData();
 
 module.exports = router;
