@@ -1,27 +1,8 @@
 <template>
 
 <div id="blue-editor">
-
-    <vs-navbar class="nabarx" color='rgb(50, 60, 90)'>
-      <vs-button class="nav_opener" type="flat" icon="menu"></vs-button>
-
-      <vs-navbar-title style="color:white">
-        OpenVIS 
-      </vs-navbar-title>
-
-      <vs-spacer></vs-spacer>
-
-      <vs-navbar-item index="0" style="color:white">
-        <a href="#">Home</a>
-      </vs-navbar-item> 
-      <vs-navbar-item index="1" style="color:white">
-        <a href="#">News</a>
-      </vs-navbar-item>
-      <vs-navbar-item index="2" style="color:white">
-        <a href="#">Update</a>
-      </vs-navbar-item>
-    </vs-navbar>
-
+    <NavBar></NavBar>
+    
     <div class='toolbar' style='position:absolute;top:45px;right:2%'>
       <vs-button v-on:click="graphPreview" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
       <vs-button v-on:click="cleanPanel" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
@@ -131,6 +112,7 @@ import viewerbutton from "../../assets/vsbuttonbox.json";
 import { keys } from 'd3';
 import TemplateA from "../ViewLayouts/TemplateA"
 import TemplateB from "../ViewLayouts/TemplateB"
+import NavBar from "../../common/NavBar/NavBar"
 import BlueprintLine from "../../common/BlueComponents/BlueprintLine"
 import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
 //import AutoPage from "../AutoBoard/AutoPage";
@@ -175,7 +157,8 @@ export default {
   components:{
       TemplateA,
       TemplateB,
-      DataPreviewTable
+      DataPreviewTable,
+      NavBar
   },
   methods: {
 
