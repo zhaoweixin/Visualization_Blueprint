@@ -83,8 +83,6 @@ router.post('/getSingleData' ,function(req, res, next){
     res.json(resData);
 })
 
-
-
 //获取单个数据文件属性列表
 router.post('/getDatalist', function(req, res, next){
     res.setHeader('Content-Type', 'application/json');
@@ -152,22 +150,16 @@ router.post('/test' ,function(req, res, next){
 
 router.post('/getData' ,function(req, res, next){
 
-    let dataName = req.query.dataname
+    let dataName = req.body.dataName
+    let values = dataBuffer.getData(dataName)
+    let dimensions = dataBuffer.getSingleDimensions(dataName)
     
     resData = {
-        "dimensions": dataBuffer.getDataDimensions(dataName),
-        "description": "",
-        "data": {
-            "values": dataBuffer.getData(dataName)
-        },
-        "title": {
-            "text": "A Simple Bar Chart",
-            "anchor": "middle",
-            "fontSize": 20
-        }
+        "tr": values,
+        "th": dimensions
     }
-    
     res.setHeader('Content-Type', 'application/json');
+    
     res.json(resData)
 })
 

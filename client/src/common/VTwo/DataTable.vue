@@ -1,133 +1,99 @@
 <template lang="html">
   <div>
-    <vs-table
-      multiple
-      v-model="selected"
-      pagination
-      max-items="3"
-      search
-      :data="users">
+    <vs-table v-model="selected" pagination max-items="3" search :data="tr">
       <template slot="header">
         <h3>
           Users
         </h3>
       </template>
+
       <template slot="thead">
-        <vs-th sort-key="email">
-          Email
-        </vs-th>
-        <vs-th sort-key="username">
-          Name
-        </vs-th>
-        <vs-th sort-key="website">
-          Website
-        </vs-th>
-        <vs-th sort-key="id">
-          Nro
-        </vs-th>
+          <vs-th :key="indexth" sort-key="item.sortkey" v-for="(item, indexth) in th">{{item.name}}</vs-th>
       </template>
 
       <template slot-scope="{data}">
-        <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data" >
-          <vs-td :data="data[indextr].email">
-            {{data[indextr].email}}
-          </vs-td>
-
-          <vs-td :data="data[indextr].username">
-            {{data[indextr].username}}
-          </vs-td>
-
-          <vs-td :data="data[indextr].id">
-            {{data[indextr].website}}
-          </vs-td>
-
-          <vs-td :data="data[indextr].id">
-            {{data[indextr].id}}
-          </vs-td>
+        <vs-tr :key="indextr" v-for="(tr_item, indextr) in tr">
+            <vs-td :data="tr_item[item['sortkey']]" v-for="(item) in th">{{tr_item[item['sortkey']]}}</vs-td>
         </vs-tr>
       </template>
+
     </vs-table>
 
-    <pre>{{ selected }}</pre>
   </div>
 </template>
 
 <script>
+import dataHelper from "../DataManager.js"
 export default {
   data:()=>({
-    selected:[],
-    users:[
-      {
-        "id": 1,
-        "name": "Leanne Graham",
-        "username": "Bret",
-        "email": "Sincere@april.biz",
-        "website": "hildegard.org",
-      },
-      {
-        "id": 2,
-        "name": "Ervin Howell",
-        "username": "Antonette",
-        "email": "Shanna@melissa.tv",
-        "website": "anastasia.net",
-      },
-      {
-        "id": 3,
-        "name": "Clementine Bauch",
-        "username": "Samantha",
-        "email": "Nathan@yesenia.net",
-        "website": "ramiro.info",
-      },
-      {
-        "id": 4,
-        "name": "Patricia Lebsack",
-        "username": "Karianne",
-        "email": "Julianne.OConner@kory.org",
-        "website": "kale.biz",
-      },
-      {
-        "id": 5,
-        "name": "Chelsey Dietrich",
-        "username": "Kamren",
-        "email": "Lucio_Hettinger@annie.ca",
-        "website": "demarco.info",
-      },
-      {
-        "id": 6,
-        "name": "Mrs. Dennis Schulist",
-        "username": "Leopoldo_Corkery",
-        "email": "Karley_Dach@jasper.info",
-        "website": "ola.org",
-      },
-      {
-        "id": 7,
-        "name": "Kurtis Weissnat",
-        "username": "Elwyn.Skiles",
-        "email": "Telly.Hoeger@billy.biz",
-        "website": "elvis.io",
-      },
-      {
-        "id": 8,
-        "name": "Nicholas Runolfsdottir V",
-        "username": "Maxime_Nienow",
-        "email": "Sherwood@rosamond.me",
-        "website": "jacynthe.com",
-      },
-      {
-        "id": 9,
-        "name": "Glenna Reichert",
-        "username": "Delphine",
-        "email": "Chaim_McDermott@dana.io",
-        "website": "conrad.com",
-      },
-      {
-        "id": 10,
-        "name": "Clementina DuBuque",
-        "username": "Moriah.Stanton",
-        "email": "Rey.Padberg@karina.biz",
-        "website": "ambrose.net",
-      }
-    ]
+    trWidth: "25%",
+    tableName: "barley"
   }),
+  watch:{
+  },
+  computed:{
+    th: function() {
+      return this.waitTable("th")
+    },
+    tr () {
+      return this.waitTable("tr")
+    }
+  },
+  created(){
+    //this.initData()
+    /*
+    dataHelper.getData("barley").then(response => {
+      this.th = response.data["th"]
+      this.tr = response.data["tr"]
+    });
+    */
+  },
+  mounted() {
+    let that = this
+    that.initTdStyle()
+  },
+  methods: {
+    initData(){
+      let that = this
+    },
+    initTdStyle(){
+      if(this.th.length == 0 || this.th.length == undefined) return;
+      this.trWidth = getPercent(1, this.th.length)
+
+      let td = document.getElementsByClassName("td vs-table--td")
+      for(let i=0; i < td.length; i++){
+        td[i].setAttribute("width", this.trWidth)
+      }
+      
+      let tr = document.getElementsByClassName("col-0 col")
+      for(let i=0; i < tr.length; i++){
+        tr[i].setAttribute("width", this.trWidth)
+      }
+
+      function getPercent(num ,total){
+        num = parseFloat(num)
+        total = parseFloat(total)
+        if (isNaN(num) || isNaN(total)) {
+          return "-";
+        }
+        return total <= 0 ? "0%" : (Math.round(num / total * 10000) / 100.00)+"%";
+      }
+    },
+    sleep(delay){
+      var start = (new Date()).getTime();
+        while ((new Date()).getTime() - start < delay) {
+          console.log(111)
+          continue;
+        }
+    },
+    waitTable(type){
+        this.sleep(700)
+        const tn = this.tableName
+        console.log(this.$store.state.filesData, tn, type)
+        return this.$store.state.filesData[tn][type]
+      }
+  }
 }
 </script>
+<style>
+</style>

@@ -169,8 +169,8 @@ dataProcess = {
                 })
                 funcStore.addRawDataToBuffer(rawdata, dataName);
                 funcStore.generateDimensions(columns, dataName);
-                funcStore.jsonAddId(rawdata);
-                funcStore.createIndex(rawdata, dataName);
+                //funcStore.jsonAddId(rawdata);
+                //funcStore.createIndex(rawdata, dataName);
                 funcStore.storeToDB(dataName)
                 console.log(dataName + "." + dataType + " successful loading~")
             })
@@ -189,8 +189,8 @@ dataProcess = {
                 let columns = Object.keys(flatten(rawdata[0]))
                 funcStore.addRawDataToBuffer(rawdata, dataName);
                 funcStore.generateDimensions(columns, dataName);
-                funcStore.jsonAddId(rawdata);
-                funcStore.createIndex(rawdata, dataName);
+                //funcStore.jsonAddId(rawdata);
+                //funcStore.createIndex(rawdata, dataName);
                 funcStore.storeToDB(dataName);
                 console.log(dataName + "." + dataType + " successful loading~")
             })
@@ -247,9 +247,15 @@ const dataBuffer = {
         return this.dimensions;
     },
     getSingleDimensions: function(dataName){
-        for(let i in this.dimensions){
-            if(i == dataName){
-                return this.dimensions[i]
+        console.log(this.dimensions)
+        const list = []
+        for(let i in dataBuffer.dimensions){
+            if(dataBuffer.dimensions[i]["name"] == dataName){
+                const temp = dataBuffer.dimensions[i]["dimensions"]
+                for(let j=0; j<temp.length; j++){
+                    list.push({"name": temp[j]["name"], "type:": temp[j]["type"], "sortkey": temp[j]["name"]})
+                }
+                return list
             }
         }
         return null
@@ -291,15 +297,6 @@ const dataBuffer = {
     },
     getDataLength: function(dataName){
         if(this.data.hasOwnProperty(dataName)) return parseInt(this.data[dataName].length)
-    },
-    getDataDimensions: function(dataName){
-        for(let i in this.dimensions){
-            if(this.dimensions[i]['name'] == dataName)
-                return this.dimensions[i]['dimensions']
-        }
-    },
-    getDataLength: function(dataName){
-        return this.data[dataName].length
     },
     getData: function(dataName){
         if(this.data.hasOwnProperty(dataName)) return this.data[dataName]

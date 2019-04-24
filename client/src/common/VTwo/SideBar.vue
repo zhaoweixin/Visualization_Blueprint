@@ -12,7 +12,7 @@
         User
     </vs-divider>
     
-    <vs-button type="flat" v-for = "item in listdata" class="vsbutt">{{item.name}}</vs-button>
+    <vs-button :key="index" type="flat" v-for = "(item, index) in listdata" class="vsbutt" v-on:click="updateDataTable(item.name)">{{item.name}}</vs-button>
     
     <vs-divider icon="palette" position="left">
         User
@@ -84,13 +84,10 @@ export default {
                     re.push(obj)
                 })
                 this.listdata = re
-                console.log(this.listdata)
-                //this.$store.commit('getFilesListData', {data: re})
             })
         },
-        test(t){
-            console.log(t)
-            return t
+        updateDataTable(tableName){
+            console.log(tableName)
         }
     },
     watch:{

@@ -14,8 +14,17 @@ export default class DataManager {
             }
         })
     }
+    static getData (dataName) {
+        let data = {
+            'dataName': dataName
+        }
+        return axios.post('http://localhost:3000/api/getData', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
     static initAllData () {
-        //this.$store.dispatch('getFilesListData') // init listdata
     }
 }
 

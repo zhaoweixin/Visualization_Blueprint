@@ -13,29 +13,22 @@
                     
                     <template slot="thead">
                         <template  v-for="(item, index) in state.nameKey">
-                        <vs-th :sort-key="item" width="350"> {{item}} </vs-th>
+                            <vs-th :sort-key="item" width="350"> {{item}} </vs-th>
                         </template>
                         <vs-th>操作</vs-th>
                     </template>
                             
                     <template slot-scope="{data}">
                         <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-                            
-                                <template v-for="(item) in state.nameKey">
-                                    <vs-td :data="data[indextr][item]" width = "350">{{data[indextr][item]}}
-                                        <template slot="edit">
-                                            <vs-input v-model="data[indextr][item]" class="inputx" placeholder="item"/>
-                                        </template>
-                                     </vs-td>
-                                     
-                                </template>
-                            
-                            
-                                
-                                    <vs-button color="warning" type="line"  :key="indextr" @click="delectit(tr.id)">delete</vs-button>
-                                    <!-- <vs-button color="primary" type="line"  :key="indextr" @click="fixit(tr.id)">fix</vs-button> -->
-                               
-                            
+                            <template v-for="(item) in state.nameKey">
+                                <vs-td :data="data[indextr][item]" width = "350">{{data[indextr][item]}}
+                                    <template slot="edit">
+                                        <vs-input v-model="data[indextr][item]" class="inputx" placeholder="item"/>
+                                    </template>
+                                </vs-td>
+                            </template>
+                            <vs-button color="warning" type="line"  :key="indextr" @click="delectit(tr.id)">delete</vs-button>
+                            <!-- <vs-button color="primary" type="line"  :key="indextr" @click="fixit(tr.id)">fix</vs-button> -->
                         </vs-tr>
                     </template>
                      

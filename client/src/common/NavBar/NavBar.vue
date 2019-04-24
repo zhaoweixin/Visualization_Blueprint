@@ -5,7 +5,6 @@
       <vs-navbar-title style="color:white">
         OpenVIS 
       </vs-navbar-title>
-
       <vs-spacer></vs-spacer>
 
       <vs-navbar-item index="0" style="color:white">

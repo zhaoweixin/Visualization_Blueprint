@@ -56,16 +56,23 @@ const store = new Vuex.Store({
     ],
     fileAttrList:[''],
     checkboxes:[],
-    tableData : null
+    tableData : null,
+    filesData: {}
   },
   mutations: {
-    getFilesListData (state, payload) {
+    getFilesList (state, payload) {
       state.filesListData = payload.data
+    },
+    getFilesData (state, payload){
+      if(!state.filesData[payload["title"]]){
+        state.filesData[payload["title"]] = payload["data"]
+      }
+      console.log(payload,state.filesData)
     },
     getFileAttrList (state, payload) {
       state.fileAttrList = payload.data
     },
-    updateListdata (state, payload) {
+    updateListdata (state, payload){
       console.log(payload)
     },
     addListdata (state, payload){
@@ -81,15 +88,16 @@ const store = new Vuex.Store({
     },
     changeTableData(state,tableData){
       state.tableData = tableData
-    }
+    }  
   },
   getters: {},
   actions: {
     changeTableData(ctx,tableData){
       ctx.commit('changeTableData',tableData)
     },
-    getFilesListData (context) {
+    getFilesList (context) {
       //获取文件数据列表
+      const that = this
       DataManager.getDataInfo().then(response => {
         let re = []
         response.data.forEach( (d, i) => {
@@ -98,7 +106,18 @@ const store = new Vuex.Store({
               obj[checkModel] = false
             re.push(obj)
         })
-        context.commit('getFilesListData', {data: re})
+        
+        context.commit('getFilesList', {data: re})
+        store.dispatch('getFilesData', {data: re})
+      })
+    },
+    getFilesData(context, payload){
+      payload.data.forEach(d => {
+        const title = d.title
+        DataManager.getData(title).then(response => {
+          const obj = {"title": title, "data": response.data}
+          context.commit('getFilesData', obj)
+        })
       })
     },
     getFileAttrList (context, payload) {
@@ -117,7 +136,7 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
-  mounted() {
-    this.$store.dispatch('getFilesListData') // init listdata
+  mounted(){
+    this.$store.dispatch('getFilesList') // init listdata
   }
 }).$mount('#app')

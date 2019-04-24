@@ -197,7 +197,6 @@ export default{
                 })
                 this.listdata = re
                 console.log(this.listdata)
-                this.$store.commit('getFilesListData', {data: re})
             })
         },
         datalistProcess(val, oldVal){
