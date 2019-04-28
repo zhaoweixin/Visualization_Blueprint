@@ -55,7 +55,7 @@ router.post('/getDataInfo', function(req, res, next){
     res.json(resdata)
 })
 
-//获取指定文件数据 
+//获取指定文件数据
 router.post('/getSingleData' ,function(req, res, next){
     // params :{dataName, preview, page }
     let params = req.body,
@@ -141,7 +141,7 @@ router.post('/test' ,function(req, res, next){
         dataName_2 = params.dataName_2,
         column = params.column,
         resData = []
-    console.log(fakeDataBaseProcess)
+    //console.log(fakeDataBaseProcess)
     resData = fakeDataBaseProcess.getColumnAttrUnrepeat(dataName_1, column)
     res.setHeader('Content-Type', 'application/json');
     res.json(resData)

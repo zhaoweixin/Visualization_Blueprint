@@ -188,6 +188,19 @@ export default{
         return ratio;
         },
         initData(){
+            const that = this;
+            (async function(){
+                const response = await DataManager.getDataInfo()
+                let re = []
+                response.data.forEach( (d, i) => {
+                    let obj = {'title': d.name}
+                    obj['checked'] = false
+                    re.push(obj)
+                })
+                that.listdata = [...that.listdata, ...re]
+            })()
+
+            /*
             DataManager.getDataInfo().then(response => {
                 let re = []
                 response.data.forEach( (d, i) => {
@@ -198,6 +211,7 @@ export default{
                 this.listdata = re
                 console.log(this.listdata)
             })
+            */
         },
         datalistProcess(val, oldVal){
             if(val.length > 2){
@@ -260,7 +274,7 @@ export default{
             }
         },
         addDataTabs(dataName){
-            let that = this
+            const that = this;
             if(this.dataTabs.count >= 2) return;
 
             let top = 50,
@@ -307,7 +321,19 @@ export default{
                 this.dataTabs.datalist.push(dataName)
             }
 
+            (async function(dataName){
+                const response = await DataManager.getFileAttrList(dataName)
+                const re = []
+                response.data.forEach((d, i) => {
+                    re.push({'text': d.name, 'value': d.name})
+                })
+                //new draggable data attr list
+                that.$set(that.state['attrList'], position, re)
+                //new draggable data title
+                that.$set(that.state['labels'], position, dataName)
+            })(dataName)
             
+            /*
             DataManager.getFileAttrList(dataName).then(function(response) {
                 let re = []
                 response.data.forEach((d, i) => {
@@ -319,6 +345,7 @@ export default{
                 //new draggable data title
                 that.$set(that.state['labels'], position, dataName)
             })
+            */
         },
         delDataTabs(dataName){
             if(this.dataTabs.count <= 0) return;

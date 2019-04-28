@@ -67,7 +67,7 @@ const store = new Vuex.Store({
       if(!state.filesData[payload["title"]]){
         state.filesData[payload["title"]] = payload["data"]
       }
-      console.log(payload,state.filesData)
+      //console.log(payload,state.filesData)
     },
     getFileAttrList (state, payload) {
       state.fileAttrList = payload.data
@@ -97,7 +97,21 @@ const store = new Vuex.Store({
     },
     getFilesList (context) {
       //获取文件数据列表
-      const that = this
+      const that = this;
+      (async function(){
+        let re = []
+        response.data.forEach( (d, i) => {
+            let checkModel = d + '_' + i
+            let obj = {'title': d.name}
+              obj[checkModel] = false
+            re.push(obj)
+        })
+        //console.log(re)
+        context.commit('getFilesList', {data: re})
+        store.dispatch('getFilesData', {data: re})
+      })()
+      
+      /*
       DataManager.getDataInfo().then(response => {
         let re = []
         response.data.forEach( (d, i) => {
@@ -106,10 +120,11 @@ const store = new Vuex.Store({
               obj[checkModel] = false
             re.push(obj)
         })
-        
+        //console.log(re)
         context.commit('getFilesList', {data: re})
         store.dispatch('getFilesData', {data: re})
       })
+      */
     },
     getFilesData(context, payload){
       payload.data.forEach(d => {

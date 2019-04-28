@@ -13,7 +13,7 @@
 
       <template slot-scope="{data}">
         <vs-tr :key="indextr" v-for="(tr_item, indextr) in tr">
-            <vs-td :data="tr_item[item['sortkey']]" v-for="(item) in th">{{tr_item[item['sortkey']]}}</vs-td>
+            <vs-td :key="indexth" :data="tr_item[item['sortkey']]" v-for="(item, indexth) in th">{{tr_item[item['sortkey']]}}</vs-td>
         </vs-tr>
       </template>
 

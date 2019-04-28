@@ -247,7 +247,7 @@ const dataBuffer = {
         return this.dimensions;
     },
     getSingleDimensions: function(dataName){
-        console.log(this.dimensions)
+        //console.log(this.dimensions)
         const list = []
         for(let i in dataBuffer.dimensions){
             if(dataBuffer.dimensions[i]["name"] == dataName){
