@@ -57,7 +57,8 @@ const store = new Vuex.Store({
     fileAttrList:[''],
     checkboxes:[],
     tableData : null,
-    filesData: {}
+    filesData: {},
+    currentTable: "barley"
   },
   mutations: {
     getFilesList (state, payload) {
@@ -67,13 +68,6 @@ const store = new Vuex.Store({
       if(!state.filesData[payload["title"]]){
         state.filesData[payload["title"]] = payload["data"]
       }
-      //console.log(payload,state.filesData)
-    },
-    getFileAttrList (state, payload) {
-      state.fileAttrList = payload.data
-    },
-    updateListdata (state, payload){
-      console.log(payload)
     },
     addListdata (state, payload){
       state.checkboxes.push(payload)
@@ -88,9 +82,18 @@ const store = new Vuex.Store({
     },
     changeTableData(state,tableData){
       state.tableData = tableData
-    }  
+    },
+    updateTable(state, payload){
+      state.currentTable = payload
+    }
   },
-  getters: {},
+  getters: {
+    getFileData: (state, getters) => (dataName) => {
+      console.log(1111, dataName, store.state.filesData.hasOwnProperty(dataName))
+      //store.state.filesData.hasOwnProperty("")
+      return store.state.filesData.hasOwnProperty(dataName) ? store.state.filesData["dataName"] : []
+    }
+  },
   actions: {
     changeTableData(ctx,tableData){
       ctx.commit('changeTableData',tableData)
@@ -99,46 +102,32 @@ const store = new Vuex.Store({
       //获取文件数据列表
       const that = this;
       (async function(){
-        let re = []
-        response.data.forEach( (d, i) => {
+        const re = [];
+        const response = await DataManager.getDataInfo()
+        response.data.forEach((d, i) => {
             let checkModel = d + '_' + i
             let obj = {'title': d.name}
               obj[checkModel] = false
             re.push(obj)
-        })
-        //console.log(re)
-        context.commit('getFilesList', {data: re})
-        store.dispatch('getFilesData', {data: re})
-      })()
-      
-      /*
-      DataManager.getDataInfo().then(response => {
-        let re = []
-        response.data.forEach( (d, i) => {
-            let checkModel = d + '_' + i
-            let obj = {'title': d.name}
-              obj[checkModel] = false
-            re.push(obj)
-        })
-        //console.log(re)
-        context.commit('getFilesList', {data: re})
-        store.dispatch('getFilesData', {data: re})
-      })
-      */
+        });
+        context.commit('getFilesList', {data: re});
+        store.dispatch('getFilesData', {data: re});
+      })();
     },
     getFilesData(context, payload){
+      const req = async function(title){
+        const response = await DataManager.getData(title)
+        const obj = {"title": title, "data": response.data}
+        context.commit('getFilesData', obj)
+      }
+
       payload.data.forEach(d => {
         const title = d.title
+        req(title)
         DataManager.getData(title).then(response => {
           const obj = {"title": title, "data": response.data}
           context.commit('getFilesData', obj)
         })
-      })
-    },
-    getFileAttrList (context, payload) {
-      //获取数据文件属性
-      DataManager.getFileAttrList(payload.dataName).then(response => {
-        console.log(response.data)
       })
     }
   },

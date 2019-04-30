@@ -87,36 +87,9 @@ export default {
                 })
                 that.listdata = [...that.listdata, ...re]
             })()
-            /*
-            const req = async function() {
-                const response = await DataManager.getDataInfo()
-                let re = []
-                response.data.forEach( (d, i) => {
-                    let obj = {'name': d.name}
-                    obj["checked"] = false
-                    obj["ind"] = i + 1
-                    re.push(obj)
-                })
-                that.listdata = [...that.listdata, ...re]
-            }
-            req()
-           
-            
-            DataManager.getDataInfo().then(response => {
-                let re = []
-                response.data.forEach( (d, i) => {
-                    let obj = {'name': d.name}
-                    obj["checked"] = false
-                    obj["ind"] = i + 1
-                    re.push(obj)
-                })
-                this.listdata = re
-            })
-             */
-            
         },
         updateDataTable(tableName){
-            console.log(tableName)
+            this.$store.commit("updateTable", tableName)
         }
     },
     watch:{

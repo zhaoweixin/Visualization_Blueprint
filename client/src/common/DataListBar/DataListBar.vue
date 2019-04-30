@@ -332,20 +332,6 @@ export default{
                 //new draggable data title
                 that.$set(that.state['labels'], position, dataName)
             })(dataName)
-            
-            /*
-            DataManager.getFileAttrList(dataName).then(function(response) {
-                let re = []
-                response.data.forEach((d, i) => {
-                    re.push({'text': d.name, 'value': d.name})
-                })
-
-                //new draggable data attr list
-                that.$set(that.state['attrList'], position, re)
-                //new draggable data title
-                that.$set(that.state['labels'], position, dataName)
-            })
-            */
         },
         delDataTabs(dataName){
             if(this.dataTabs.count <= 0) return;
