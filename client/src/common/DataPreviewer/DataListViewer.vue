@@ -8,7 +8,7 @@
             <vs-row vs-w="12" vs-h="12">
                 <vs-table search :data="state.listdata" style="width:100% height:100%" max-items="10"  stripe pagination>
                     <template slot="header">
-                        <h2> Users </h2>                    
+                        <h2> Users </h2>
                     </template>
                     
                     <template slot="thead">

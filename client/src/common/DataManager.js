@@ -24,6 +24,13 @@ export default class DataManager {
             }
         })
     }
+    static joinFunc (data) {
+        return axios.post('http://localhost:3000/api/joinFunc', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
     static initAllData () {
     }
 }

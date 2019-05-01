@@ -7,13 +7,11 @@ export default class connector_modules {
        }
        else if(type == 'right'){
 
-
        }
        else if(type == 'outer'){
 
        }
        else if(type == 'inner'){
-
 
        }
         

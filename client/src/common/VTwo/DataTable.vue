@@ -1,26 +1,43 @@
 <template lang="html">
   <div v-if="hasTable">
-    <el-table :data="tr" style="width: 100%">
-      <el-table-column prop="item.name" label="item.name" sortable v-for="(item, indexth) in th"></el-table-column>
-    </el-table>
-    <!--<vs-table v-model="selected" pagination max-items="10" search :data="tr">
-    <vs-table max-items="10" pagination search :data="tr">
-      <template slot="header">
-        <h3>
+    <!--tabletitle-->
+    <template>
+        <h1 style="padding-left: 50%; padding-bottom:1%">
           {{tableName}}
-        </h3>
-      </template>
-      <template slot="thead">
-        <vs-th :key="indexth" sort-key="item.sortkey" v-for="(item, indexth) in th">{{item.name}}</vs-th>
-      </template>
+        </h1>
+    </template>
+    <!--endtabletitle-->
 
-      <template slot-scope="{data}">
-        <vs-tr :key="indextr" v-for="(tr_item, indextr) in data">
-            <vs-td :key="Math.random()*100 + indexth" :data="tr_item[item['sortkey']]" v-for="(item, indexth) in th">{{tr_item[item['sortkey']]}}</vs-td>
-        </vs-tr>
+     <!--table-->
+    <el-table :data="tr.slice((currentPage-1) * pagesize, currentPage*pagesize)"  
+      show-overflow-tooltip="true" 
+      align="center" 
+      border>
+      <template v-for="(col, indexth) in th">
+        <el-table-column
+          :prop="col.name"
+          :label="col.name"
+          sortable
+          align="center"
+          >
+        </el-table-column>
       </template>
-    </vs-table>
-    -->
+    </el-table>
+    <template>
+      <div style="text-align: center;margin-top: 30px;">
+      <el-pagination 
+        background
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+        :current-page="currentPage"
+        :page-sizes="[10, 20]"
+        :page-size= "pagesize"
+        layout="total, prev, pager, next, jumper"
+        :total="tr.length">
+      </el-pagination>
+      </div>
+    </template>
+     <!--endtable-->
   </div>
 </template>
 
@@ -29,14 +46,15 @@ import dataManager from "../DataManager.js"
 export default {
   data:()=>({
     trWidth: "25%",
-    tableData:{},
     hasTable: false,
     th:[],
-    tr:[]
+    tr:[],
+    tableData:{},
+    currentPage: 1,
+    pagesize: 10
   }),
   watch:{
     tableName: function(val, oldVal){
-      console.log("update datatable to", val)
       this.initTable()
     }
   },
@@ -50,43 +68,23 @@ export default {
   },
   mounted() {
     let that = this
-    //that.initTdStyle()
   },
   methods: {
-    initTdStyle(){
-      const that = this
-      this.trWidth = getPercent(1, that.th.length)
-      const td = document.getElementsByClassName("td vs-table--td")
-      for(let i=0; i < td.length; i++){
-        td[i].setAttribute("width", this.trWidth)
-      }
-      const tr = document.getElementsByClassName("col-0 col")
-      for(let i=0; i < tr.length; i++){
-        tr[i].setAttribute("width", this.trWidth)
-      }
-      function getPercent(num ,total){
-        num = parseFloat(num)
-        total = parseFloat(total)
-        if (isNaN(num) || isNaN(total)) {
-          return "-";
-        }
-        return total <= 0 ? "0%" : (Math.round(num / total * 10000) / 100.00) + "%";
-      }
-    },
     initTable(){
       const that = this
       const req = async function(){
         const response = await dataManager.getData(that.tableName)
         that.th = response.data.th
-        console.log(that.th)
         that.tr = response.data.tr
-        console.log(that.tr)
         that.hasTable = true
-        setTimeout(function(){
-          that.initTdStyle()
-        }, 300)
       }
       req()
+    },
+    handleSizeChange: function (size) {
+        this.pagesize = size;
+    },
+    handleCurrentChange: function(currentPage){
+        this.currentPage = currentPage;
     }
   }
 }

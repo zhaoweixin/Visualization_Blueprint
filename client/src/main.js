@@ -10,6 +10,7 @@ import VueRouter from 'vue-router'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
+import 'element-ui/lib/theme-chalk/index.css';
 import 'material-icons/iconfont/material-icons.css';
 //import store from './store'
 

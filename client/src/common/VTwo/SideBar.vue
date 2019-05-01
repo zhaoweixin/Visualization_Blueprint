@@ -5,9 +5,8 @@
     <vs-sidebar static-position default-index="1" color="primary" class="sidebarx" spacer v-model="active">
 
     <div class="header-sidebar" slot="header">
-        <vs-upload action="http://localhost:3000/api/changeavatar" @on-success="" class="dark"/>
+        <vs-upload action="http://localhost:3000/api/changeavatar" @on-success="uploaded" class="dark"/>
     </div>
-
     <vs-divider icon="format_list_numbered" position="left" >
         User
     </vs-divider>
@@ -18,30 +17,36 @@
         User
     </vs-divider>
 
-    <vs-select
-      class="selectExample"
-      label="Join function"
-      v-model="select1"
-    >
-    <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="item,index in options1" />
+
+    <el-select v-model="joinSelect" clearable placeholder="Join function">
+    <el-option
+      v-for="(item, index) in joinOpt"
+      :key="item.index"
+      :label="item.text"
+      :value="item.text">
+    </el-option>
+    </el-select>
 
     </vs-select>
-    <vs-select
-      placeholder=" "
-      max-selected="2"
-      multiple
-      autocomplete
-      class="selectExample"
-      label="DataList"
-      v-model="select2"
-    >
-    <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in options2" />
-    </vs-select>
+
+    <el-select v-model="attrSelect" placeholder="selection" multiple collapse-tags>
+    <el-option-group
+      v-for="group in attrdata"
+      :key="group.label"
+      :label="group.label">
+      <el-option
+        v-for="item in group.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-option-group>
+    </el-select>
 
     <vs-divider icon="cached" position="left">
         User
     </vs-divider>
-    <vs-button color="success" type="flat" icon="done" class="vsbutt">Generation</vs-button>
+    <vs-button color="success" type="flat" icon="done" class="vsbutt" v-on:click="joinFunc()">Generation</vs-button>
     
     </vs-sidebar>
   </div>
@@ -53,24 +58,18 @@ import DataManager from "../DataManager"
 export default {
   data:()=>({
     active:false,
-    select1:0,
-    select2:[],
-    options1:[
-        {text:' ',value:0},
-        {text:'Left Join',value:1},
-        {text:'Right Join',value:2},
-        {text:'Inner Join',value:3},
-        {text:'Outer Join',value:4}
+    joinSelect:'',
+    attrSelect:[],
+    joinOpt:[
+        {text:'Left Join',value:"Left Join"},
+        {text:'Right Join',value:"Right Join"},
+        {text:'Inner Join',value:"Inner Join"},
+        {text:'Outer Join',value:"Outer Join"}
     ],
-    options2:[{text: 'Square', value: 1},
-        {text: 'Rectangle', value: 2},
-        {text: 'Rombo', value: 3},
-        {text: 'Romboid', value: 4},
-        {text: 'Trapeze', value: 5}
-    ],
-    listdata:[]
+    listdata:[],
+    attrdata:[]
   }),
-    created: function() { 
+    created: function() {
         this.initData()
     },
     methods:{
@@ -78,26 +77,83 @@ export default {
             const that = this;
             (async function(){
                 const response = await DataManager.getDataInfo()
-                let re = []
-                response.data.forEach( (d, i) => {
-                    let obj = {'name': d.name}
-                    obj["checked"] = false
-                    obj["ind"] = i + 1
+                const re = []
+                const re1 = []
+                response.data.forEach((d, i) => {
+                    //construct listdata
+                    const obj = {'name': d.name}
                     re.push(obj)
+                    //construct attrdata
+                    const obj1 = {"label": d.name, "options":[]}
+                    const dimension = d.dimensions
+                    dimension.forEach((v) => {
+                        const val = d.name + "-" + v.name
+                        obj1.options.push({"value": val, "label": v.name})
+                    })
+                    re1.push(obj1)
                 })
+
                 that.listdata = [...that.listdata, ...re]
+                that.attrdata = [...that.attrdata, ...re1]
+                console.log(that.listdata)
             })()
         },
         updateDataTable(tableName){
             this.$store.commit("updateTable", tableName)
-        }
+        },
+        uploaded(res){
+            const content = JSON.parse(res.currentTarget.response)
+            const obj = [{
+                "name": content["name"]
+            }]
+            this.listdata = [...this.listdata, ...obj]
+        },
+        joinFunc(){
+            //fault tolerant
+            if(!this.joinSelect){
+                this.notifications({"title":"Notice", "text": "Please choose a data update method", "color": 'danger'})
+                return;
+            }
+            if(this.attrSelect.length < 2){
+                //notification
+                this.notifications({"title":"Notice", "text": "Please select two attributes for data operation", "color": 'danger'})
+                return;
+            }
+            const dataName_1 = this.attrSelect[0].split("-")[0]
+            const dataName_2 = this.attrSelect[1].split("-")[0]
+            const dataAttr_1 = this.attrSelect[0].split("-")[1]
+            const dataAttr_2 = this.attrSelect[1].split("-")[1]
+            
+            if(dataName_1 == dataName_2){
+                //same datatable
+                this.notifications({"title":"Notice", "text": "Please select two different data tables", "color": 'danger'})
+                return;
+            }
+            const send = {
+                "dataName_1": dataName_1,
+                "dataName_2": dataName_2,
+                "column_1": dataAttr_1,
+                "column_2": dataAttr_2,
+                "joinWay": this.joinSelect
+            }
+            /*
+            (async function(send){
+                const response = await DataManager.joinFunc(send)
+                
+            })(send)
+            */
+            console.log(this.joinSelect, this.attrSelect, send)
+        },
+        notifications(message){
+            this.$vs.notify({
+            title:message.title,
+            text:message.text,
+            color:message.color,
+            position:'bottom-right'
+        })
+    }
     },
     watch:{
-        select1:{
-            handler: function(val, oldVal){
-                console.log(val, oldVal)
-            }
-        }
     }
     
 
@@ -110,6 +166,9 @@ export default {
   height 1080px
   position relative
 
+.el-select-dropdown
+    z-index 99999 !important
+
 .vs-sidebar--background
     background rgba(0,0,0,0) !important
     z-index 0
@@ -119,13 +178,6 @@ export default {
 
 .vs-select--options
     z-index 100000 !important
-
-.con-select
-    padding-left 25% !important
-
-.vs-select--label
-    padding-left 10% !important 
-    font-size 1rem !important 
 
 .vsbutt
     width 100% !important
@@ -152,4 +204,9 @@ export default {
       border 0px solid rgba(0,0,0,0) !important
       border-left 1px solid rgba(0,0,0,.07) !important
       border-radius 0px !important
+
+.el-select {
+    padding-left: 20% !important 
+    width: 85% !important
+}
 </style>

@@ -1,5 +1,5 @@
 const fs = require('fs')
-const staticBasePath = "../upload/"
+const staticBasePath = "../../upload/"
 const path = require('path');
 const d3 = require('d3')
 const csvToJson = require('convert-csv-to-json');
@@ -371,11 +371,12 @@ const fakeDataBaseProcess = {
         let data_1_list = dataBuffer.getColoumnsList(dataName_1),
             data_2_list = dataBuffer.getColoumnsList(dataName_2),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
             redata = []
-        
+
         data_1_list.forEach(function(d){
             if(data_2_list.indexOf(d) != -1)
                 redata.push(d)
         })
+        
         return redata
     },
     constructToJoinData: function(dataName, column){
