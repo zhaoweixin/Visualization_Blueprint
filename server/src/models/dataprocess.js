@@ -1,5 +1,5 @@
 const fs = require('fs')
-const staticBasePath = "../../upload/"
+const staticBasePath = "../../src/upload/"
 const path = require('path');
 const d3 = require('d3')
 const csvToJson = require('convert-csv-to-json');
@@ -159,7 +159,7 @@ dataProcess = {
                 if (firstCode < 0x20 || firstCode > 0x7f){
                     data = data.substring(1)
                 }
-
+                
                 let json = dsv.parse(data)
                 let rawdata = []
                 let columns = json.columns
@@ -194,15 +194,28 @@ dataProcess = {
                 funcStore.storeToDB(dataName);
                 console.log(dataName + "." + dataType + " successful loading~")
             })
+        } else if(dataType == "join"){
+            let data = arguments[0]["data"],
+                dataName = arguments[0]["name"],
+                columns = []
+            if(data.length != 0){
+                columns = Object.keys(data[0])
+            }
+            funcStore.addRawDataToBuffer(data, dataName);
+            funcStore.generateDimensions(columns, dataName);
+            //funcStore.jsonAddId(rawdata);
+            //funcStore.createIndex(rawdata, dataName);
+            //funcStore.storeToDB(dataName)
+            console.log(dataName + "." + dataType + " successful loading~")
         }
     },
     innerJoin: function(dataName_1, dataName_2, column_1, column_2){
         return fakeDataBaseProcess._inner(dataName_1, dataName_2, column_1, column_2)
     },
     outerJoin: function(dataName_1, dataName_2, column){
-        let innerData = fakeDataBaseProcess._inner(dataName_1, dataName_2, column_1, column_2),
-            leftData = fakeDataBaseProcess._part(dataName_1, dataName_2, column_1, column_2),
-            rightData = fakeDataBaseProcess._part(dataName_2, dataName_1, column_1, column_2)
+        let innerData = fakeDataBaseProcess._inner(dataName_1, dataName_2, column_1, column_2)
+        let leftData = fakeDataBaseProcess._part(dataName_1, dataName_2, column_1, column_2)
+        let rightData = fakeDataBaseProcess._part(dataName_2, dataName_1, column_2, column_1)
         return innerData.concat(leftData.concat(rightData))
     },
     leftJoin: function(dataName_1, dataName_2, column_1, column_2){
@@ -212,7 +225,8 @@ dataProcess = {
     },
     rightJoin: function(dataName_1, dataName_2, column_1, column_2){
         let innerData = fakeDataBaseProcess._inner(dataName_1, dataName_2, column_1, column_2),
-            rightData = fakeDataBaseProcess._part(dataName_2, dataName_1, column_1, column_2)
+            rightData = fakeDataBaseProcess._part(dataName_2, dataName_1, column_2, column_1)
+            //console.log(innerData, "~~~~~", rightData)
         return innerData.concat(rightData)
     },
     deleteData: function(StoreId, filename){
@@ -337,7 +351,6 @@ const fakeDataBaseProcess = {
                 resList.push(obj)
             }
         })
-        
         return resList
         //根据sameKey生成合成数据
     },
@@ -348,7 +361,6 @@ const fakeDataBaseProcess = {
             redata_1 = this.constructToJoinData(dataName_1, column_1),
             redata = [],
             redata_2_dataNamelist = this.getDataNameColoumnsList(dataName_2, column_1)
-        
         let addObj = {}
         //填充null
         redata_2_dataNamelist.forEach(function(d){
@@ -387,14 +399,14 @@ const fakeDataBaseProcess = {
         let data = dataBuffer.getSingleData(dataName),
             redata = {},
             tempdata = [],
-            col = dataName + '.' + column
+            col = dataName + '_' + column
         //改变键值 'key' -> 'dataName.key'
         data.forEach(function(d,i){
             let objectKeys = Object.keys(d),
                 obj = {}
             for(let j=0; j<objectKeys.length; j++){
                 let key = objectKeys[j],
-                    addKey = dataName + '.' + objectKeys[j]
+                    addKey = dataName + '_' + objectKeys[j]
                 if(!obj.hasOwnProperty(addKey) && key != 'StoreId' && key != 'isDelete'){
                     obj[addKey] = d[key]
                 }
@@ -465,7 +477,7 @@ const fakeDataBaseProcess = {
     },
     getDataNameColoumnsList: function(dataName){
         //构造 dataName + key 属性返回
-        return dataBuffer.getColoumnsList(dataName).map(x => dataName + '.' + x)
+        return dataBuffer.getColoumnsList(dataName).map(x => dataName + '_' + x)
     }
 }
 

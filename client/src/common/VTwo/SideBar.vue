@@ -7,11 +7,12 @@
     <div class="header-sidebar" slot="header">
         <vs-upload action="http://localhost:3000/api/changeavatar" @on-success="uploaded" class="dark"/>
     </div>
+
     <vs-divider icon="format_list_numbered" position="left" >
         User
     </vs-divider>
     
-    <vs-button :key="index" type="flat" v-for = "(item, index) in listdata" class="vsbutt" v-on:click="updateDataTable(item.name)">{{item.name}}</vs-button>
+    <vs-button v-bind:key="index" type="flat" v-for= "(item, index) in listdata" class="vsbutt" v-on:click="updateDataTable(item.name)">{{item.name}}</vs-button>
     
     <vs-divider icon="palette" position="left">
         User
@@ -22,8 +23,8 @@
     <el-option
       v-for="(item, index) in joinOpt"
       :key="item.index"
-      :label="item.text"
-      :value="item.text">
+      :label="item.label"
+      :value="item.value">
     </el-option>
     </el-select>
 
@@ -61,10 +62,10 @@ export default {
     joinSelect:'',
     attrSelect:[],
     joinOpt:[
-        {text:'Left Join',value:"Left Join"},
-        {text:'Right Join',value:"Right Join"},
-        {text:'Inner Join',value:"Inner Join"},
-        {text:'Outer Join',value:"Outer Join"}
+        {label:'Left Join',value:"Left"},
+        {label:'Right Join',value:"Right"},
+        {label:'Inner Join',value:"Inner"},
+        {label:'Outer Join',value:"Outer"}
     ],
     listdata:[],
     attrdata:[]
@@ -99,6 +100,7 @@ export default {
             })()
         },
         updateDataTable(tableName){
+            console.log(tableName)
             this.$store.commit("updateTable", tableName)
         },
         uploaded(res){
@@ -109,6 +111,7 @@ export default {
             this.listdata = [...this.listdata, ...obj]
         },
         joinFunc(){
+            const that = this
             //fault tolerant
             if(!this.joinSelect){
                 this.notifications({"title":"Notice", "text": "Please choose a data update method", "color": 'danger'})
@@ -136,13 +139,14 @@ export default {
                 "column_2": dataAttr_2,
                 "joinWay": this.joinSelect
             }
-            /*
-            (async function(send){
+            const req = async function(send){
                 const response = await DataManager.joinFunc(send)
-                
-            })(send)
-            */
-            console.log(this.joinSelect, this.attrSelect, send)
+                const obj = [{
+                    "name": response.data
+                }]
+                that.listdata = [...that.listdata, ...obj]
+            }
+            req(send)
         },
         notifications(message){
             this.$vs.notify({

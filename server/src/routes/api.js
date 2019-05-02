@@ -101,23 +101,26 @@ router.post('/joinFunc' ,function(req, res, next){
         column_1 = params.column_1,
         column_2 = params.column_2,
         joinWay = params.joinWay,
-        resData = null
+        resData = {"data": "", "name": ""}
+        resName = ""
         switch(joinWay){
-            case "Left Join":
-                resData = dataProcess.leftJoin(dataName_1, dataName_2, column_1, column_2)
+            case "Left":
+                resData["data"] = dataProcess.leftJoin(dataName_1, dataName_2, column_1, column_2)
                 break;
-            case "Right Join":
-                resData = dataProcess.rightJoin(dataName_1, dataName_2, column_1, column_2)
+            case "Right":
+                resData["data"] = dataProcess.rightJoin(dataName_1, dataName_2, column_1, column_2)
                 break;
-            case "Inner Join":
-                resData = dataProcess.innerJoin(dataName_1, dataName_2, column_1, column_2)
+            case "Inner":
+                resData["data"] = dataProcess.innerJoin(dataName_1, dataName_2, column_1, column_2)
                 break;
-            case "Outer Join":
-                resData = dataProcess.outerJoin(dataName_1, dataName_2, column_1, column_2)
+            case "Outer":
+                resData["data"] = dataProcess.outerJoin(dataName_1, dataName_2, column_1, column_2)
                 break;
         }
+    resData["name"] = column_1 + "_" + column_2 + "_" + joinWay
+    dataProcess.storeData(resData, "join")
     res.setHeader('Content-Type', 'application/json');
-    res.json(resData)
+    res.json(resData.name)
 })
 
 
@@ -135,10 +138,13 @@ router.post('/getData' ,function(req, res, next){
     res.json(resData)
 })
 
-router.get("/testdata", function(req, res, next){
+router.post("/testdata", function(req, res, next){
+    console.log("testdata")
+    let dataName = req.body.dataName
+    console.log(dataName)
     res.setHeader("Content-Type", "application/json");
     //console.log(dataProcess.getDataFromDB())
-    res.json(dataProcess.getDataFromDB())
+    res.json(dataBuffer.data[dataName])
 })
 
     //暂时使用默认存入数据功能
@@ -173,7 +179,7 @@ const dataPrepare = function(isUseDB){
     }
 }
 
-dataPrepare(0) //switch prepare data function 0 DB 1 local
+dataPrepare(1) //switch prepare data function 0 DB 1 local
 //storeDefaultData();
 
 module.exports = router;

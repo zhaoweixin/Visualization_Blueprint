@@ -74,10 +74,12 @@ export default {
       const that = this
       const req = async function(){
         const response = await dataManager.getData(that.tableName)
+        console.log(response)
         that.th = response.data.th
         that.tr = response.data.tr
         that.hasTable = true
       }
+      console.log("upload to ", this.tableName)
       req()
     },
     handleSizeChange: function (size) {
