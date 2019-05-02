@@ -147,6 +147,12 @@ router.post("/testdata", function(req, res, next){
     res.json(dataBuffer.data[dataName])
 })
 
+router.post("/testdrawdata", function(req, res, next){
+    res.setHeader("Content-Type", "application/json");
+    //console.log(dataProcess.getDataFromDB())
+    res.json(dataBuffer.drawData)
+})
+
     //暂时使用默认存入数据功能
 const storeDefaultData = function(){
     fs.readdir(process.cwd() + "/src/upload", function(err, files){
@@ -179,7 +185,7 @@ const dataPrepare = function(isUseDB){
     }
 }
 
-dataPrepare(1) //switch prepare data function 0 DB 1 local
+dataPrepare(0) //switch prepare data function 0 DB 1 local
 //storeDefaultData();
 
 module.exports = router;

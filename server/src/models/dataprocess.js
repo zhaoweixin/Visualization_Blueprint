@@ -8,6 +8,8 @@ const keys = require('all-object-keys');
 const dsv = d3.dsvFormat(",")
 const db = require("./db.js")
 const mongoose = require("mongoose")
+const ss = require("simple-statistics")
+const cav = require("count-array-values")
 //命名空间 首先检查dataprocess是否已经被定义 
 //如果是的话，那么使用现有的dataprocess全局对象
 //否则，创建一个名为dataprocess的空对象用来封装方法，函数，变量和对象。
@@ -144,6 +146,43 @@ const funcStore = {
                 console.log(dataName, "update success")
             }
         })
+    },
+    calDimensionPreview(rawdata, dataName){
+        let dimension = JSON.parse(JSON.stringify(dataBuffer.getSingleDimensions(dataName)))
+        let regression = function(data){
+            let linearData = []
+            data.forEach((d,i) => {
+                linearData.push([+d,i])
+            })
+            let l = ss.linearRegressionLine(ss.linearRegression(linearData))
+            linearData.forEach((d,i) => {
+                d.push(l(i))
+            })
+            return linearData
+        }
+        dimension.forEach(function(d,i){
+            d["data"] = []
+            rawdata.forEach(function(v,j){
+                d["data"].push(v[d["name"]])
+            })
+            if(d["type"] == "quantitative"){
+                //circle chart with regression line
+                d["value"] = regression(JSON.parse(JSON.stringify(d["data"])))
+            }else if(d["type"] == "ordinal"){
+                //barchart
+                d["value"] = cav(d["data"])
+            }else if(d["type"] == "temporal"){
+                //barchart
+                d["value"] = cav(d["data"])
+            }
+        })
+        dimension.forEach((d,i) => {
+            delete d.data
+        })
+        if(!dataBuffer.drawData.hasOwnProperty(dataName)){
+            dataBuffer.drawData[dataName] = JSON.parse(JSON.stringify(dimension))
+            console.log(dataName, " calculate preview success")
+        }
     }
 }
 
@@ -169,6 +208,7 @@ dataProcess = {
                 })
                 funcStore.addRawDataToBuffer(rawdata, dataName);
                 funcStore.generateDimensions(columns, dataName);
+                funcStore.calDimensionPreview(rawdata, dataName);
                 //funcStore.jsonAddId(rawdata);
                 //funcStore.createIndex(rawdata, dataName);
                 funcStore.storeToDB(dataName)
@@ -189,6 +229,7 @@ dataProcess = {
                 let columns = Object.keys(flatten(rawdata[0]))
                 funcStore.addRawDataToBuffer(rawdata, dataName);
                 funcStore.generateDimensions(columns, dataName);
+                funcStore.calDimensionPreview(rawdata, dataName);
                 //funcStore.jsonAddId(rawdata);
                 //funcStore.createIndex(rawdata, dataName);
                 funcStore.storeToDB(dataName);
@@ -257,6 +298,7 @@ const dataBuffer = {
     data: {},
     index: {},
     dimensions: [],
+    drawData: {},
     getAllDimensions: function(){
         return this.dimensions;
     },
@@ -267,7 +309,7 @@ const dataBuffer = {
             if(dataBuffer.dimensions[i]["name"] == dataName){
                 const temp = dataBuffer.dimensions[i]["dimensions"]
                 for(let j=0; j<temp.length; j++){
-                    list.push({"name": temp[j]["name"], "type:": temp[j]["type"], "sortkey": temp[j]["name"]})
+                    list.push({"name": temp[j]["name"], "type": temp[j]["type"], "sortkey": temp[j]["name"]})
                 }
                 return list
             }
@@ -493,6 +535,7 @@ const dataInitFDB = {
                         data = JSON.parse(docs[key]["data"])
                     funcStore.addRawDataToBuffer(data, name);
                     funcStore.generateDimensions(Object.keys(data[0]), name);
+                    funcStore.calDimensionPreview(data, name);
                     funcStore.createIndex(data, name);
                     console.log(name, "loading from DB success~")
                 }
