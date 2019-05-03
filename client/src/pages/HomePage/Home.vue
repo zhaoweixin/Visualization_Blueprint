@@ -4,14 +4,15 @@
         <NavBar></NavBar>
         <!-- <vs-row > -->
             
-            <vs-col vs-w="1.5" vs-h="12">
+            <vs-col vs-w="1.5" vs-h="12" style="box-shadow: 1px 1px 20px rgba(0,0,0, 0.1)">
                 <SideBar></SideBar>
                 <!--
                 <data-list-bar/>
                 <data-previewer/>-->
             </vs-col>
-            <vs-col vs-w="10" vs-h="12" style="margin: 0.5%">
+            <vs-col vs-w="10" vs-h="12" style="margin-left:1.5%;">
                 <DataTable></DataTable>
+                <DataPreview></DataPreview>
                 <!--
                 <data-preview-table/>
                 <data-list-viewer /> 
@@ -30,6 +31,7 @@ import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
 import NavBar from "../../common/NavBar/NavBar"
 import SideBar from "../../common/Vtwo/SideBar"
 import DataTable from "../../common/Vtwo/DataTable"
+import DataPreview from "../../common/Vtwo/DataPreview"
 
 export default{
     name: 'homepage',
@@ -40,7 +42,8 @@ export default{
         DataPreviewTable,
         NavBar,
         SideBar,
-        DataTable
+        DataTable,
+        DataPreview
     }
 }
 </script>

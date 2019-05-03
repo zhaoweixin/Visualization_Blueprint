@@ -125,7 +125,6 @@ router.post('/joinFunc' ,function(req, res, next){
 
 
 router.post('/getData' ,function(req, res, next){
-
     let dataName = req.body.dataName
     let values = dataBuffer.getData(dataName)
     let dimensions = dataBuffer.getSingleDimensions(dataName)
@@ -138,19 +137,45 @@ router.post('/getData' ,function(req, res, next){
     res.json(resData)
 })
 
+router.post("/testdrawdata", function(req, res, next){
+    res.setHeader("Content-Type", "application/json");
+    //console.log(dataProcess.getDataFromDB())
+    res.json(dataBuffer.drawData)
+})
+
 router.post("/testdata", function(req, res, next){
-    console.log("testdata")
     let dataName = req.body.dataName
-    console.log(dataName)
     res.setHeader("Content-Type", "application/json");
     //console.log(dataProcess.getDataFromDB())
     res.json(dataBuffer.data[dataName])
 })
 
-router.post("/testdrawdata", function(req, res, next){
+router.post("/getDrawData", function(req, res, next){
+    let dataName = req.body.dataName
     res.setHeader("Content-Type", "application/json");
     //console.log(dataProcess.getDataFromDB())
-    res.json(dataBuffer.drawData)
+    res.json(dataBuffer.getDrawData(dataName))
+})
+router.post("/getDrawDataInfo", function(req, res, next){
+    let dataName = req.body.dataName,
+        data = dataBuffer.getDrawData(dataName),
+        attrName = []
+        
+    data.forEach((d,i) => {
+        const temp = {
+            "index": i,
+            "name": d.name
+        }
+        attrName.push(temp)
+    })
+
+    res.setHeader("Content-Type", "application/json");
+    //console.log(dataProcess.getDataFromDB())
+    let obj = {
+        "length": data.length,
+        "attr": attrName
+    }
+    res.json(obj)
 })
 
     //暂时使用默认存入数据功能

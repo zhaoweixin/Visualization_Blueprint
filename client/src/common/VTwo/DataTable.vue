@@ -1,8 +1,8 @@
 <template lang="html">
-  <div v-if="hasTable">
+  <div v-if="hasTable" style="box-shadow: 1px 1px 20px rgba(0,0,0, 0.1); border: 1px solid #EBEEF5">
     <!--tabletitle-->
     <template>
-        <h1 style="padding-left: 50%; padding-bottom:1%">
+        <h1 style="padding-left: 50%; padding-bottom:0.5%; padding-top:0.5%">
           {{tableName}}
         </h1>
     </template>
@@ -24,7 +24,7 @@
       </template>
     </el-table>
     <template>
-      <div style="text-align: center;margin-top: 30px;">
+      <div style="text-align: center;margin-top: 1%; margin-bottom: 1%;">
       <el-pagination 
         background
         @current-change="handleCurrentChange"
@@ -74,7 +74,6 @@ export default {
       const that = this
       const req = async function(){
         const response = await dataManager.getData(that.tableName)
-        console.log(response)
         that.th = response.data.th
         that.tr = response.data.tr
         that.hasTable = true

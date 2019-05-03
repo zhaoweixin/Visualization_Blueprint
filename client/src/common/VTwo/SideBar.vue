@@ -96,7 +96,6 @@ export default {
 
                 that.listdata = [...that.listdata, ...re]
                 that.attrdata = [...that.attrdata, ...re1]
-                console.log(that.listdata)
             })()
         },
         updateDataTable(tableName){
@@ -191,7 +190,6 @@ export default {
   align-items center
   justify-content center
   flex-direction column
-  width 100%
   h4
     display flex
     align-items center
@@ -212,5 +210,9 @@ export default {
 .el-select {
     padding-left: 20% !important 
     width: 85% !important
+}
+.vs-sidebar--background{
+    width: 0 !important 
+    height: 0 !important
 }
 </style>

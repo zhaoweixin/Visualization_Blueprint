@@ -31,7 +31,26 @@ export default class DataManager {
             }
         })
     }
-    static initAllData () {
+    static getDrawData (dataName) {
+        let data = {
+            'dataName': dataName
+        }
+        return axios.post('http://localhost:3000/api/getDrawData', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+    
+    static getDrawDataInfo (dataName) {
+        let data = {
+            'dataName': dataName
+        }
+        return axios.post('http://localhost:3000/api/getDrawDataInfo', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
     }
 }
 

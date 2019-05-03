@@ -152,13 +152,21 @@ const funcStore = {
         let regression = function(data){
             let linearData = []
             data.forEach((d,i) => {
-                linearData.push([+d,i])
+                linearData.push([i, +d])
             })
+            
             let l = ss.linearRegressionLine(ss.linearRegression(linearData))
             linearData.forEach((d,i) => {
                 d.push(l(i))
             })
-            return linearData
+
+            let reLinearData = []
+            linearData.forEach( (d,i) =>{
+                const obj = {"x": d[0], "cy": d[1], "ly": d[2]}
+                reLinearData.push(obj)
+            })
+
+            return reLinearData
         }
         dimension.forEach(function(d,i){
             d["data"] = []
@@ -299,6 +307,11 @@ const dataBuffer = {
     index: {},
     dimensions: [],
     drawData: {},
+    getDrawData: function(dataName){
+        if(this.drawData.hasOwnProperty(dataName)){
+            return this.drawData[dataName]
+        }
+    },
     getAllDimensions: function(){
         return this.dimensions;
     },
