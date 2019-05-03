@@ -214,5 +214,9 @@ export default {
 .vs-sidebar--background{
     width: 0 !important 
     height: 0 !important
+    
+}
+.vs-sidebar{
+    z-index: 1 !important
 }
 </style>

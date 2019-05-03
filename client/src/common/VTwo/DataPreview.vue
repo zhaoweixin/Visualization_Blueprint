@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="chartWindow">
+        <div class="chartWindow" v-loading="loading">
             <div class="chartWindow-item" v-for="(item, index) in chartInfo" :offset="index > 0 ? 0.2 : 0">
                 <div class="manu-card">
                 <div class="manu-card-header">
@@ -15,8 +15,6 @@
             </div>
         </div>
     </div>
-
-    
 </template>
 
 <script>
@@ -27,11 +25,14 @@ export default {
         return{
             chartInfo:[],
             idList:[],
-            drawData:[]
+            drawData:[],
+            loading: true
         }
     },
     watch:{
         tableName: function(val, oldVal){
+            console.log("loading..")
+            this.loading = true
             this.drawChart()
         }
     },
@@ -151,6 +152,7 @@ export default {
                             drawOrdinal(d,i)
                             break;
                     }
+                    that.loading = false
                 })
             }
             req()

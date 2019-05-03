@@ -9,7 +9,7 @@
     <!--endtabletitle-->
 
      <!--table-->
-    <el-table :data="tr.slice((currentPage-1) * pagesize, currentPage*pagesize)"  
+    <el-table v-loading="loading" :data="tr.slice((currentPage-1) * pagesize, currentPage*pagesize)"  
       show-overflow-tooltip="true" 
       align="center" 
       border>
@@ -51,10 +51,12 @@ export default {
     tr:[],
     tableData:{},
     currentPage: 1,
-    pagesize: 10
+    pagesize: 10,
+    loading:true
   }),
   watch:{
     tableName: function(val, oldVal){
+      this.loading = true
       this.initTable()
     }
   },
@@ -77,6 +79,7 @@ export default {
         that.th = response.data.th
         that.tr = response.data.tr
         that.hasTable = true
+        that.loading = false
       }
       console.log("upload to ", this.tableName)
       req()
