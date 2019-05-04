@@ -29,12 +29,12 @@
         "maker": "line"
     },
     "Scatterplot":{
-
         "inPorts": [
             {"name":"x","text":"X","attr":"encoding","type":"in"},
             {"name":"y","text":"Y","attr":"encoding","type":"in"},
             {"name":"fill","text":"Fill","attr":"encoding","type":"in"},
-            {"name":"size","text":"Size","attr":"encoding","type":"in"}
+            {"name":"size","text":"Size","attr":"encoding","type":"in"},
+            {"name":"shape", "text":"shape", "attr": "encoding", "type":"in"}
         ],
         "outPorts": [
             {"name":"out","text":"out","attr":"field","type":"out"}
@@ -69,6 +69,64 @@
         ],
         "type":"Chart",
         "maker": "boxplot"
+    },
+    "Areaplot":{
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"color","text":"Stroke","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type":"Chart",
+        "maker": "area"
+    },
+    "Circle":{
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"color","text":"Stroke","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type":"Chart",
+        "maker": "circle"
+    },
+    "ErrorBar":{
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type":"Chart",
+        "maker": "errorbar"
+    },
+    "ErrorBand":{
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type":"Chart",
+        "maker": "errorband"
+    },
+    "Reacplot":{
+        "inPorts": [
+            {"name":"x","text":"X","attr":"encoding","type":"in"},
+            {"name":"y","text":"Y","attr":"encoding","type":"in"},
+            {"name":"color","text":"Stroke","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type":"Chart",
+        "maker": "rect"
     },
     "Color":{
 

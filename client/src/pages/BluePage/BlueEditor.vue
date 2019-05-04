@@ -5,7 +5,8 @@
     
     <div class='toolbar' style='position:absolute;top:45px;right:2%'>
       <vs-button v-on:click="graphPreview" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
-      <vs-button v-on:click="cleanPanel" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
+      <vs-button v-on:click="cleanPanel" class='tool_button' radius color="#1473e6" type="filled" icon="autorenew"></vs-button>
+      <vs-button v-on:click="cleanChart" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
     </div>
     <vs-row style="height:1080px">
       <!--整个高度为10-->
@@ -73,7 +74,7 @@
           <!--该列放置生成图-->
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <div>
-              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox.button">
+              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox">
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
           </div>
@@ -142,17 +143,17 @@ export default {
       blueComponentNameList:[], //the index made of componentid
       exstingPorts:[], //all of the component port in blueprint
       vegaObjectObj:{}, //vegaobject is used to generate graph throgh
-      viewerData:{}, //store the data in different viewer
-      layoutObj:{}, //store the vegaobject in different viewer
-      viewerlayout: {}, //layout is the preset typesetting
+      chartData:{}, //store the data in different chart
+      comChartCount:{}, // chart count -> distinguish chart
+      chartLayout:{}, //layout is the preset typesetting
+      chartLayoutObj:{}, //更新chartLayoutObj 用于存储layout-port-config
       popupActivo4: false,
       layoutIdName:{}, //{"layout-0": "Template A"}
       layoutlist: ["A", "B"],
       A: false,
       B: false,
       tableData:null,
-      isTable:false,
-      ComponentsTypeCount:{}
+      isTable:false
     }
   },
   components:{
@@ -170,14 +171,19 @@ export default {
       let that = this;
       let bluecomponentscountInit = function(that){
         //init blue componets counts
-        console.log(that.componentTypes)
         for(const key in that.componentTypes){
+          if(key == "Chart"){
+            that.componentTypes[key]["childrens"].forEach( (d,i) => {
+              if(!that.comChartCount.hasOwnProperty(d)){
+                that.comChartCount[d] = 0
+              }
+            })
+          }
           if(!that.blueComponentsTypeCount.hasOwnProperty(key)){
             that.blueComponentsTypeCount[key] = 0
           }
         }
       }
-
       for (let key in props) {
         this.data[key] = props[key];
       }
@@ -304,7 +310,6 @@ export default {
       }
       const constructproperty = function(that, property, name){
         let obj = JSON.parse(JSON.stringify(property))
-        
         //according to this.blueComponentsTypeCount construct id and add 1
         //make inports outports full
         //make sure that the viewer name equal to button content
@@ -329,24 +334,26 @@ export default {
             obj.outPorts[i]["parentid"] = obj['id'];
           }
         }
-        if(obj.type == "Viewer"){
-          let propertiesname = 'Viewer-' + that.blueComponentsTypeCount[obj.type];
-          //create tab
-          that.viewerbuttonbox.button.every(function(d,i){
+        if(obj.type == "Layout"){
+          that.layoutIdName[obj.id] = {}
+          that.layoutIdName[obj.id]["name"] = obj.name
+          that.layoutIdName[obj.id]["ref"] = "msg" + "-" + obj.name.split(" ")[1]
+        }
+        if(obj.type == "Chart"){
+          let propertiesname = obj.name + "-" + that.comChartCount[obj.name];
+          that.comChartCount[obj.name] = that.comChartCount[obj.name] + 1
+
+          that.viewerbuttonbox.every(function(d,i){
             if(d['style'] == 'none'){
               d['style'] = 'block';
               d['content'] = propertiesname;
-              obj["name"] = propertiesname; 
+              obj["name"] = propertiesname;
+              d["id"] = obj['id']
               return false
             }else{
               return true
             }
           })
-        }
-        if(obj.type == "Layout"){
-          that.layoutIdName[obj.id] = {}
-          that.layoutIdName[obj.id]["name"] = obj.name
-          that.layoutIdName[obj.id]["ref"] = "msg" + "-" + obj.name.split(" ")[1]
         }
         that.blueComponentsTypeCount[obj.type] = that.blueComponentsTypeCount[obj.type] + 1
         _com = new BlueComponent(that.container, obj);
@@ -430,7 +437,7 @@ export default {
 
     //generate chart
     generateChart(id, meta){
-      let result = this.vegaObjectObj[meta["content"]].getOutputForced();
+      let result = this.vegaObjectObj[meta["id"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
       this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
@@ -488,7 +495,6 @@ export default {
           type: source.dimension_type
         };
         let maker = that.modelConfig[target.parent].maker;
-
         that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
         that.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
       }
@@ -675,36 +681,37 @@ export default {
       let connect = con.getConnectInfo()
       let _source = connect.source
       let _target = connect.target
-      let componentGraph = new Array() //two dimensional matrix of storage blueprint connection logic
+      let componentGraph = new Array()
+      //two dimensional matrix of storage blueprint connection logic
 
-      //更新that.layoutObj viewer- layout-0_chartA parentid + "_" + text
-      
+      //更新that.chartlayoutObj viewer- layout-0_chartA parentid + "_" + text
       if(_target.attr == "Layout"){
         //建立索引 用于更新layout-port
-        if(that.viewerlayout[_source["parentid"]] == undefined){
-          that.viewerlayout[_source["parentid"]] = []
+        if(that.chartLayout[_source["parentid"]] == undefined){
+          that.chartLayout[_source["parentid"]] = []
           let _name = _target.id + "_" + _target.text
-          that.viewerlayout[_source["parentid"]].push(_name)
+          that.chartLayout[_source["parentid"]].push(_name)
         }else{
           let _name = _target.id + "_" + _target.text
-          that.viewerlayout[_source["parentid"]].push(_name)
+          that.chartLayout[_source["parentid"]].push(_name)
         }
 
-        //更新layoutObj 用于存储layout-port- config
-        if(that.layoutObj[_target["id"]] == undefined){
-          that.layoutObj[_target["id"]] = {}
+        //更新chartLayoutObj 用于存储layout-port-config
+        if(that.chartLayoutObj[_target["id"]] == undefined){
+          that.chartLayoutObj[_target["id"]] = {}
 
-          that.layoutObj[_target["id"]][_target["text"]] = ""
-          that.layoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
+          that.chartLayoutObj[_target["id"]][_target["text"]] = ""
+          that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
 
         }else{
-          if(that.layoutObj[_target["id"]][_target["text"]] == undefined){
+          if(that.chartLayoutObj[_target["id"]][_target["text"]] == undefined){
 
-            that.layoutObj[_target["id"]][_target["text"]] = ""
-            that.layoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
+            that.chartLayoutObj[_target["id"]][_target["text"]] = ""
+            that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]))
           }
         }
       }
+
       //每增加一条边就更新
       //首先处理componentIndex
 
@@ -734,30 +741,31 @@ export default {
         let indextarget = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split('_')[1])
         componentGraph[indexsource][indextarget] = 1
       }
-      
-      //获取view组件
-      let viewerDict = {}
-      let viewerList = []
-      let viewerTreeLink = {}
+
+      //获取chart组件
+      let chartDict = {}
+      let chartList = []
+      let chartTreeLink = {}
 
       for(let i=0 ;i<this.blueComponentNameList.length; i++){
         if(this.blueComponentNameList[i] != ""){
-          if(this.getComponentById(this.blueComponentNameList[i]).getType() == "Viewer"){
-          if(!viewerDict.hasOwnProperty( this.blueComponentNameList[i] )){
-            viewerDict[this.blueComponentNameList[i]] = i
-            viewerList.push(this.blueComponentNameList[i])
+          if(this.getComponentById(this.blueComponentNameList[i]).getType() == "Chart"){
+          if(!chartDict.hasOwnProperty( this.blueComponentNameList[i] )){
+            chartDict[this.blueComponentNameList[i]] = i
+            chartList.push(this.blueComponentNameList[i])
             }
           }
         }
       }
+
       //根据view组件建立vegaObjectObj 若有新view则增加 若没有则删除/ 先执行删除 再增加/ 遍历两遍
       Object.keys(that.vegaObjectObj).forEach(function(d){
-        if(viewerList.indexOf(d) == -1){
-          //如果在viewerlist中没有该viewer,则该viewer已被删除,需从vegaObjectObj中去掉键值对
+        if(chartList.indexOf(d) == -1){
+          //如果在chartlist中没有该chart,则该chart已被删除,需从vegaObjectObj中去掉键值对
           delete that.vegaObjectObj[d]
         }
       })
-      viewerList.forEach(function(d){
+      chartList.forEach(function(d){
         if(!(d in that.vegaObjectObj)){
           //不存在则新建vegaobject
           let _height = window.innerHeight * 0.3
@@ -766,11 +774,10 @@ export default {
         }
       })
       
-      
-      //根据view组件进行遍历 获取有相连关系的组件
-      for(let i=0; i<viewerList.length; i++){
-        viewerTreeLink[viewerList[i]] = []
-        searchlink(viewerDict[viewerList[i]])
+      //根据chart组件进行遍历 获取有相连关系的组件
+      for(let i=0; i<chartList.length; i++){
+        chartTreeLink[chartList[i]] = []
+        searchlink(chartDict[chartList[i]])
 
         function searchlink(j){
         for(let k=0; k<that.blueComponentNameList.length; k++){
@@ -778,8 +785,9 @@ export default {
             let _source = that.blueComponentNameList[k] //id
             let _target = that.blueComponentNameList[j] //id
             //将相连的组件存起来 或者 直接遍历两个相连组件间的边
-            let _st = _source + "_" + _target
-            viewerTreeLink[viewerList[i]].push(_st)
+            let _st = _source + "_" + 
+            _target
+            chartTreeLink[chartList[i]].push(_st)
             searchlink(k)
             }
           }
@@ -787,30 +795,24 @@ export default {
         }
       }
 
-      //绑定数据
-      //搜索viewer相关的数据组件进行setdata
-      //构建data component 根据是否新增数据而setdata
-      //找出新增加的组件 根据新增加的组件在viewer树中的位置 判断是否需要setdata
-      //建立viewer data tree
-      
-      let viewerTreeLinkKeys = Object.keys(viewerTreeLink)
-      viewerTreeLinkKeys.forEach(function(d){
-        let linkList = viewerTreeLink[d]
+      let chartTreeLinkKeys = Object.keys(chartTreeLink)
+      chartTreeLinkKeys.forEach(function(d){
+        let linkList = chartTreeLink[d]
 
         linkList.forEach(function(value){
           let componentlist = value.split("_")
           for(let i=0; i<componentlist.length; i++){
             let com = componentlist[i]
             if(that.getComponentById(com).type == "Data"){
-              if(that.viewerData[d] == undefined){
-                that.viewerData[d] = []
-                that.viewerData[d].push(com)
+              if(that.chartData[d] == undefined){
+                that.chartData[d] = []
+                that.chartData[d].push(com)
                 let _loadedData = that.loadedDatasets[com]
                 that.vegaObjectObj[d].setData(_loadedData)
               }
               else{
-                if(that.viewerData[d].indexOf(com) == -1){
-                  that.viewerData[d].push(com)
+                if(that.chartData[d].indexOf(com) == -1){
+                  that.chartData[d].push(com)
                   let _loadedData = that.loadedDatasets[com]
                   that.vegaObjectObj[d].setData(_loadedData)
                 }
@@ -820,9 +822,6 @@ export default {
         })
       })
 
-
-      //构建component connections dict
-      
       let connectionsDict = {}
       for(let i=0; i<that.blueLines.length; i++){
         let lineInfo = that.blueLines[i].getConnectInfo()
@@ -834,12 +833,12 @@ export default {
           connectionsDict[_name].push(lineInfo)
         }
       }
-      //根据view分组新建object 需要#list
+      //根据chart分组新建object 需要#list
       //this.vegaObject = new VegaModel(parseInt(this.height / 2.3), parseInt(this.width * 1.1), "Test")
       //vegaEmbed("#canvas", result, { theme: "default" });
-      for(let i=0; i<viewerList.length; i++){
-        let _viewer = viewerList[i]
-        let _componentLink = viewerTreeLink[_viewer]
+      for(let i=0; i<chartList.length; i++){
+        let _chart = chartList[i]
+        let _componentLink = chartTreeLink[_chart]
 
         for(let j=0; j<_componentLink.length; j++){
           //component-component
@@ -847,23 +846,24 @@ export default {
           let _connections = connectionsDict[_name]
           for(let k=0; k<_connections.length; k++){
             //component port - component port
-            let _vegaObject = that.vegaObjectObj[_viewer]
+            let _vegaObject = that.vegaObjectObj[_chart]
             let _sourcelink = _connections[k].source
             let _targetlink = _connections[k].target
-            that.setVegaConfig(_sourcelink, _targetlink, _viewer)
+            that.setVegaConfig(_sourcelink, _targetlink, _chart)
           }
         }
       }
-    
+
       //更新layout/chart/vegamodel
-       let _viewerlayoutKeys = Object.keys(that.viewerlayout)
-       _viewerlayoutKeys.forEach(function(d){
-         that.viewerlayout[d].forEach(function(v){
+       let chartLayoutKeys = Object.keys(that.chartLayout)
+       chartLayoutKeys.forEach(function(d){
+         that.chartLayout[d].forEach(function(v){
            let _targetid = v.split("_")[0]
            let _targettext = v.split("_")[1]
-           that.layoutObj[_targetid][_targettext] = JSON.parse(JSON.stringify(that.vegaObjectObj[d]))
+           that.chartLayoutObj[_targetid][_targettext] = JSON.parse(JSON.stringify(that.vegaObjectObj[d]))
          })
        })
+
     },
     notifications(message){
       this.$vs.notify({
@@ -877,7 +877,8 @@ export default {
       //check which layout
       //only allowed to exist one layout in blueEditor
       let that = this
-      let key = Object.keys(that.layoutObj)
+      let key = Object.keys(that.chartLayoutObj)
+
       if(key.length == 0){
         //alert notice that user should choose one layout
         that.notifications({'title':'Notice', 'text': 'Please select a layout', 'color': 'danger'})
@@ -890,7 +891,7 @@ export default {
             //owing to vue life circle, when the first click, the that.$refs[_ref] haven't loaded
             //when the second click, the that.$refs[_ref] have loaded
             if(that.$refs[_ref] != undefined){
-              that.$refs[_ref].getModularInfo({"config": that.layoutObj[key[0]], "layoutname": key[0]})
+              that.$refs[_ref].getModularInfo({"config": that.chartLayoutObj[key[0]], "layoutname": key[0]})
               that.popupActivo4=!that.popupActivo4
             }
           }else{
@@ -949,10 +950,11 @@ export default {
       if(comtype == "Data"){
         delete that.selectedData[comid]
         delete that.dataComponent[comid]
-      }else if(comtype == "Viewer"){
+      }else if(comtype == "Viewer" || comtype == "Chart"){
         let index = comid.split("-")[1]
-        that.viewerbuttonbox.button[index]["content"] = "button" + index
-        that.viewerbuttonbox.button[index]["style"] = "none"
+        that.viewerbuttonbox[index]["content"] = "button" + index
+        that.viewerbuttonbox[index]["style"] = "none"
+        that.viewerbuttonbox[index]["id"] = ""
         that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] + 1
       }
       that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] - 1
@@ -961,12 +963,21 @@ export default {
         that.blueComponentNameList.splice(that.blueComponentNameList.indexOf(comid), 1)
       }
     },
+    cleanChart(){
+      try{
+        document.getElementById("canvas").innerHTML = ""
+      }catch(err){
+        console.log(err)
+      }
+    },
     cleanPanel(){
       let that = this
       if(this.blueComponents.length == 0){
         this.notifications({'title':'Notice', 'text': 'There are no components here.', 'color': 'danger'})
         return;
       }
+      //clean draw panel
+      this.cleanChart()
       //make sure remove all of the bluecomponents
       this.blueComponents.forEach(function(d,i){
         that.remove(d)
@@ -987,9 +998,12 @@ export default {
       this.blueComponentNameList = [];
       this.exstingPorts = [];
       this.vegaObjectObj = {};
-      this.viewerData = {};
-      this.layoutObj = {};
-      this.viewerlayout = {};
+      this.chartData = {};
+      this.chartLayout = {};
+      this.chartLayoutObj = {};
+      for(let key in this.comChartCount){
+        this.comChartCount[key] = 0
+      }
       for(let key in this.blueComponentsTypeCount){
         this.blueComponentsTypeCount[key] = 0
       }
@@ -1079,7 +1093,6 @@ export default {
     // })
     //Get the data candidates from server
     dataHelper.getDataList().then(response => {
-      console.log(response.data)
       this.dataList = response.data;
 
       this.dataList.forEach(function(data) {

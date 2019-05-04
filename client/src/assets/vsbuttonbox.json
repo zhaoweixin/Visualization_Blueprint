@@ -1,5 +1,4 @@
-{
-    "button":[
+[
         {"id": "button1", "style": "none", "content": "button1"},
         {"id": "button2", "style": "none", "content": "button2"},
         {"id": "button3", "style": "none", "content": "button3"},
@@ -8,5 +7,4 @@
         {"id": "button6", "style": "none", "content": "button6"},
         {"id": "button7", "style": "none", "content": "button7"},
         {"id": "button8", "style": "none", "content": "button8"}
-    ]
-}
+]
