@@ -3,7 +3,6 @@
     <div>
         <NavBar></NavBar>
         <!-- <vs-row > -->
-            
             <vs-col vs-w="1.5" vs-h="12" style="box-shadow: 1px 1px 20px rgba(0,0,0, 0.1)">
                 <SideBar></SideBar>
                 <!--
@@ -55,7 +54,7 @@ export default{
             lock: true,
             text: 'Loading',
             spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
+            background: 'rgba(255, 255, 255, 1)'
             });
             setTimeout(() => {
                 loading.close();

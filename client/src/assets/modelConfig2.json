@@ -138,6 +138,38 @@
         ],
         "type":"Processor"
     },
+    "Left Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Right Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Inner Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
+    "Outer Join":{
+
+        "inPorts": [
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"},
+            {"name":"dim","text":"Dim","attr":"connector","type":"in"}
+        ],
+        "type":"Connector"
+    },
     "Viewer":{
         "inPorts":[
             {"name":"dim","text":"input","attr":"viewer","type":"in"}

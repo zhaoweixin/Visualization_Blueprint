@@ -7,11 +7,11 @@ export default class dataHelper {
     }
     static getDataDetail(dataname) {
 
-        return axios.post('http://localhost:3000/api/getData?dataname=' + dataname);
+        return axios.post('http://localhost:3000/api/getDataDetail?dataname=' + dataname);
     }
 
     static getAllData(){
-        return axios.post('http://localhost:3000/api/getData');
+        return axios.post('http://localhost:3000/api/getDataDetail');
     }
     static fakeDataBaseProcess = {
 

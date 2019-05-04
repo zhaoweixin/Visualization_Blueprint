@@ -329,6 +329,12 @@ const dataBuffer = {
         }
         return null
     },
+    getDataDimensions: function(dataName){
+        for(let i in this.dimensions){
+            if(this.dimensions[i]['name'] == dataName)
+                return this.dimensions[i]['dimensions']
+        }
+    },
     getColoumnsList: function(dataName){
         let data = this.getSingleDimensions(dataName)
         let datalist = []

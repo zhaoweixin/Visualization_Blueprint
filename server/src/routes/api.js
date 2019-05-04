@@ -137,6 +137,48 @@ router.post('/getData' ,function(req, res, next){
     res.json(resData)
 })
 
+router.post('/getDataDetail' ,function(req, res, next){
+
+    let dataName = req.query.dataname
+    
+    resData = {
+        "dimensions": dataBuffer.getDataDimensions(dataName),
+        "description": dataName,
+        "data": {
+            "values": dataBuffer.getData(dataName)
+        },
+        "title": {
+            "text": "",
+            "anchor": "",
+            "fontSize": ""
+        }
+    }
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.json(resData)
+})
+
+router.post('/getAllData' ,function(req, res, next){
+
+    let dataName = req.query.dataname
+    
+    resData = {
+        "dimensions": dataBuffer.getDataDimensions(dataName),
+        "description": "",
+        "data": {
+            "values": dataBuffer.getData(dataName)
+        },
+        "title": {
+            "text": "A Simple Bar Chart",
+            "anchor": "middle",
+            "fontSize": 20
+        }
+    }
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.json(resData)
+})
+
 router.post("/testdrawdata", function(req, res, next){
     res.setHeader("Content-Type", "application/json");
     //console.log(dataProcess.getDataFromDB())

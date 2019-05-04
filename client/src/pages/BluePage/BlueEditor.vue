@@ -151,7 +151,8 @@ export default {
       A: false,
       B: false,
       tableData:null,
-      isTable:false
+      isTable:false,
+      ComponentsTypeCount:{}
     }
   },
   components:{
@@ -160,13 +161,16 @@ export default {
       DataPreviewTable,
       NavBar
   },
+  created(){
+    this.openFullScreen()
+  },
   methods: {
-
     //Intialized the blueprint canvas
     chartInit(container, props) {
       let that = this;
       let bluecomponentscountInit = function(that){
         //init blue componets counts
+        console.log(that.componentTypes)
         for(const key in that.componentTypes){
           if(!that.blueComponentsTypeCount.hasOwnProperty(key)){
             that.blueComponentsTypeCount[key] = 0
@@ -328,7 +332,6 @@ export default {
         if(obj.type == "Viewer"){
           let propertiesname = 'Viewer-' + that.blueComponentsTypeCount[obj.type];
           //create tab
-          
           that.viewerbuttonbox.button.every(function(d,i){
             if(d['style'] == 'none'){
               d['style'] = 'block';
@@ -596,9 +599,8 @@ export default {
 
       // The case of source attribution is 「FIELD」 and target is PROCESSOR
       if (source.attr == "field" && target.attr == "processor") {
-        console.log("source target", source, target)
         let sourcePortName = source.name;
-
+        let index = null
 
         if (target.parent == "Filter") {
           this.getComponentByName(target.parent).showDataPreview(
@@ -992,6 +994,18 @@ export default {
         this.blueComponentsTypeCount[key] = 0
       }
       this.notifications({'title':'Notice', 'text': 'clean panel success~', 'color': 'rgb(31,116,225)'})
+    },
+    openFullScreen: function(){
+            //el-icon-loading
+            const loading = this.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(255, 255, 255, 1)'
+            });
+            setTimeout(() => {
+                loading.close();
+            }, 2000);
     }
   
   },
@@ -1065,6 +1079,7 @@ export default {
     // })
     //Get the data candidates from server
     dataHelper.getDataList().then(response => {
+      console.log(response.data)
       this.dataList = response.data;
 
       this.dataList.forEach(function(data) {
@@ -1075,7 +1090,6 @@ export default {
       });
     });
     dataHelper.getAllData().then(response => {
-      console.log(response)
     })
     //Global control the animation of line or others
     setInterval(function() {

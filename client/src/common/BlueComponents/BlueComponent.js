@@ -525,7 +525,6 @@ export default class BlueComponent {
     showDataPreview(data, dim){
 
         //console.log(data)
-
         if(!this.container.select('#showPanel').empty()){
 
             return 
@@ -537,7 +536,7 @@ export default class BlueComponent {
              
         let that = this
         let bins = {}
-
+        
         let data_max = d3.max(data, d => parseFloat(d[dim]))
         let data_min = d3.min(data, d => parseFloat(d[dim]))
 
