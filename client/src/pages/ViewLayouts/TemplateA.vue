@@ -5,7 +5,7 @@
         </div>
         <div class="mutiItem">
             <div class="left">
-                <div id=" t1">
+                <div id="t1">
                     <div id="chartA"></div>
                 </div>
                 <div id="t2">
@@ -26,10 +26,6 @@
 </template>
 
 <script>
-//import chartA from ''//引用图表一
-//import chartB from //引用图表二
-//import chartC from //引用图标三
-//import chartD from //引用图表四
 
 import vegaEmbed from "vega-embed";
 import * as d3 from "d3";
@@ -38,10 +34,10 @@ export default{
     data() {
         return {
             ModularInfo:{},
-            chartStyle:{"chartA":{"width": 750,"height": 380},
-                    "chartB":{"width": 750,"height": 380},
-                    "chartC":{"width": 750,"height": 380},
-                    "chartD":{"width": 750,"height": 380}
+            chartStyle:{"chartA":{"width": 828,"height": 390},
+                    "chartB":{"width": 828,"height": 390},
+                    "chartC":{"width": 828,"height": 390},
+                    "chartD":{"width": 828,"height": 390}
                     },
             layoutObj:{}
         }
@@ -68,14 +64,17 @@ export default{
         getModularInfo(m){
             let that = this
             this.layoutObj = JSON.parse(JSON.stringify(m))
+            
+            //this.calculateChartWH()
+            //this.setBackgroundColor()
             this.adaptWidthHeight()
+            this.generateGraph()
             
         },
         adaptWidthHeight(){
             //this.layoutObj.[chartA].data.height/width
             let that = this
             let chartList = Object.keys(that.chartStyle)
-
             chartList.forEach(function(d){
                 if(that.layoutObj["config"][d] != undefined){
                     //用vega model 自带的set方法
@@ -90,7 +89,44 @@ export default{
                 }
             })
             
-            this.generateGraph()  
+        },
+        setBackgroundColor(){
+            let that = this
+            for(let key in that.layoutObj["config"]){
+                //key chartA chartB
+                that.layoutObj["config"][key]["data"]["background"] = "#242E47"
+            }
+        },
+        setAxisColor(){
+            let that = this
+            for(let key in that.layoutObj["layers"]){
+                //key chartA chartB
+                if(that.layoutObj["layers"][key]["encoding"]["x"]){
+                    if(!that.layoutObj["layers"][key]["encoding"]["x"]["axis"]){
+                        that.layoutObj["layers"][key]["encoding"]["x"]["axis"] = {
+                            "domainColor" : "white",
+                            "labelColor": "white",
+                            "tickColor": "white",
+                            "titleColor": "white",
+                            "gridColor": "white"
+                        }
+                    }
+                }
+                if(that.layoutObj["layers"][key]["encoding"]["y"]){
+                    if(!that.layoutObj["layers"][key]["encoding"]["y"]["axis"]){
+                        that.layoutObj["layers"][key]["encoding"]["y"]["axis"] = {
+                            "domainColor" : "white",
+                            "labelColor": "white",
+                            "tickColor": "white",
+                            "titleColor": "white",
+                            "gridColor": "white"
+                        }
+                    }
+                }
+            }
+        },
+        setHeaderColor(){
+
         },
         generateGraph(){
             let that = this
@@ -114,34 +150,37 @@ export default{
     border-radius:5px
 }
 .header{
-    height: 5%;
-    background:#20283F;
-    padding-left:50%;
-    padding-top:0.5%;
-    font-size: 20px;
+	padding: 0.5% 0 0.5% 2%;
+    font-size: 25px;
     color:white;
     border-radius:5px;
 }
 .mutiItem{
     height: 95%;
-    background-color: #242E47;
+    background-color: white;
 }
 .left{
     width: 50%;
-    height: 95%;
+    height: 100%;
     float: left;
 }
 .right{
     width: 50%;
-    height: 95%;
+    height: 100%;
     float: left;
 }
 #chartA,#chartB,#chartC,#chartD{
-    height: 47.5% ;
-    padding-top: 2%;
-    padding-left: 1%;
+    height: 100% ;
     opacity: 0.6;
     border-radius: 3px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    border: 1px solid grey;
+}
+
+#t1,#t2,#t3,#t4{
+	height:46%;
+	width:96%;
+	padding:2%
 }
 
 </style>

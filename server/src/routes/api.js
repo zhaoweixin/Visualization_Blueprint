@@ -202,7 +202,7 @@ router.post("/getDrawDataInfo", function(req, res, next){
     let dataName = req.body.dataName,
         data = dataBuffer.getDrawData(dataName),
         attrName = []
-        
+    
     data.forEach((d,i) => {
         const temp = {
             "index": i,
@@ -252,7 +252,7 @@ const dataPrepare = function(isUseDB){
     }
 }
 
-dataPrepare(1) //switch prepare data function 0 DB 1 local
+dataPrepare(0) //switch prepare data function 0 DB 1 local
 //storeDefaultData();
 
 module.exports = router;

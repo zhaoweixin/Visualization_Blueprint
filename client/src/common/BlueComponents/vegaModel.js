@@ -8,6 +8,10 @@ export default class VegaModel {
         this.data["height"] = height;
         this.data["layer"] = [];
         this.data['background'] = '#ffffff'
+        this.data["autosize"] = {
+            "type":"fit",
+            "contains": "padding"
+        }
         this.config = {}
       
         this['data'].title = {

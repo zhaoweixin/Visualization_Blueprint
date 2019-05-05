@@ -1,22 +1,30 @@
 <template>
     <div class="layout">
-        <div class="header">
-            <div class="left">
-                <div id="chartA"></div>
-            </div>
-            <div class="right">
-                <div class="A">
-                    <div id="chartB"></div>
-                </div>
-                <div class="B">
-                    <div id="chartC"></div>
-                </div>
-            </div>
-        </div>
-        <div class="footer">
-            <div id="chartD"></div>
-        </div>
-    </div>
+			<div class="header">
+				<div>Preview</div>
+			</div>
+
+			<div class="main">
+				<div class="left">
+					<div class="t1">
+						<div id="chartA"></div>
+					</div>
+				</div>
+				<div class="right">
+					<div class="t2">
+						<div id="chartB"></div>
+					</div>
+					<div class="t3">
+						<div id="chartC"></div>
+					</div>
+				</div>
+			</div>
+			<div class="footer">
+				<div class="t4">
+					<div id="chartD"></div>
+				</div>
+			</div>
+		</div>
 </template>
 
 <script>
@@ -27,10 +35,10 @@ export default{
     data() {
         return {
             ModularInfo:{},
-            chartStyle:{"chartA":{"width": 980,"height": 680},
-                    "chartB":{"width": 600,"height": 300},
-                    "chartC":{"width": 600,"height": 290},
-                    "chartD":{"width": 1700,"height": 200}
+            chartStyle:{"chartA":{"width": 1030,"height": 720},
+                    "chartB":{"width": 660,"height": 340},
+                    "chartC":{"width": 660,"height": 340},
+                    "chartD":{"width": 1720,"height": 200}
                     },
             layoutObj:{}
         }
@@ -86,45 +94,72 @@ export default{
 }
 </script>
 <style type="text/css">
-.layout{
-    width: 1800px;
-    margin: 0 auto;
-    height: 1000px;
-    position: relative;
-}
-.header{
-    height: 75%;
-    width:  1800px;
-    overflow: hidden;
-    margin:10px;
-}
-.left{
-    width: 60%;
-    height: 100%;
-    float: left;
-    
-}
-.right{
-    width: 40%;
-    height: 100%;
-    float: left;
-}
-.A{
-    height: 50%;
-    margin-left:10px;
-    margin-bottom:10px;
-    
-}
-.B{
-    height: 50% ;
-    margin-left:10px;
-
-}
-
-.footer{
-     height: 25%;
-    margin:10px;
-}
+.layout {
+		width: 1800px;
+		margin: 0 auto;
+		height: 1000px;
+		position: relative;
+	}
+	
+	.header {
+		padding: 0.5% 0 0.5% 2%;
+		font-size: 25px;
+		color: white;
+		border-radius: 5px;
+		background: #171C30;
+	}
+	
+	.main {
+		height: 75%;
+		width: 100%;
+		overflow: hidden;
+	}
+	
+	.footer {
+		height: 25%;
+	}
+	
+	.left {
+		width: 60%;
+		height: 100%;
+		float: left;
+	}
+	
+	.right {
+		width: 40%;
+		height: 100%;
+		float: left;
+	}
+	
+	.t1 {
+		height: 100%;
+		width: 98%;
+		padding: 1%
+	}
+	
+	.t2,
+	.t3 {
+		height: 50%;
+		width: 96%;
+		padding: 2%
+	}
+	
+	.t4 {
+		height: 98%;
+		width: 98%;
+		padding: 1%
+	}
+	
+	#chartA,
+	#chartB,
+	#chartC,
+	#chartD {
+		height: 100%;
+		opacity: 0.6;
+		border-radius: 3px;
+		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .3);
+		border: 1px solid grey;
+	}
 </style>
 <style media="screen">
     .vega-actions a {

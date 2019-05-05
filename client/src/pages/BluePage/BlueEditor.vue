@@ -11,7 +11,7 @@
     <vs-row style="height:1080px">
       <!--整个高度为10-->
 
-      <vs-col id='data_list_container' vs-justify="left" vs-align="top" vs-w="2" style="max-height:1080px;overflow-y:scroll">
+      <vs-col id='data_list_container' vs-justify="left" vs-align="top" vs-w="2" style="max-height:1080px;overflow-y:scroll;box-shadow:0 2px 12px 0 rgba(0,0,0, 0.1);">
         <!--该列放置数据和操作-->
         <!--数据列-->
 
@@ -65,20 +65,21 @@
         
         <vs-row>
           <!--该列放置蓝图-->
-          <vs-col vs-align="center" vs-w="12">
+          <vs-col vs-align="center" vs-w="12" style="box-shadow:0 2px 12px 0 rgba(0,0,0, 0.1)">
             <div id='preview' style="background:rgba(0,0,0,0.05)"><svg id ='editorborad'></svg></div>
           </vs-col>
         </vs-row>
 
-        <vs-row v-if="!isTable" id="preview_container" vs-w="12">
+        <vs-row v-if="!isTable" id="preview_container" vs-w="12" style="display:flex; padding:20px 20px 0 20px;">
           <!--该列放置生成图-->
-          <vs-col vs-type="flex" vs-align="center" vs-w="12">
-            <div>
-              <div style="padding-left: 15px; padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox">
+          <vs-col vs-type="flex" vs-align="center" vs-w="12" style="display:flex; box-shadow: 0 2px 12px 0 rgba(0,0,0, 0.1)">
+            <div style="padding:0 15px 0 15px; height:430px;">
+              <div style=" padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox">
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
-          </div>
-            <div  id='canvas'></div>
+            </div>
+            <div style="height:380px; border-right: 1px solid rgba(0,0,0,0.2)"></div>
+            <div id='canvas' style="display:flex; with:1420px; padding-left:20px;"></div>
           </vs-col>
         </vs-row>
         <vs-row v-if="isTable" vs-w="12">
@@ -768,8 +769,8 @@ export default {
       chartList.forEach(function(d){
         if(!(d in that.vegaObjectObj)){
           //不存在则新建vegaobject
-          let _height = window.innerHeight * 0.3
-          let _width = window.innerWidth * 0.68
+          let _height = window.innerHeight * 0.412
+          let _width = window.innerWidth * 0.67
           that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d)
         }
       })
