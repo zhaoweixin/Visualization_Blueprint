@@ -75,9 +75,18 @@ export default {
     initTable(){
       const that = this
       const req = async function(){
-        const response = await dataManager.getData(that.tableName)
-        that.th = response.data.th
-        that.tr = response.data.tr
+        console.log(that.tableData)
+        if(that.tableName in that.tableData){
+          that.th = that.tableData[that.tableName]["th"]
+          that.tr = that.tableData[that.tableName]["tr"]
+        } else {
+          const response = await dataManager.getData(that.tableName)
+          that.th = response.data.th
+          that.tr = response.data.tr
+          that.tableData[that.tableName] = {}
+          that.tableData[that.tableName]["th"] = response.data.th
+          that.tableData[that.tableName]["tr"] = response.data.tr
+        }
         that.hasTable = true
         that.loading = false
       }

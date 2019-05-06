@@ -26,6 +26,7 @@ export default {
             chartInfo:[],
             idList:[],
             drawData:[],
+            drawDataObj:{},
             loading: true
         }
     },
@@ -62,6 +63,7 @@ export default {
                 }
                 that.chartInfo = []
                 that.chartInfo = [...that.chartInfo, ...response.data.attr]
+                console.log(response)
             }
             req()
         },
@@ -138,8 +140,15 @@ export default {
 
             }
             let req = async function(){
-                let response = await dataManager.getDrawData(that.tableName)
-                that.drawData = response.data
+                
+                if(that.tableName in that.drawDataObj){
+                    that.drawData = that.drawDataObj[that.tableName]
+                } else {
+                    let response = await dataManager.getDrawData(that.tableName)
+                    that.drawData = response.data
+                    that.drawDataObj[that.tableName] = response.data
+                }
+                
                 that.drawData.forEach((d,i) => {
                     switch(d.type){
                         case "quantitative":
