@@ -7,7 +7,25 @@
 <script>
 
 export default {
-  name: 'App'
+  name: 'App',
+  created(){
+    this.openFullScreen()
+  },
+  methods:{
+    openFullScreen: function(){
+      console.log("loading...")
+            //el-icon-loading
+            const loading = this.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(255, 255, 255, 1)'
+            });
+            setTimeout(() => {
+                loading.close();
+            }, 2000);
+    }
+  }
 }
 </script>
 

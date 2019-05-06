@@ -71,18 +71,19 @@
           </vs-col>
         </vs-row>
 
-        <vs-row v-if="!isTable" id="preview_container" vs-w="12" style="display:flex; padding:20px 20px 0 20px;">
+        <vs-row v-if="!isTable" id="preview_container" vs-w="12" style="display:flex; padding:20px 20px 20px 20px; height:38%">
           <!--该列放置生成图-->
-          <vs-col vs-type="flex" vs-align="center" vs-w="12" style="display:flex; box-shadow: 0 2px 12px 0 rgba(0,0,0, 0.1)">
-            <div style="padding:0 15px 0 15px; height:430px;">
+          <vs-col vs-type="flex" vs-align="center" vs-w="12" style="display:flex; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1)">
+            <div style="padding:0 15px 0 15px; height:80%;">
               <div style=" padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox">
                 <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{display: meta.style}" v-on:click="generateChart(meta.id, meta)">{{meta.content}}</vs-button>
               </div>
             </div>
-            <div style="height:380px; border-right: 1px solid rgba(0,0,0,0.2)"></div>
+            <div style="height:85%; border-right: 1px solid rgba(0,0,0,0.2)"></div>
             <div id='canvas' style="display:flex; with:1420px; padding-left:20px;"></div>
           </vs-col>
         </vs-row>
+
         <vs-row v-if="isTable" vs-w="12">
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <data-preview-table :tabledata="tableData"></data-preview-table>   
@@ -167,6 +168,7 @@ export default {
       NavBar
   },
   created(){
+    //
     this.openFullScreen()
   },
   methods: {
@@ -772,8 +774,11 @@ export default {
       chartList.forEach(function(d){
         if(!(d in that.vegaObjectObj)){
           //不存在则新建vegaobject
-          let _height = window.innerHeight * 0.412
-          let _width = window.innerWidth * 0.67
+          let _height = window.innerHeight * 0.29
+          let _width = window.innerWidth * 0.7
+          //1300 300
+
+          //1350 350
           that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d)
         }
       })
@@ -896,7 +901,7 @@ export default {
             //when the second click, the that.$refs[_ref] have loaded
             if(that.$refs[_ref] != undefined){
               that.$refs[_ref].getModularInfo({"config": that.chartLayoutObj[key[0]], "layoutname": key[0]})
-              that.model_config_text = JSON.stringify(that.chartLayoutObj)
+              that.model_config_text = JSON.parse(JSON.stringify(that.chartLayoutObj))
               that.popupActivo4=!that.popupActivo4
             }
           }else{
@@ -1038,11 +1043,12 @@ export default {
             "Layout-0": "templateA",
             "Layout-1": "templateB"
           }
-          let data = JSON.parse(JSON.stringify(that.model_config_text))
+
           let config = {
-            "data": data,
+            "data": that.model_config_text,
             "template": obj[template]
           }
+          //{"config": that.chartLayoutObj[key[0]], "layoutname": key[0]}
           const res = await dataManager.downloadSetting(config)
         }
       }

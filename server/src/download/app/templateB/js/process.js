@@ -20,7 +20,6 @@ var app = new Vue({
 		_init() {
 			let that = this
 			d3.json("config.json", function(err, data) {
-				console.log(data)
 				const layoutName = Object.keys(data)[0]
 				that.getModularInfo({
 					"config": data[layoutName],
@@ -41,9 +40,7 @@ var app = new Vue({
 			//this.layoutObj.[chartA].data.height/width
 			let that = this
 			let chartList = Object.keys(that.chartStyle)
-			console.log(chartList)
 			chartList.forEach(function(d) {
-				console.log(that.layoutObj["config"])
 				if(that.layoutObj["config"][d] != undefined) {
 					//用vega model 自带的set方法
 					that.layoutObj["config"][d]["data"]["height"] = that.chartStyle[d]["height"]

@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var fileUpload = require('express-fileupload')
-
+var bodyParser = require('body-parser')
 var apiRouter = require('./routes/api')
 
 var app = express();
@@ -29,9 +29,12 @@ app.set('view engine', 'jade');
 
 app.use(fileUpload());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+//app.use(express.json());
+//app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/download', express.static(__dirname + '/download'));
 app.use('/api', apiRouter);

@@ -45,7 +45,7 @@ export default{
         DataPreview
     },
     created(){
-        this.openFullScreen()
+        //this.openFullScreen()
     },
     methods:{
         openFullScreen: function(){

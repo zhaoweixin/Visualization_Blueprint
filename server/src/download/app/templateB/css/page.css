@@ -23,6 +23,10 @@
 	height: 25%;
 }
 
+body {
+	margin: 0;
+}
+
 .left {
 	width: 60%;
 	height: 100%;
