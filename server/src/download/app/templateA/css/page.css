@@ -1,0 +1,50 @@
+.layout {
+	width: 1920px;
+	margin: 0 auto;
+	height: 1000px;
+	background-color: #171C30;
+}
+
+.header {
+	padding: 0.5% 0 0.5% 2%;
+	font-size: 25px;
+	color: white;
+	border-radius: 5px;
+}
+
+.mutiItem {
+	height: 95%;
+	background-color: white;
+}
+
+.left {
+	width: 50%;
+	height: 100%;
+	float: left;
+}
+
+.right {
+	width: 50%;
+	height: 100%;
+	float: left;
+}
+
+#chartA,
+#chartB,
+#chartC,
+#chartD {
+	height: 100%;
+	opacity: 0.6;
+	border-radius: 3px;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+	border: 1px solid grey;
+}
+
+#t1,
+#t2,
+#t3,
+#t4 {
+	height: 46%;
+	width: 96%;
+	padding: 2%
+}

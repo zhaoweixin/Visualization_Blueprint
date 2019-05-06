@@ -2,7 +2,8 @@ const express = require('express');
 const upload = require('./multer')
 const router = express.Router();
 const fs = require('fs')
-
+const zipper = require("zip-local");
+const jsonfile = require("jsonfile")
 
 const dataProcessFunc = require('../models/dataprocess');
 const dataProcess = dataProcessFunc.dataProcess
@@ -218,6 +219,45 @@ router.post("/getDrawDataInfo", function(req, res, next){
         "attr": attrName
     }
     res.json(obj)
+})
+
+router.post('/downloadSetting', function(req, res) {
+    let template = req.body.template
+    let zipUrl = "../server/src/download/app/"
+    let zipFileName = template + ".zip"
+    let configJsonFile = "../server/src/download/app/" + template + "/config.json"
+    let fileObj = req.body.data
+    res.setHeader("Content-Type", "application/json");
+
+    if(template == "templateA" || template == "templateB"){
+        zipUrl = "../server/src/download/app/" + template
+    } else {
+        res.json({"message": "template folder error"})
+        return;
+    }
+    //write and compress
+    jsonfile.writeFile(configJsonFile, fileObj, { spaces: 2 }).then(response => {
+        zipper.zip(zipUrl, function(error, zipped) {
+            if (!error) {
+                zipped.compress(); // compress before exporting
+                var buff = zipped.memory(); // get the zipped file as a Buffer
+                // or save the zipped file to disk
+                zipped.save("./src/download/zip/" + zipFileName, function(error) {
+                    if (!error) {
+                        console.log("Ziped files successfully!");
+                        res.json({"message": "success"})
+                    }
+                });
+            } else {
+                res.json({"message": error})
+                console.log(error)
+            }
+        });
+    }).catch(err => {
+        res.json({"message": err})
+        console.log(err)
+    })
+    
 })
 
     //暂时使用默认存入数据功能

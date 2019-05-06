@@ -1,4 +1,6 @@
 import axios from 'axios';
+import download from "downloadjs";
+import fs from "fs";
 
 export default class DataManager {
     static getDataInfo() {
@@ -49,6 +51,36 @@ export default class DataManager {
         return axios.post('http://localhost:3000/api/getDrawDataInfo', data, {
             headers: {
                 'Content-Type': 'application/json'
+            }
+        })
+    }
+
+    static downloadSetting(data){
+        return axios.post("http://localhost:3000/api/downloadSetting", data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(res){
+            if(res.data.message == "success"){
+                let zipUrl = 'http://localhost:3000/download/zip/' + data.template + ".zip"
+            axios({
+                url: zipUrl,
+                method:'get',
+                responseType: "blob",
+                headers: {
+                'Content-Type': 'application/zip'
+            }}).then(function(response){
+                let blob = new Blob([response.data]);
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = data.template + ".zip"
+                let evt = document.createEvent("HTMLEvents");
+                evt.initEvent("click", false, false);
+                link.style.display = "none";
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(link.href);
+              })
             }
         })
     }

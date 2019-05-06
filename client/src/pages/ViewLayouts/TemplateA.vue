@@ -9,12 +9,12 @@
                     <div id="chartA"></div>
                 </div>
                 <div id="t2">
-                    <div id="chartB"></div>
+                    <div id="chartC"></div>
                 </div>
             </div>
             <div class="right">
                 <div id="t3">
-                    <div id="chartC"></div>
+                    <div id="chartB"></div>
                 </div>
                 <div id='t4'>
                     <div id="chartD"></div>
@@ -64,7 +64,7 @@ export default{
         getModularInfo(m){
             let that = this
             this.layoutObj = JSON.parse(JSON.stringify(m))
-            
+            console.log(this.layoutObj)
             //this.calculateChartWH()
             //this.setBackgroundColor()
             this.adaptWidthHeight()

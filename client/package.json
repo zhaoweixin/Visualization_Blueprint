@@ -17,6 +17,7 @@
     "canvas": "^2.0.1",
     "canvas-to-image": "^2.0.0",
     "d3": "^5.9.2",
+    "downloadjs": "^1.4.7",
     "element-ui": "^2.6.3",
     "fs": "0.0.1-security",
     "iview": "^3.3.3",

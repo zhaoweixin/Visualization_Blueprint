@@ -1,0 +1,66 @@
+.layout {
+	width: 1800px;
+	margin: 0 auto;
+	height: 1000px;
+	position: relative;
+}
+
+.header {
+	padding: 0.5% 0 0.5% 2%;
+	font-size: 25px;
+	color: white;
+	border-radius: 5px;
+	background: #171C30;
+}
+
+.main {
+	height: 75%;
+	width: 100%;
+	overflow: hidden;
+}
+
+.footer {
+	height: 25%;
+}
+
+.left {
+	width: 60%;
+	height: 100%;
+	float: left;
+}
+
+.right {
+	width: 40%;
+	height: 100%;
+	float: left;
+}
+
+.t1 {
+	height: 100%;
+	width: 98%;
+	padding: 1%
+}
+
+.t2,
+.t3 {
+	height: 50%;
+	width: 96%;
+	padding: 2%
+}
+
+.t4 {
+	height: 98%;
+	width: 98%;
+	padding: 1%
+}
+
+#chartA,
+#chartB,
+#chartC,
+#chartD {
+	height: 100%;
+	opacity: 0.6;
+	border-radius: 3px;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .3);
+	border: 1px solid grey;
+}

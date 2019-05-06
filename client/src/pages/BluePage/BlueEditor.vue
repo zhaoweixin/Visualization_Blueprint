@@ -7,6 +7,7 @@
       <vs-button v-on:click="graphPreview" class='tool_button' radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
       <vs-button v-on:click="cleanPanel" class='tool_button' radius color="#1473e6" type="filled" icon="autorenew"></vs-button>
       <vs-button v-on:click="cleanChart" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
+      <vs-button v-on:click="downloadSetting" class='tool_button' radius color="#1473e6" type="filled" icon="cloud_download"></vs-button>
     </div>
     <vs-row style="height:1080px">
       <!--整个高度为10-->
@@ -103,6 +104,7 @@ import vegaEmbed from "vega-embed";
 import config from "../../assets/config.json";
 import $ from "jquery";
 import dataHelper from "../../common/Helper/dataHelper";
+import dataManager from "../../common/DataManager";
 import caculator_modules from "../../common/Helper/caculator_modules";
 import processor_modules from "../../common/Helper/processer_modules";
 import BlueComponent from "../../common/BlueComponents/BlueComponent";
@@ -154,7 +156,8 @@ export default {
       A: false,
       B: false,
       tableData:null,
-      isTable:false
+      isTable:false,
+      model_config_text:"" // store configuration of chart
     }
   },
   components:{
@@ -893,6 +896,7 @@ export default {
             //when the second click, the that.$refs[_ref] have loaded
             if(that.$refs[_ref] != undefined){
               that.$refs[_ref].getModularInfo({"config": that.chartLayoutObj[key[0]], "layoutname": key[0]})
+              that.model_config_text = JSON.stringify(that.chartLayoutObj)
               that.popupActivo4=!that.popupActivo4
             }
           }else{
@@ -1021,6 +1025,28 @@ export default {
             setTimeout(() => {
                 loading.close();
             }, 2000);
+    },
+    downloadSetting: function(){
+      let that = this
+      let req = async function(){
+        let key = Object.keys(that.chartLayoutObj)
+        if(key.length == 0){
+          that.notifications({'title':'Notice', 'text': 'Please connect a layout', 'color': 'danger'})
+        }else if(key.length == 1){
+          let template = key[0]
+          let obj = {
+            "Layout-0": "templateA",
+            "Layout-1": "templateB"
+          }
+          let data = JSON.parse(JSON.stringify(that.model_config_text))
+          let config = {
+            "data": data,
+            "template": obj[template]
+          }
+          const res = await dataManager.downloadSetting(config)
+        }
+      }
+      req()
     }
   
   },

@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
 			<div class="header">
-				<div>Preview</div>
+				<div>System Preview</div>
 			</div>
 
 			<div class="main">

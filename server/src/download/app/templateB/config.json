@@ -1,0 +1,352 @@
+{
+  "Layout-0": {
+    "chartA": {
+      "data": {
+        "width": 1286,
+        "height": 399,
+        "layer": [
+          {
+            "encoding": {
+              "x": {
+                "field": "yield",
+                "type": "quantitative"
+              },
+              "y": {
+                "field": "variety",
+                "type": "ordinal"
+              }
+            },
+            "width": 1286,
+            "height": 399,
+            "mark": {
+              "type": "bar",
+              "fill": "#FCCA46",
+              "stroke": ""
+            }
+          }
+        ],
+        "background": "#ffffff",
+        "autosize": {
+          "type": "fit",
+          "contains": "padding"
+        },
+        "title": {
+          "text": "Chart-0",
+          "anchor": "middle",
+          "fontSize": 20
+        },
+        "data": {
+          "values": [
+            {
+              "yield": 27,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "University Farm",
+              "StoreId": "7446-1556119818941-35545",
+              "isDelete": false
+            },
+            {
+              "yield": 48.86667,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Waseca",
+              "StoreId": "8f4f-1556119818941-17141",
+              "isDelete": false
+            },
+            {
+              "yield": 27.43334,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Morris",
+              "StoreId": "5481-1556119818941-43431",
+              "isDelete": false
+            }
+          ]
+        }
+      },
+      "config": {},
+      "layers": {
+        "Barchart": {
+          "encoding": {
+            "x": {
+              "field": "yield",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "variety",
+              "type": "ordinal"
+            }
+          },
+          "width": 1286,
+          "height": 399,
+          "mark": {
+            "type": "bar",
+            "fill": "#FCCA46",
+            "stroke": ""
+          }
+        }
+      }
+    },
+    "chartB": {
+      "data": {
+        "width": 1286,
+        "height": 399,
+        "layer": [
+          {
+            "encoding": {
+              "x": {
+                "field": "yield",
+                "type": "quantitative"
+              },
+              "y": {
+                "field": "variety",
+                "type": "ordinal"
+              }
+            },
+            "width": 1286,
+            "height": 399,
+            "mark": {
+              "type": "bar",
+              "fill": "#FCCA46",
+              "stroke": ""
+            }
+          }
+        ],
+        "background": "#ffffff",
+        "autosize": {
+          "type": "fit",
+          "contains": "padding"
+        },
+        "title": {
+          "text": "Chart-0",
+          "anchor": "middle",
+          "fontSize": 20
+        },
+        "data": {
+          "values": [
+            {
+              "yield": 27,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "University Farm",
+              "StoreId": "7446-1556119818941-35545",
+              "isDelete": false
+            },
+            {
+              "yield": 48.86667,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Waseca",
+              "StoreId": "8f4f-1556119818941-17141",
+              "isDelete": false
+            },
+            {
+              "yield": 27.43334,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Morris",
+              "StoreId": "5481-1556119818941-43431",
+              "isDelete": false
+            }
+          ]
+        }
+      },
+      "config": {},
+      "layers": {
+        "Barchart": {
+          "encoding": {
+            "x": {
+              "field": "yield",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "variety",
+              "type": "ordinal"
+            }
+          },
+          "width": 1286,
+          "height": 399,
+          "mark": {
+            "type": "bar",
+            "fill": "#FCCA46",
+            "stroke": ""
+          }
+        }
+      }
+    },
+    "chartC": {
+      "data": {
+        "width": 1286,
+        "height": 399,
+        "layer": [
+          {
+            "encoding": {
+              "x": {
+                "field": "yield",
+                "type": "quantitative"
+              },
+              "y": {
+                "field": "variety",
+                "type": "ordinal"
+              }
+            },
+            "width": 1286,
+            "height": 399,
+            "mark": {
+              "type": "bar",
+              "fill": "#FCCA46",
+              "stroke": ""
+            }
+          }
+        ],
+        "background": "#ffffff",
+        "autosize": {
+          "type": "fit",
+          "contains": "padding"
+        },
+        "title": {
+          "text": "Chart-0",
+          "anchor": "middle",
+          "fontSize": 20
+        },
+        "data": {
+          "values": [
+            {
+              "yield": 27,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "University Farm",
+              "StoreId": "7446-1556119818941-35545",
+              "isDelete": false
+            },
+            {
+              "yield": 48.86667,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Waseca",
+              "StoreId": "8f4f-1556119818941-17141",
+              "isDelete": false
+            },
+            {
+              "yield": 27.43334,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Morris",
+              "StoreId": "5481-1556119818941-43431",
+              "isDelete": false
+            }
+          ]
+        }
+      },
+      "config": {},
+      "layers": {
+        "Barchart": {
+          "encoding": {
+            "x": {
+              "field": "yield",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "variety",
+              "type": "ordinal"
+            }
+          },
+          "width": 1286,
+          "height": 399,
+          "mark": {
+            "type": "bar",
+            "fill": "#FCCA46",
+            "stroke": ""
+          }
+        }
+      }
+    },
+    "chartD": {
+      "data": {
+        "width": 1286,
+        "height": 399,
+        "layer": [
+          {
+            "encoding": {
+              "x": {
+                "field": "yield",
+                "type": "quantitative"
+              },
+              "y": {
+                "field": "variety",
+                "type": "ordinal"
+              }
+            },
+            "width": 1286,
+            "height": 399,
+            "mark": {
+              "type": "bar",
+              "fill": "#FCCA46",
+              "stroke": ""
+            }
+          }
+        ],
+        "background": "#ffffff",
+        "autosize": {
+          "type": "fit",
+          "contains": "padding"
+        },
+        "title": {
+          "text": "Chart-0",
+          "anchor": "middle",
+          "fontSize": 20
+        },
+        "data": {
+          "values": [
+            {
+              "yield": 27,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "University Farm",
+              "StoreId": "7446-1556119818941-35545",
+              "isDelete": false
+            },
+            {
+              "yield": 48.86667,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Waseca",
+              "StoreId": "8f4f-1556119818941-17141",
+              "isDelete": false
+            },
+            {
+              "yield": 27.43334,
+              "variety": "Manchuria",
+              "year": 1931,
+              "site": "Morris",
+              "StoreId": "5481-1556119818941-43431",
+              "isDelete": false
+            }
+          ]
+        }
+      },
+      "config": {},
+      "layers": {
+        "Barchart": {
+          "encoding": {
+            "x": {
+              "field": "yield",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "variety",
+              "type": "ordinal"
+            }
+          },
+          "width": 1286,
+          "height": 399,
+          "mark": {
+            "type": "bar",
+            "fill": "#FCCA46",
+            "stroke": ""
+          }
+        }
+      }
+    }
+  }
+}
