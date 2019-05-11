@@ -231,7 +231,7 @@ export default class BlueComponent {
             d.y = 20 + (i+1) * 30
             return d.y
         })
-        .attr('r', 9)
+        .attr('r', 6)
 
 
         this.container
@@ -273,7 +273,7 @@ export default class BlueComponent {
             d.y = 20 + (i+1) * 30
             return d.y
         })
-        .attr('r', 9)
+        .attr('r', 6)
         
         this.container
         .selectAll('portname')

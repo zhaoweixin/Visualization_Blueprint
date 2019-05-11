@@ -158,7 +158,8 @@ export default {
       B: false,
       tableData:null,
       isTable:false,
-      model_config_text:"" // store configuration of chart
+      model_config_text:"", // store configuration of chart
+      calculatorDict:{},
     }
   },
   components:{
@@ -495,12 +496,31 @@ export default {
       let that = this;
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
       if (source.attr == "field" && target.attr == "encoding") {
+        //console.log(source.dimension_type, source.name, target.name)
+       //that.calculator[source["id"]] -> sum_miles_per_gallon_cylinders
+        let metaName = '',
+          metaType = ''
+        if(source.parentid != undefined){
+          if(source.parentid.split("-")[0] == "Calculator"){
+            metaName = that.calculatorDict[source["id"]]
+            metaType = "quantitative"
+          } else {
+            metaName = source.name
+            metaType = source.dimension_type
+          }
+        } else {
+            metaName = source.name
+            metaType = source.dimension_type
+        }
+        
         let meta = {
-          name: source.name,
+          name: metaName, // source.name
           key: target.name,
-          type: source.dimension_type
+          type: metaType//source.dimension_type
         };
+        
         let maker = that.modelConfig[target.parent].maker;
+        //console.log("setEncoding", source, target, meta)
         that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
         that.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
       }
@@ -511,7 +531,7 @@ export default {
 
         if (caculator_modules.operatorsSetted()) {
           let result = {};
-
+          
           if (target.parent == "Sum")
             result = caculator_modules.sum(that.vegaObjectObj[vegaObjKey].getData());
           else if (target.parent == "Reduce")
@@ -519,11 +539,17 @@ export default {
           else if (target.parent == "Multi")
             result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
 
+          
           let newData = result.data,
             newName = result.name;
+          
+          if(!target.id in that.calculatorDict){
+            that.calculatorDict[target["id"]] = newName
+          }
+
           that.vegaObjectObj[vegaObjKey].setData(newData);
           caculator_modules.resetOperators();
-          let _com = getComponentByName(target.parent);
+          let _com = that.getComponentByName(target.parent);
           _com.setFieldName(newName);
         }
       }
@@ -745,6 +771,7 @@ export default {
       for(let i=0; i<this.blueLinesName.length; i++){
         let indexsource = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split('_')[0])
         let indextarget = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split('_')[1])
+        
         componentGraph[indexsource][indextarget] = 1
       }
 
@@ -862,7 +889,7 @@ export default {
           }
         }
       }
-
+      //vegaobject内存在sum/reduce等操作的数据啦 现在要做的就是把它对应起来
       //更新layout/chart/vegamodel
        let chartLayoutKeys = Object.keys(that.chartLayout)
        chartLayoutKeys.forEach(function(d){
