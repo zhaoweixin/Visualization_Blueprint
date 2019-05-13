@@ -9,7 +9,7 @@
       <vs-button v-on:click="cleanChart" class='tool_button' radius color="#1473e6" type="filled" icon="delete"></vs-button>
       <vs-button v-on:click="downloadSetting" class='tool_button' radius color="#1473e6" type="filled" icon="cloud_download"></vs-button>
     </div>
-    <vs-row style="height:1080px">
+    <vs-row style="height:1075px">
       <!--整个高度为10-->
 
       <vs-col id='data_list_container' vs-justify="left" vs-align="top" vs-w="2" style="max-height:1080px;overflow-y:scroll;box-shadow:0 2px 12px 0 rgba(0,0,0, 0.1);">

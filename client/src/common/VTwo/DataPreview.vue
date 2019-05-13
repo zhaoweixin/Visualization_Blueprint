@@ -187,7 +187,7 @@ export default {
 
 .chartWindow{
     display:flex; 
-    margin-top:20px; 
+    margin-top:15px; 
     overflow-x:auto
 }
 

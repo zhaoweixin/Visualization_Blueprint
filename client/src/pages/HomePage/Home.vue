@@ -1,6 +1,6 @@
 <template>
     
-    <div>
+    <div >
         <NavBar></NavBar>
         <!-- <vs-row > -->
             <vs-col vs-w="1.5" vs-h="12" style="box-shadow: 1px 1px 20px rgba(0,0,0, 0.1)">
@@ -9,6 +9,7 @@
                 <data-list-bar/>
                 <data-previewer/>-->
             </vs-col>
+            
             <vs-col vs-w="10" vs-h="12" style="margin-left:1.5%;">
                 <DataTable></DataTable>
                 <DataPreview></DataPreview>
