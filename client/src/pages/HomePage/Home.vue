@@ -1,6 +1,6 @@
 <template>
     
-    <div >
+    <div style="height:1075px">
         <NavBar></NavBar>
         <!-- <vs-row > -->
             <vs-col vs-w="1.5" vs-h="12" style="box-shadow: 1px 1px 20px rgba(0,0,0, 0.1)">

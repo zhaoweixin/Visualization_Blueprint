@@ -191,6 +191,7 @@ export default {
           }
         }
       }
+      
       for (let key in props) {
         this.data[key] = props[key];
       }

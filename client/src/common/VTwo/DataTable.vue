@@ -75,10 +75,11 @@ export default {
     initTable(){
       const that = this
       const req = async function(){
-        console.log(that.tableData)
         if(that.tableName in that.tableData){
-          that.th = that.tableData[that.tableName]["th"]
-          that.tr = that.tableData[that.tableName]["tr"]
+          that.th = JSON.parse(JSON.stringify(that.tableData[that.tableName]["th"]))
+          that.tr = JSON.parse(JSON.stringify(that.tableData[that.tableName]["tr"]))
+          console.log(that.th, that.tr)
+          console.log('get')
         } else {
           const response = await dataManager.getData(that.tableName)
           that.th = response.data.th

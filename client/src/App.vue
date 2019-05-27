@@ -43,8 +43,8 @@ export default {
 body{
 
   position: absolute;
-  width: 99.9%;
-  height: 99.9%;
+  width: 99.5%;
+  height: 99.5%;
   min-height:800px;
   background: #ffffff
 }

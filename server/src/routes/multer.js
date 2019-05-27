@@ -2,14 +2,15 @@ const bytes = require('bytes')
 const multer = require('multer')
 const fs = require('fs')
 const dataprocess = require('../models/dataprocess')
+
 // 配置multer
 // 详情请见https://github.com/expressjs/multer
 //设置上传文件夹
-const uploadFolder = './upload/';
+const uploadFolder = './src/upload/';
 const createFolder = function(folder){
     try{
         fs.accessSync(folder);  
-    }catch(e){ 
+    }catch(e){
         fs.mkdirSync(folder); 
     }
 };
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
     }, 
     filename: function (req, file, cb) { 
         // 将保存文件名设置为 字段名 + 时间戳，比如 logo-1478521468943 
-        cb(null, file.fieldname );   
+        cb(null, file.fieldname);   
     } 
 });
 

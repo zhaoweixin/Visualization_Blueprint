@@ -15,7 +15,7 @@ const dataInitFDB = dataProcessFunc.dataInitFDB
     //上传并保存数据
 router.post('/changeAvatar', upload.single(), function(req, res){
     const avatar = req.files.null;
-    avatar.mv('./upload/'+ avatar.name, function(err){
+    avatar.mv('./src/upload/'+ avatar.name, function(err){
         if(err)
             return res.status(500).send(err);
         dataname = avatar.name.split('.')[0];

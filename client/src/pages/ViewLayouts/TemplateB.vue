@@ -155,10 +155,8 @@ export default{
 	#chartC,
 	#chartD {
 		height: 100%;
-		opacity: 0.6;
 		border-radius: 3px;
 		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .3);
-		border: 1px solid grey;
 	}
 </style>
 <style media="screen">

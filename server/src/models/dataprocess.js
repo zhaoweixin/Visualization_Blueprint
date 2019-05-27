@@ -252,6 +252,7 @@ dataProcess = {
             }
             funcStore.addRawDataToBuffer(data, dataName);
             funcStore.generateDimensions(columns, dataName);
+            funcStore.calDimensionPreview(data, dataName);
             //funcStore.jsonAddId(rawdata);
             //funcStore.createIndex(rawdata, dataName);
             //funcStore.storeToDB(dataName)

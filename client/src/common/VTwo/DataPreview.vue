@@ -34,6 +34,7 @@ export default {
         tableName: function(val, oldVal){
             console.log("loading..")
             this.loading = true
+            this.initEle()
             this.drawChart()
         }
     },
@@ -63,13 +64,11 @@ export default {
                 }
                 that.chartInfo = []
                 that.chartInfo = [...that.chartInfo, ...response.data.attr]
-                console.log(response)
             }
             req()
         },
         drawChart(){
             let that = this
-                       
             let drawQuantitative = function(data, index){
                 let title = that.tableName + "-" + data.name
                 let id = "#pic-" + index
@@ -104,13 +103,14 @@ export default {
             let drawOrdinal = function(data, index){
                 let title = that.tableName + "-" + data.name
                 let id = "#pic-" + index
+                let drawdata = data.value.length <= 15 ? data.value : data.value.slice(0, 15)
                 let vegaObj = {
                     "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
                     "description": title,
                     "width": 300,
                     "height": 250,
                     "data": {
-                        "values": data.value,
+                        "values": drawdata,
                     },
                     "transform": [
                         {
@@ -164,6 +164,7 @@ export default {
                     that.loading = false
                 })
             }
+            
             req()
         }
     }

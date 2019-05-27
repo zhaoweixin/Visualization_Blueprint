@@ -2,31 +2,27 @@
   "Layout-0": {
     "chartA": {
       "data": {
-        "width": 1261,
-        "height": 306,
+        "width": 1344,
+        "height": 319,
         "layer": [
           {
             "encoding": {
               "x": {
-                "field": "Name",
-                "type": "ordinal"
+                "field": "Miles_per_Gallon",
+                "type": "quantitative"
               },
               "y": {
-                "field": "Year",
-                "type": "temporal"
+                "field": "Horsepower",
+                "type": "quantitative"
               },
               "color": {
-                "field": "Name",
-                "type": "ordinal"
+                "field": "Year",
+                "type": "temporal"
               }
             },
-            "width": 1261,
-            "height": 306,
-            "mark": {
-              "type": "bar",
-              "fill": "#FCCA46",
-              "stroke": ""
-            }
+            "width": 1344,
+            "height": 319,
+            "mark": "circle"
           }
         ],
         "background": "#ffffff",
@@ -4512,53 +4508,49 @@
       },
       "config": {},
       "layers": {
-        "Barchart": {
+        "Circle": {
           "encoding": {
             "x": {
-              "field": "Name",
-              "type": "ordinal"
+              "field": "Miles_per_Gallon",
+              "type": "quantitative"
             },
             "y": {
-              "field": "Year",
-              "type": "temporal"
+              "field": "Horsepower",
+              "type": "quantitative"
             },
             "color": {
-              "field": "Name",
-              "type": "ordinal"
+              "field": "Year",
+              "type": "temporal"
             }
           },
-          "width": 1261,
-          "height": 306,
-          "mark": {
-            "type": "bar",
-            "fill": "#FCCA46",
-            "stroke": ""
-          }
+          "width": 1344,
+          "height": 319,
+          "mark": "circle"
         }
       }
     },
     "chartB": {
       "data": {
-        "width": 1261,
-        "height": 306,
+        "width": 1344,
+        "height": 319,
         "layer": [
           {
             "encoding": {
               "x": {
-                "field": "Name",
-                "type": "ordinal"
-              },
-              "y": {
                 "field": "Year",
                 "type": "temporal"
               },
+              "y": {
+                "field": "Miles_per_Gallon",
+                "type": "quantitative"
+              },
               "color": {
-                "field": "Name",
-                "type": "ordinal"
+                "field": "Cylinders",
+                "type": "quantitative"
               }
             },
-            "width": 1261,
-            "height": 306,
+            "width": 1344,
+            "height": 319,
             "mark": {
               "type": "bar",
               "fill": "#FCCA46",
@@ -4572,7 +4564,7 @@
           "contains": "padding"
         },
         "title": {
-          "text": "Chart-0",
+          "text": "Chart-2",
           "anchor": "middle",
           "fontSize": 20
         },
@@ -9052,20 +9044,20 @@
         "Barchart": {
           "encoding": {
             "x": {
-              "field": "Name",
-              "type": "ordinal"
-            },
-            "y": {
               "field": "Year",
               "type": "temporal"
             },
+            "y": {
+              "field": "Miles_per_Gallon",
+              "type": "quantitative"
+            },
             "color": {
-              "field": "Name",
-              "type": "ordinal"
+              "field": "Cylinders",
+              "type": "quantitative"
             }
           },
-          "width": 1261,
-          "height": 306,
+          "width": 1344,
+          "height": 319,
           "mark": {
             "type": "bar",
             "fill": "#FCCA46",
@@ -9076,26 +9068,26 @@
     },
     "chartC": {
       "data": {
-        "width": 1261,
-        "height": 306,
+        "width": 1344,
+        "height": 319,
         "layer": [
           {
             "encoding": {
               "x": {
-                "field": "Name",
-                "type": "ordinal"
-              },
-              "y": {
                 "field": "Year",
                 "type": "temporal"
               },
+              "y": {
+                "field": "Horsepower",
+                "type": "quantitative"
+              },
               "color": {
-                "field": "Name",
-                "type": "ordinal"
+                "field": "Horsepower",
+                "type": "quantitative"
               }
             },
-            "width": 1261,
-            "height": 306,
+            "width": 1344,
+            "height": 319,
             "mark": {
               "type": "bar",
               "fill": "#FCCA46",
@@ -9109,7 +9101,7 @@
           "contains": "padding"
         },
         "title": {
-          "text": "Chart-0",
+          "text": "Chart-1",
           "anchor": "middle",
           "fontSize": 20
         },
@@ -13589,20 +13581,20 @@
         "Barchart": {
           "encoding": {
             "x": {
-              "field": "Name",
-              "type": "ordinal"
-            },
-            "y": {
               "field": "Year",
               "type": "temporal"
             },
+            "y": {
+              "field": "Horsepower",
+              "type": "quantitative"
+            },
             "color": {
-              "field": "Name",
-              "type": "ordinal"
+              "field": "Horsepower",
+              "type": "quantitative"
             }
           },
-          "width": 1261,
-          "height": 306,
+          "width": 1344,
+          "height": 319,
           "mark": {
             "type": "bar",
             "fill": "#FCCA46",
@@ -13613,30 +13605,34 @@
     },
     "chartD": {
       "data": {
-        "width": 1261,
-        "height": 306,
+        "width": 1344,
+        "height": 319,
         "layer": [
           {
             "encoding": {
-              "x": {
-                "field": "Name",
+              "shape": {
+                "field": "Origin",
                 "type": "ordinal"
               },
               "y": {
-                "field": "Year",
-                "type": "temporal"
+                "field": "Horsepower",
+                "type": "quantitative"
               },
-              "color": {
-                "field": "Name",
+              "x": {
+                "field": "Acceleration",
+                "type": "quantitative"
+              },
+              "fill": {
+                "field": "Origin",
                 "type": "ordinal"
               }
             },
-            "width": 1261,
-            "height": 306,
+            "width": 1344,
+            "height": 319,
             "mark": {
-              "type": "bar",
-              "fill": "#FCCA46",
-              "stroke": ""
+              "type": "point",
+              "fill": "#A1C181",
+              "stroke": "#fff"
             }
           }
         ],
@@ -13646,7 +13642,7 @@
           "contains": "padding"
         },
         "title": {
-          "text": "Chart-0",
+          "text": "Chart-4",
           "anchor": "middle",
           "fontSize": 20
         },
@@ -18123,27 +18119,31 @@
       },
       "config": {},
       "layers": {
-        "Barchart": {
+        "Scatterplot": {
           "encoding": {
-            "x": {
-              "field": "Name",
+            "shape": {
+              "field": "Origin",
               "type": "ordinal"
             },
             "y": {
-              "field": "Year",
-              "type": "temporal"
+              "field": "Horsepower",
+              "type": "quantitative"
             },
-            "color": {
-              "field": "Name",
+            "x": {
+              "field": "Acceleration",
+              "type": "quantitative"
+            },
+            "fill": {
+              "field": "Origin",
               "type": "ordinal"
             }
           },
-          "width": 1261,
-          "height": 306,
+          "width": 1344,
+          "height": 319,
           "mark": {
-            "type": "bar",
-            "fill": "#FCCA46",
-            "stroke": ""
+            "type": "point",
+            "fill": "#A1C181",
+            "stroke": "#fff"
           }
         }
       }
