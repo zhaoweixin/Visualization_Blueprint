@@ -199,11 +199,73 @@ export default {
       this.container.append("g").attr("id", "grid_layer");
       this.chartResize(window.innerWidth * 0.825, window.innerHeight * 0.6);
       bluecomponentscountInit(that)
+      this.containerListener()
       setTimeout(function(){
         that.notifications({'title':'Congratulations', 'text': 'drag and click to start your amazing work~', 'color': 'rgb(31,116,225)'})
       }, 3000)
     },
-
+    //container listener
+    containerListener(){
+      //distinguish click and dblclick
+      function clickcancel() {
+        var event = d3.dispatch('click', 'dblclick')
+        function cc(selection){
+          var down,
+            tolerance = 5,
+            last,
+            wait = null;
+            // euclidean distance
+          function dist(a, b){
+            return Math.sqrt(Math.pow(a[0] - b[0], 2), Math.pow(a[1] - b[1], 2));
+          }
+          selection.on('mousedown', function(){
+            down = d3.mouse(document.body);
+            last = +new Date();
+          });
+          selection.on('mouseup', function(){
+            if (dist(down, d3.mouse(document.body)) > tolerance){
+              return;
+            } else {
+              if (wait) {
+                window.clearTimeout(wait);
+                wait = null;
+                event.call("dblclick", this, d3.event)
+                //event.dblclick(d3.event);
+              } else {
+                wait = window.setTimeout((function(e){
+                  return function(){
+                    event.call("click", this, e)
+                    //event.click(e);
+                    wait = null;
+                  };
+                })(d3.event), 300);
+              }
+            }
+          });
+        };
+        let rebind = function(target, source) {
+          var i = 1, n = arguments.length, method;
+          while (++i < n) target[method = arguments[i]] = d3_rebind(target, source, source[method]);
+          return target;
+        };
+        function d3_rebind(target, source, method) {
+          return function() {
+            var value = method.apply(source, arguments);
+            return value === source ? target : value;
+          };
+        }
+        return rebind(cc, event, 'on');
+      }
+      let cc = clickcancel()
+      d3.select('#editorborad').call(cc);
+      
+      cc.on('click', function(d){
+        console.log('click editorborad')
+      })
+      cc.on('dblclick', function(d){
+        console.log('dblclick editorborad')
+      })
+    },
     //Resize the canvas after window's size has been updated
     chartResize(innerWidth, innerHeight) {
       let that = this
@@ -264,6 +326,7 @@ export default {
             that.drawingLine.getConnectInfo()["target"] == ""
           ) {
             let coordinates = d3.mouse(this);
+
             that.drawingLine.dynamicGenerateCurveLine(coordinates);
             that.drawingLine.findNearestPoint(coordinates, that.exstingPorts);
           }
@@ -449,11 +512,6 @@ export default {
       //Show the result in bottom canvas via vage compilier
       vegaEmbed("#canvas", result, { theme: "default" });
       this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
-    },
-    //store litte function
-    
-    storeFunc(){
-      
     },
 
     //find the component by the component's name
@@ -707,8 +765,7 @@ export default {
         }, 500)
       }
       interval()
-    }
-    ,
+    },
     buildBlueGraph(con){
       let that = this
       let connect = con.getConnectInfo()
