@@ -159,7 +159,6 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         //获取生成曲线长度并设定线段间隔为曲线长度
         let totalLength = attribu.coverLine.node().getTotalLength()
         attribu.coverLine.style('stroke-dasharray', 8 + "," + 8)
-
     }
 
     function generateEndPoints() {
@@ -222,7 +221,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         attribu.sourcePort = source
         attribu.points = [point, point]
         attribu.storePoints = [point, point]
-        attribu.container = container
+        attribu.container = container.append('g')
         attribu.sourceParent = parent
         attribu.sourceId = sourceid
     }
@@ -341,16 +340,14 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
     }
     this.remove = function(parent){
         if(attribu.targetParent == parent || attribu.sourceParent == parent){
-            attribu.baseLine.remove()
-            attribu.coverLine.remove()
+            attribu.container.remove()
             attribu.isDeleted = true
             return true
         }
         return false
     }
     this.forceRemove = function(){
-        attribu.baseLine.remove()
-        attribu.coverLine.remove()
+        attribu.container.remove()
         attribu.isDeleted = true
     }
     this.setExstingPorts = function(ports){
@@ -364,6 +361,12 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             "targetId": attribu.targetId
         }
         return re
+    }
+    this.removeBaseLine = function(){
+        
+    }
+    this.removeCoverLine = function(){
+
     }
     //对象共有属性
     //构造器

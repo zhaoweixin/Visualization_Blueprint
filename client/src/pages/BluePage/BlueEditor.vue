@@ -207,6 +207,7 @@ export default {
     //container listener
     containerListener(){
       //distinguish click and dblclick
+      let that = this
       function clickcancel() {
         var event = d3.dispatch('click', 'dblclick')
         function cc(selection){
@@ -256,6 +257,13 @@ export default {
         }
         return rebind(cc, event, 'on');
       }
+      function deleteSingleLine() {
+        that.drawingLine.forceRemove()
+        that.blueLines.pop()
+        that.drawingLine = ""
+        that.mouseAction == ""
+        that.container.on("mousemove", null)
+      }
       let cc = clickcancel()
       d3.select('#editorborad').call(cc);
       
@@ -263,7 +271,9 @@ export default {
         console.log('click editorborad')
       })
       cc.on('dblclick', function(d){
-        console.log('dblclick editorborad')
+        if(that.mouseAction == "drawing_line" && that.drawingLine.getConnectInfo()["target"] == ""){
+          deleteSingleLine()
+        }
       })
     },
     //Resize the canvas after window's size has been updated
