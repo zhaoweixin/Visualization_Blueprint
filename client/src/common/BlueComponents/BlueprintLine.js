@@ -99,6 +99,9 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
                 .style('fill', 'none')
                 .style('stroke', '#808080')
                 .attr('stroke-width', curveWidth)
+                .on("mouseover", baseLine_handleMouseOver)
+                .on("mouseout", baseLine_handleMouseOut)
+                .on('click', clickLineDelete)
         }
         else {
             //存在待绘制路径,反复绘制实现路径预览
@@ -112,6 +115,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             pathData = lineGenerator(points);
         if(attribu.coverLine != ''){
             attribu.coverLine.attr('d', pathData)
+
         }
     }
 
@@ -215,6 +219,44 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         }
     }
 
+    function baseLine_handleMouseOver(d, i){
+        d3.select(this)
+            .transition()
+            .duration(200)
+            .style("opacity", 0.1);
+        if(attribu.coverLine != ''){
+            attribu.coverLine
+                .transition()
+                .duration(200)
+                .attr("stroke-width", '5px');
+        }
+    }
+
+    function baseLine_handleMouseOut(d, i){
+        d3.select(this)
+            .transition()
+            .duration(500)
+            .style("opacity", 1);
+
+        if(attribu.coverLine != ''){
+            attribu.coverLine
+                .transition()
+                .duration(500)
+                .attr("stroke-width", '3px');
+        }
+    }
+
+    function clickLineDelete(){
+        console.log('click line')
+        forceRemove()
+        //this.forceRemove();
+    }
+
+    function forceRemove(){
+        attribu.container.remove()
+        attribu.isDeleted = true
+    }
+
     //特权方法
     this.setAttributions = function(){
         attribu.sourcePoint = point
@@ -239,37 +281,6 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             this.dynamicGenerateCurveLine()
             updateCoverLine()
         }
-
-        /*
-        let inPortsNames = {}
-        let outPortsNames = {}
-        inPorts.forEach(function (port) {
-            inPortsNames[port.parent + '_' + port.name] = 1
-        })
-
-        outPorts.forEach(function (port) {
-            outPortsNames[port.parent + '_' + port.name] = 1
-        })
-
-        let sourcePortKey = attribu.sourcePort.parent + '_' + attribu.sourcePort.name
-        let targetPortKey = attribu.targetPort.parent + '_' + attribu.targetPort.name
-
-        if (sourcePortKey in inPortsNames || sourcePortKey in outPortsNames) {
-
-            attribu.storePoints[0][0] += dx
-            attribu.storePoints[0][1] += dy
-            this.dynamicGenerateCurveLine()
-            updateCoverLine()
-        }
-        else if (targetPortKey in outPortsNames || targetPortKey in inPortsNames) {
-
-            attribu.storePoints[1][0] += dx
-            attribu.storePoints[1][1] += dy
-            this.dynamicGenerateCurveLine()
-            updateCoverLine()
-       
-        }
-        */
         
     }
     this.dynamicGenerateCurveLine = function(coordinates){
@@ -338,17 +349,8 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
                 .style('stroke-dashoffset', attribu.count)
         }
     }
-    this.remove = function(parent){
-        if(attribu.targetParent == parent || attribu.sourceParent == parent){
-            attribu.container.remove()
-            attribu.isDeleted = true
-            return true
-        }
-        return false
-    }
-    this.forceRemove = function(){
-        attribu.container.remove()
-        attribu.isDeleted = true
+    this.remove = function(){
+        forceRemove()
     }
     this.setExstingPorts = function(ports){
         attribu.existingPort = ports;
@@ -358,15 +360,10 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             "source": attribu.sourcePort,
             "target": attribu.targetPort,
             "sourceId": attribu.sourceId,
-            "targetId": attribu.targetId
+            "targetId": attribu.targetId,
+            "isDeleted": attribu.isDeleted
         }
         return re
-    }
-    this.removeBaseLine = function(){
-        
-    }
-    this.removeCoverLine = function(){
-
     }
     //对象共有属性
     //构造器

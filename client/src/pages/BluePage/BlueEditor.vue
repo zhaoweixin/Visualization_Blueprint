@@ -160,6 +160,8 @@ export default {
       isTable:false,
       model_config_text:"", // store configuration of chart
       calculatorDict:{},
+      blueLinesDelSignal:false, //true has been delete
+      lastBlueLines:[]
     }
   },
   components:{
@@ -258,7 +260,7 @@ export default {
         return rebind(cc, event, 'on');
       }
       function deleteSingleLine() {
-        that.drawingLine.forceRemove()
+        that.drawingLine.remove()
         that.blueLines.pop()
         that.drawingLine = ""
         that.mouseAction == ""
@@ -268,10 +270,9 @@ export default {
       d3.select('#editorborad').call(cc);
       
       cc.on('click', function(d){
-        console.log('click editorborad')
       })
       cc.on('dblclick', function(d){
-        if(that.mouseAction == "drawing_line" && that.drawingLine.getConnectInfo()["target"] == ""){
+        if(that.mouseAction == "drawing_line" && that.drawingLine != ""){
           deleteSingleLine()
         }
       })
@@ -761,20 +762,54 @@ export default {
         }
       }
     },
-    catchConnect(connect){
+    catchConnect(option){
       // catch ConnectInfo
       let that = this
-      let interval = function(){
+      let interval = function(con){
         let i = 0;
         let intr = setInterval(function() {
-          let conInfo = connect.getConnectInfo()
+          let conInfo = con.getConnectInfo()
           if (conInfo.targetId != ""){
             clearInterval(intr);
-            that.buildBlueGraph(connect)
+            that.buildBlueGraph(con)
           }
         }, 500)
       }
-      interval()
+      let emptyItems = function(){
+          that.chartLayout = {}
+          that.chartLayoutObj = {}
+          that.blueComponentNameList = []
+          that.vegaObjectObj = {}
+          that.chartData = {}
+      }
+      let removeDeltedLine = function(){
+        let savedLine = []
+        that.blueLines.forEach(function(d,i){
+          if(d.getConnectInfo().isDeleted == false){
+            savedLine.push(d)
+          }
+        })
+        that.blueLines = savedLine
+      }
+      if(option == "add"){
+        let tailNo = that.blueLines.length - 1;
+        interval(that.blueLines[tailNo])
+      }else if(option == "delete"){
+        //delete removed blueprint line
+        that.blueLinesDelSignal = true
+        removeDeltedLine()
+      }else if(option == "afterdelete"){
+        //empty the bluegraph map
+        //buildBlueGraph
+        emptyItems()
+        that.blueLines.forEach(function(d,i){
+          interval(d)
+        })
+      }else if(option == "empty"){
+        //empty the bluegraph map
+        emptyItems()
+      }
+
     },
     buildBlueGraph(con){
       let that = this
@@ -927,6 +962,7 @@ export default {
       })
 
       let connectionsDict = {}
+
       for(let i=0; i<that.blueLines.length; i++){
         let lineInfo = that.blueLines[i].getConnectInfo()
         let _name = lineInfo.sourceId + '_' + lineInfo.targetId
@@ -1025,7 +1061,7 @@ export default {
             linkname = _source + "_" + _target
 
         if(comid == _source || comid == _target){
-          that.blueLines[i].forceRemove();
+          that.blueLines[i].remove();
           that.blueLines[i] = null;
           that.blueLines.splice(i, 1);
           i--;
@@ -1195,12 +1231,37 @@ export default {
     //Monitor the bluelines' length, if length increased, the new connection will be parsed
     blueLines: {
       handler(curVal, oldVal) {
-        if(curVal.length != 0){
-          let tailNo = curVal.length - 1;
-          this.catchConnect(curVal[tailNo])
+        let that = this
+        if(that.blueLinesDelSignal == true){
+          // deleted blueprint line has been removed
+          // update bluegraph map using option 'afterdelete'
+          // turn blueLinesDelSignal to false
+          that.blueLinesDelSignal = false
+          that.catchConnect("afterdelete")
+          that.lastBlueLines = []
+          curVal.forEach(d => {
+            that.lastBlueLines.push(d)
+          })
+        }else if(that.blueLinesDelSignal == false){
+          if(curVal.length > that.lastBlueLines.length && curVal.length != 0){
+            //add line
+            that.catchConnect("add")
+          }
+          if(curVal.length < that.lastBlueLines.length){
+            //delete line
+            if(curVal.length == 0){
+              // empty relative items
+              this.catchConnect("empty")
+            }else{
+              this.catchConnect("delete")
+            }
+          }
+          that.lastBlueLines = []
+          curVal.forEach(d => {
+            that.lastBlueLines.push(d)
+          })
         }
-      },
-      deep: true
+      }
     }
   },
   mounted() {
@@ -1242,6 +1303,18 @@ export default {
         //com.animate();
       });
     }, 20);
+    setInterval(function(){
+      if(that.blueLines.length){
+        let templength = that.blueLines.length;
+        for(let i=0; i<templength; i++){
+          if(that.blueLines[i].getConnectInfo().isDeleted == "true"){
+            that.blueLines.splice(i,1)
+            templength = templength - 1
+            console.log(true)
+          }
+        }
+      }
+    }, 1500)
   }
 };
 </script>
