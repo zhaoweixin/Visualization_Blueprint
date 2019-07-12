@@ -161,7 +161,13 @@ export default {
       model_config_text:"", // store configuration of chart
       calculatorDict:{},
       blueLinesDelSignal:false, //true has been delete
-      lastBlueLines:[]
+      lastBlueLines:[],
+      lineColor:{
+        "Chart": "#967ADC",
+        "Caculator": "#37BC9B",
+        "Layout": "#37BC22",
+        "Data": "#F6BB42"
+      }
     }
   },
   components:{
@@ -347,16 +353,20 @@ export default {
         //boundind the click event to the circles which represent the ports in component
         //after click the circle, there will new a line in canvas
         com.getAllCircles().on("click", function(d) {
-          let params = com.getParmas()
-          let x = d.parentX + d.x;
-          let y = d.parentY + d.y;
-          let sourceid = params.id
+          let coverType = com.getType(),
+                coverColor = that.lineColor[coverType],
+                params = com.getParmas(),
+                x = d.parentX + d.x,
+                y = d.parentY + d.y,
+                sourceid = params.id;
+
           let line = (that.drawingLine = new BlueprintLine(
             that.container,
             params.name,
             [x, y],
             d,
-            sourceid
+            sourceid,
+            coverColor
           ));
           that.blueLines.push(line);
           that.mouseAction = "drawing_line";

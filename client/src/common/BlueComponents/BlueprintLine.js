@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 
-let TextBlueLine = function(container, parent, point, source, sourceid){
+let TextBlueLine = function(container, parent, point, source, sourceid, coverColor){
     //私有属性
     var attribu = {
         sourcePoint : '',
@@ -23,7 +23,9 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         targetParent : '',
         targetId : '',
         sourceId : '',
-        isDeleted : false
+        isDeleted : false,
+        coverColor : "#808080",
+        randomCoverId: ''
     }
     //私有方法
 
@@ -97,7 +99,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             attribu.baseLine = attribu.container.append('path')
                 .attr('d', pathData)
                 .style('fill', 'none')
-                .style('stroke', '#808080')
+                .style('stroke', '#dcdcdc')
                 .attr('stroke-width', curveWidth)
                 .on("mouseover", baseLine_handleMouseOver)
                 .on("mouseout", baseLine_handleMouseOut)
@@ -130,7 +132,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         //生成渐变
         let defs = attribu.container.append('defs')
         let linearGradient = defs.append('linearGradient')
-            .attr('id', 'linearColor')
+            .attr('id', attribu.randomCoverId)
             .attr('x1', '0%')
             .attr('y1', '0%')
             .attr('x2', '100%')
@@ -138,7 +140,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
 
         linearGradient.append("stop")
             .attr("offset", "0%")
-            .style("stop-color", '#0DFF9F');
+            .style("stop-color", attribu.coverColor);
 
        /* linearGradient.append("stop")
             .attr("offset", "50%")
@@ -150,13 +152,13 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
 
         linearGradient.append("stop")
             .attr("offset", "100%") 
-            .style("stop-color", '#0DFF9F')
+            .style("stop-color", attribu.coverColor)
 
         //绘制cover曲线
         attribu.coverLine = attribu.container.append('path')
             .attr('d', pathData)
             .style('fill', 'none')
-            .style('stroke', "url(#" + linearGradient.attr("id") + ")")
+            .style('stroke', "url(#" + attribu.randomCoverId + ")")
             .attr('class', 'rgbLine')
             .attr('stroke-width', curveWidth)
 
@@ -228,7 +230,7 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
             attribu.coverLine
                 .transition()
                 .duration(200)
-                .attr("stroke-width", '5px');
+                .attr("stroke-width", '7px');
         }
     }
 
@@ -266,6 +268,8 @@ let TextBlueLine = function(container, parent, point, source, sourceid){
         attribu.container = container.append('g')
         attribu.sourceParent = parent
         attribu.sourceId = sourceid
+        attribu.coverColor = coverColor
+        attribu.randomCoverId = "linearColor" + String(new Date()-0)
     }
     this.parentPosUpdated = function(dx, dy, inPorts, outPorts, curEleid) {
         
