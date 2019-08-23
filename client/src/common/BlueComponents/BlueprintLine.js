@@ -117,7 +117,6 @@ let TextBlueLine = function(container, parent, point, source, sourceid, coverCol
             pathData = lineGenerator(points);
         if(attribu.coverLine != ''){
             attribu.coverLine.attr('d', pathData)
-
         }
     }
 
