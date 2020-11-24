@@ -2,12 +2,12 @@
 
     "Chart": { 
         "name": "Chart", 
-        "childrens": ["Barchart", "Linechart", "Scatterplot", "Boxplot", "Stripplot", "Areaplot", "Circle", "ErrorBar", "ErrorBand", "Reacplot"],
+        "childrens": ["AreaMap","BezierCurveMap", "HeatMap","StraightLineMap","ScatterMap","TrackMap","Barchart", "Linechart", "Scatterplot", "Boxplot", "Stripplot", "Areaplot", "Circle", "ErrorBar", "ErrorBand", "Reacplot"],
         "color": "#967ADC"
     }, 
     "Caculator": { 
         "name": "Caculator", 
-        "childrens": ["Sum", "Reduce", "Multi"],
+        "childrens": ["Sum", "Reduce", "Multi","Sort","Aggregation","Filters"],
         "color": "#37BC9B"
     },
     "Layout":{

@@ -1,7 +1,111 @@
 {
-
-    "Barchart":{
-
+    "Filters":{
+        "inPorts": [
+            {"name":"labe","text":"LabeB","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"filter","text":"Filter","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "Aggregation":{
+        "inPorts": [
+            {"name":"labe","text":"LabeB","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"aggregation","text":"Aggregation","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "Sort":{
+        "inPorts": [
+            {"name":"ascending","text":"Ascending","attr":"operator","type":"in"},
+            {"name":"descending","text":"Descending","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"sort","text":"Sort","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "AreaMap":{
+        "inPorts": [
+            {"name":"area","text":"Area","attr":"encoding","type":"in"},
+            {"name":"color","text":"Color","attr":"encoding","type":"in"},
+            {"name":"opacity","text":"Opacity","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "AreaMap"
+    },
+    "BezierCurveMap":{
+        "inPorts": [
+            {"name":"originlat","text":"originLat","attr":"encoding","type":"in"},
+            {"name":"originlng","text":"originLng","attr":"encoding","type":"in"},
+            {"name":"destinationlat","text":"destinationLat","attr":"encoding","type":"in"},
+            {"name":"destinationlng","text":"destinationLng","attr":"encoding","type":"in"},
+            {"name":"strokesize","text":"StrokeSize","attr":"encoding","type":"in"},
+            {"name":"color","text":"Color","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "BezierCurveMap"
+    },
+    "HeatMap":{
+        "inPorts": [
+            {"name":"lat","text":"Lat","attr":"encoding","type":"in"},
+            {"name":"lng","text":"Lng","attr":"encoding","type":"in"},
+            {"name":"value","text":"Value","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "HeatMap"
+    },
+    "StraightLineMap":{
+        "inPorts": [
+            {"name":"originlat","text":"originLat","attr":"encoding","type":"in"},
+            {"name":"originlng","text":"originLng","attr":"encoding","type":"in"},
+            {"name":"destinationlat","text":"destinationLat","attr":"encoding","type":"in"},
+            {"name":"destinationlng","text":"destinationLng","attr":"encoding","type":"in"},
+            {"name":"strokesize","text":"StrokeSize","attr":"encoding","type":"in"},
+            {"name":"color","text":"Color","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "StraightLineMap"
+    },
+    "ScatterMap":{
+        "inPorts": [
+            {"name":"lat","text":"Lat","attr":"encoding","type":"in"},
+            {"name":"lng","text":"Lng","attr":"encoding","type":"in"},
+            {"name":"size","text":"Size","attr":"encoding","type":"in"},
+            {"name":"color","text":"Color","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "ScatterMap"
+    },
+    "TrackMap":{
+        "inPorts": [
+            {"name":"track","text":"Track","attr":"encoding","type":"in"},
+            {"name":"name","text":"Name","attr":"encoding","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"out","attr":"field","type":"out"}
+        ],
+        "type": "Chart",
+        "maker": "TrackMap"
+    },
+     "Barchart":{
         "inPorts": [
             {"name":"x","text":"X","attr":"encoding","type":"in"},
             {"name":"y","text":"Y","attr":"encoding","type":"in"},

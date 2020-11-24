@@ -22,12 +22,16 @@
             <div id='data_list'>
               <vs-collapse accordion :key="index" v-for="(data, index) in dataList">
                 <vs-collapse-item style="background:rgb(142,170,255); border-radius:10px">
+
                   <div slot="header" style="color:white; border-left:white solid 2px; padding-left:10px; font-size:15px">
                     {{data.name}}
                   </div>
+
                   <vs-button type="line" @click="initTable(data.name)">{{buttonName}}</vs-button>
                   <span style="color:white;padding:5px;float:right;font-size:15px">Length: {{data.length}}</span>
+
                   <vs-divider style="margin:3px"></vs-divider>
+
                   <div :key="index" v-for="(dim, index) in data.dimensions">
                     <vs-list-item>
                       <h3 style="float:left;color:white">{{dim.name}}</h3>
@@ -37,6 +41,7 @@
                         <vs-avatar style="float:right;margin:0px;margin-left:10px; background:rgb(167,189,255)" :color="dim.color" text="+" v-on:click="createNewComponent(data.name, dim)"/>
                     </vs-list-item>
                   </div>
+                  
                 </vs-collapse-item>
               </vs-collapse >
             </div>
@@ -80,7 +85,10 @@
               </div>
             </div>
             <div style="height:85%; border-right: 1px solid rgba(0,0,0,0.2)"></div>
-            <div id='canvas' style="display:flex; with:1420px; padding-left:20px;"></div>
+            <div id='canvas' style="display:flex; with:1420px; padding-left:20px;">
+           
+            </div> <AppMap></AppMap>
+            
           </vs-col>
         </vs-row>
 
@@ -101,6 +109,8 @@
 
 </template>
 <script>
+import AppMap from "./AppMap"
+// import store from "../../store/index"
 import vegaEmbed from "vega-embed";
 import config from "../../assets/config.json";
 import $ from "jquery";
@@ -167,6 +177,18 @@ export default {
         "Caculator": "#37BC9B",
         "Layout": "#37BC22",
         "Data": "#F6BB42"
+      },
+      mapchart:{
+        "HeatMap":"HeatMap",
+        "StraightLineMap":"StraightLineMap",
+        "ScatterMap":"ScatterMap",
+        "TrackMap":"TrackMap",
+        "AreaMap":"AreaMap",
+        "BezierCurveMap": "BezierCurveMap"
+      },
+      filetersdata:{
+        "data":"",
+        "selection":""
       }
     }
   },
@@ -174,13 +196,111 @@ export default {
       TemplateA,
       TemplateB,
       DataPreviewTable,
-      NavBar
+      NavBar,
+      AppMap
   },
   created(){
     //
     this.openFullScreen()
   },
   methods: {
+    createSolider(dom,datas,targers){
+      let datarange=[]
+      let min=9999999,max=0;
+      if(d3.select(dom).select(".labelleft")!=null)return
+      if(datas[0]==undefined|| isNaN(Number(datas[0][targers])))return
+      for(var i=0;i<datas.length;i++){
+        if(Number(datas[i][targers])>max){
+          max=Number(datas[i][targers])
+        }
+       if(Number(datas[i][targers])<min){
+          min=Number(datas[i][targers])
+        }
+      }
+      datarange[0]=min
+      datarange[1]=max
+      d3.select(dom).select("rect").attr("height",120)
+       let w = d3.select(dom).select("rect").attr("width")
+       let h = d3.select(dom).select("rect").attr("height")
+       
+       let margin = {top: 80,
+                bottom: 5,
+                left: 10,
+                right: 10}
+        let width = w - margin.left - margin.right;
+        let height = h - margin.top - margin.bottom;
+        let x = d3.scaleLinear()
+                  .domain(datarange)  // data space
+                  .range([0, width]);  // display space
+        let g=d3.select(dom).append('g').attr("transform","translate(10,80)").attr("class","filter_solider")
+        let labelL = g.append('text')
+                  .attr('class', 'labelleft')
+                  .attr('x', 0)
+                  .attr('y', height + 5)
+        let labelR = g.append('text')
+                      .attr('class', 'labelright')
+                      .attr('x', 0)
+                      .attr('y', height + 5)
+        let brush = d3.brushX()
+              .extent([[0,0], [width, height]])
+            .on('brush', function() {
+              let s = d3.event.selection;
+            // update and move labels
+              labelL.attr('x', s[0])
+                    .text((x.invert(s[0]).toFixed(2)))
+              labelR.attr('x', s[1])
+                    .text((x.invert(s[1]).toFixed(2)))
+            // move brush handles      
+              handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
+            // update view
+            // if the view should only be updated after brushing is over, 
+            // move these two lines into the on('end') part below
+              d3.select(dom).node().value = s.map(function(d) {var temp = x.invert(d); return +temp.toFixed(2)});
+              d3.select(dom).node().dispatchEvent(new CustomEvent("input"));
+            })
+       // append brush to g
+        let gBrush = g.append("g")
+                    .attr("class", "brush")
+                    .call(brush)
+
+        // add brush handles (from https://bl.ocks.org/Fil/2d43867ba1f36a05459c7113c7f6f98a)
+        let brushResizePath = function(d) {
+        let e = +(d.type == "e"),
+          x = e ? 1 : -1,
+          y = height / 2;
+            return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) +
+            "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) +
+            "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+        }
+
+        let handle = gBrush.selectAll(".handle--custom")
+                    .data([{type: "w"}, {type: "e"}])
+                    .enter().append("path")
+                    .attr("class", "handle--custom")
+                    .attr("stroke", "#000")
+                    .attr("fill", '#eee')
+                    .attr("cursor", "ew-resize")
+                    .attr("d", brushResizePath);
+    
+        // override default behaviour - clicking outside of the selected area 
+        // will select a small piece there rather than deselecting everything
+        // https://bl.ocks.org/mbostock/6498000
+        gBrush.selectAll(".overlay")
+              .each(function(d) { d.type = "selection"; })
+            .on("mousedown touchstart", brushcentered)
+  
+        function brushcentered() {
+              let dx = x(1) - x(0), // Use a fixed width when recentering.
+              cx = d3.mouse(this)[0],
+              x0 = cx - dx / 2,
+              x1 = cx + dx / 2;
+              d3.select(this.parentNode).call(brush.move, x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]);
+        }
+  
+      // select entire range
+      gBrush.call(brush.move, datarange.map(x))
+    },
+
     //Intialized the blueprint canvas
     chartInit(container, props) {
       let that = this;
@@ -358,8 +478,7 @@ export default {
                 params = com.getParmas(),
                 x = d.parentX + d.x,
                 y = d.parentY + d.y,
-                sourceid = params.id;
-
+                sourceid = params.id;    
           let line = (that.drawingLine = new BlueprintLine(
             that.container,
             params.name,
@@ -401,11 +520,15 @@ export default {
         });
       }
       const constructproperty = function(that, property, name){
+        // console.log(property)
         let obj = JSON.parse(JSON.stringify(property))
         //according to this.blueComponentsTypeCount construct id and add 1
         //make inports outports full
         //make sure that the viewer name equal to button content
         obj["fill"] = that.componentTypes[obj.type].color;
+        if(that.mapchart[obj.maker]!=null){//mapchart color
+          obj["fill"]="#3256FF"
+        }
         obj["name"] = name;
         obj['id'] = obj.type + '-' + that.blueComponentsTypeCount[obj.type];
         obj['x'] = 300 * Math.random() + 100;
@@ -448,14 +571,32 @@ export default {
           })
         }
         that.blueComponentsTypeCount[obj.type] = that.blueComponentsTypeCount[obj.type] + 1
+
+
+        //test
+        console.log(that.container)
+        console.log(obj)
+
+
         _com = new BlueComponent(that.container, obj);
+        console.log(_com.container._groups[0][0])
+        
         that.blueComponents.push(_com);
         addClickEvent2Circle(that, _com);
+        // d3.select().select("rect").attr("height",120)
+        if(_com.name=="Filters")
+        {
+          that.filetersdata["selection"]=_com.container._groups[0][0];
+        }
+        
+       
       }
       const dimensionSelected = function(that, source, dim){
         dim.checked = !dim.checked;
         if (dim.checked == true) dim.color = "#808080";
         else dim.color = "#202020";
+
+        
 
         //forced update datalist to re-rendering
         let origin = that.dataList;
@@ -529,10 +670,18 @@ export default {
 
     //generate chart
     generateChart(id, meta){
+      let that=this 
       let result = this.vegaObjectObj[meta["id"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
-      vegaEmbed("#canvas", result, { theme: "default" });
-      this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
+      console.log(result)
+      if(that.mapchart[result.layer[0].mark]!=null)
+        that.$store.commit("mapdata",{"maptype":result.layer[0].mark,"encoding":result.layer[0].encoding,"data":result.data.values})
+      else{
+         vegaEmbed("#canvas", result, { theme: "default" });
+        this.notifications({"title":result.title.text, "text": "Generate success~", "color": 'rgb(31,116,225)'})
+      }  
+
+     
     },
 
     //find the component by the component's name
@@ -574,6 +723,8 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target, vegaObjKey) {
       let that = this;
+      source['targetname']=target.name
+      source['parentname']=target.parent
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
       if (source.attr == "field" && target.attr == "encoding") {
         //console.log(source.dimension_type, source.name, target.name)
@@ -596,19 +747,21 @@ export default {
         let meta = {
           name: metaName, // source.name
           key: target.name,
-          type: metaType//source.dimension_type
+          type: metaType,//source.dimension_type,
         };
-        
+       
         let maker = that.modelConfig[target.parent].maker;
-        //console.log("setEncoding", source, target, meta)
+        console.log("setEncoding", meta)
+       
         that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
         that.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
       }
 
       // The case of source attribution is 「FIELD」 and target is 「OPERATOR」
       if (source.attr == "field" && target.attr == "operator") {
-        caculator_modules.setOperator(source.name);
-
+        
+        caculator_modules.setOperator(source);
+      
         if (caculator_modules.operatorsSetted()) {
           let result = {};
           
@@ -618,19 +771,26 @@ export default {
             result = caculator_modules.reduce(that.vegaObjectObj[vegaObjKey].getData());
           else if (target.parent == "Multi")
             result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
-
-          
+            else if(target.parent=="Sort")
+            result=caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Aggregation")
+            result=caculator_modules.Aggregations(that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Filters")
+            result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
+         
           let newData = result.data,
             newName = result.name;
           
           if(!target.id in that.calculatorDict){
             that.calculatorDict[target["id"]] = newName
           }
-
+         
           that.vegaObjectObj[vegaObjKey].setData(newData);
           caculator_modules.resetOperators();
+        
           let _com = that.getComponentByName(target.parent);
           _com.setFieldName(newName);
+         
         }
       }
 
@@ -856,7 +1016,13 @@ export default {
           }
         }
       }
-
+      console.log(_source)
+      console.log( this.loadedDatasets)
+      console.log(connect)
+      if(connect.target.parent=="Filters"){
+        // console.log(this.loadedDatasets[connect.sourceId],connect.source.name)
+        that.createSolider(this.filetersdata.selection,this.loadedDatasets[connect.sourceId],connect.source.name)
+      }
       //每增加一条边就更新
       //首先处理componentIndex
 
@@ -876,6 +1042,7 @@ export default {
         componentGraph[i] = new Array()
       })
       //graph init
+      console.log(this.blueComponentNameList)
       for(let i=0; i<this.blueComponentNameList.length; i++){
         for(let j=0; j<this.blueComponentNameList.length; j++){
           componentGraph[i][j] = 0
@@ -999,6 +1166,7 @@ export default {
             let _vegaObject = that.vegaObjectObj[_chart]
             let _sourcelink = _connections[k].source
             let _targetlink = _connections[k].target
+            console.log(_targetlink,_sourcelink,_vegaObject)
             that.setVegaConfig(_sourcelink, _targetlink, _chart)
           }
         }
@@ -1201,6 +1369,7 @@ export default {
     //Monitor the positon's change of component
     blueComponents: {
       handler(curVal, oldVal) {
+        // console.log(curVal)
         let that = this
         if(curVal.length == oldVal.length){
           for (let i = 0; i < this.blueComponents.length; i++){
@@ -1328,7 +1497,13 @@ export default {
   }
 };
 </script>
-
+<style>
+.filter_solider rect.selection{
+  stroke: none;
+  fill: steelblue;
+  fill-opacity: 0.6;
+}
+</style>
 <style lang="stylus" scoped>
 @import '../Styles/editor';
 </style>

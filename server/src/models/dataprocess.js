@@ -27,6 +27,7 @@ dbSchema.statics.findByName = function(name, cb){
 const funcStore = {
     jsonAddId: function(obj){
         //递归遍历确保所有变量加上id
+        print(obj)
         let that = this
         function recursion(obj) {
             for(let a in obj){

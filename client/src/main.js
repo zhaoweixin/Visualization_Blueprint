@@ -12,7 +12,7 @@ import 'iview/dist/styles/iview.css'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 import 'element-ui/lib/theme-chalk/index.css';
 import 'material-icons/iconfont/material-icons.css';
-//import store from './store'
+// import store from './store/index'
 
 import Entrance from './pages/HomePage/Home'
 import BlueEditor from './pages/BluePage/BlueEditor'
@@ -59,9 +59,13 @@ const store = new Vuex.Store({
     checkboxes:[],
     tableData : null,
     filesData: {},
-    currentTable: "barley"
+    currentTable: "barley",
+    mapdata:null
   },
   mutations: {
+    mapdata(state,mapdata){
+            state.mapdata=mapdata;
+    },
     getFilesList (state, payload) {
       state.filesListData = payload.data
     },
@@ -93,6 +97,9 @@ const store = new Vuex.Store({
       console.log(1111, dataName, store.state.filesData.hasOwnProperty(dataName))
       //store.state.filesData.hasOwnProperty("")
       return store.state.filesData.hasOwnProperty(dataName) ? store.state.filesData["dataName"] : []
+    },
+    getmapdata: state => {
+      return state.mapdata
     }
   },
   actions: {

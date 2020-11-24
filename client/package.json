@@ -10,6 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "mapbox-gl": "^1.13.0",
     "@types/d3": "^5.0.1",
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
@@ -28,9 +29,9 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "svg2img": "^0.5.0",
-    "vega": "^4.3.0",
-    "vega-embed": "^3.26.0",
-    "vega-lite": "^3.0.0-rc8",
+    "vega": "^5.17.0",
+    "vega-embed": "^6.12.2",
+    "vega-lite": "^4.17.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuesax": "^3.8.62",
