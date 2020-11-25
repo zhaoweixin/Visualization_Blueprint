@@ -84,6 +84,7 @@
           </vs-col>
         </vs-row>
 
+        <Guide2/>
         <vs-row v-if="isTable" vs-w="12">
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <data-preview-table :tabledata="tableData"></data-preview-table>   
@@ -120,6 +121,8 @@ import TemplateB from "../ViewLayouts/TemplateB"
 import NavBar from "../../common/NavBar/NavBar"
 import BlueprintLine from "../../common/BlueComponents/BlueprintLine"
 import DataPreviewTable from '../../common/DataPreviewer/DataPreviewTable'
+import Guide from "./Guide"
+import Guide2 from './Guide2'
 //import AutoPage from "../AutoBoard/AutoPage";
 
 export default {
@@ -174,7 +177,9 @@ export default {
       TemplateA,
       TemplateB,
       DataPreviewTable,
-      NavBar
+      NavBar,
+      Guide,
+      Guide2
   },
   created(){
     //
