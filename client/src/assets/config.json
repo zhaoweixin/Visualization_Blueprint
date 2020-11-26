@@ -1,6 +1,10 @@
 {
     "chartType":[
-
+        
+        {"text":"HeatMap","value": "HeatMap"},
+        {"text":"StraightLineMap","value": "StraightLineMap"},
+        {"text":"ScatterMap","value": "ScatterMap"},
+        {"text":"TrackMap","value":"TrackMap"},
         {"text": "Barchart", "value": "bar"},
         {"text": "Areachart", "value": "area"},
         {"text": "Linechart", "value": "line"},
@@ -13,7 +17,7 @@
 
     "typesPrefab": [
         {"text":"Quantitative","value":"quantitative"},
-        {"text":"Ordinal","value":"ordinal"},
+        {"text":"ordinal","value":"ordinal"},
         {"text":"Temporal","value":"temporal"},
         {"text":"Nominal","value":"nominal"}
     ]

@@ -41,7 +41,7 @@ export default class VegaModel {
 
         if(parent in this.layers){
 
-            let meta = {'field': rule.name, 'type':rule.type}
+            let meta = {'field': rule.name, 'type':rule.type,'sort':null}
 
             this.layers[parent].encoding[rule.key] = meta
             
@@ -50,7 +50,7 @@ export default class VegaModel {
 
             this.layers[parent] = {'encoding':{}}
                 
-            let meta = {'field': rule.name, 'type':rule.type}
+            let meta = {'field': rule.name, 'type':rule.type,'sort':"ascending"}
 
             this.layers[parent].encoding[rule.key] = meta
 
