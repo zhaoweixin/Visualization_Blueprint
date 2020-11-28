@@ -189,6 +189,10 @@ export default {
       filetersdata:{
         "data":"",
         "selection":""
+      },
+      Aggregationdata:{
+         "data":"",
+        "selection":""
       }
     }
   },
@@ -204,11 +208,68 @@ export default {
     this.openFullScreen()
   },
   methods: {
+    creatAggregation(dom){
+      let that=this;
+      d3.select(dom).select("rect").attr("height",120)
+      let w = d3.select(dom).select("rect").attr("width")
+      let h = d3.select(dom).select("rect").attr("height")
+      let margin = {top: 80,
+                bottom: 5,
+                left: 10,
+                right: 10}
+      let g=d3.select(dom).append("g").attr("class","_Aggregation")
+      g.selectAll("circle")
+      .data([1,2,3])
+      .enter()
+      .append("circle")
+      .attr("cx",function(d,i){
+        return 20+(w-margin.left-margin.right)/3*i
+      })
+      .attr("cy",110)
+      .attr("r",6)
+      .attr("fill","white")
+      .attr("value",function(d){return d})
+      .on("click",function(){
+        let arrg=["Sum","Count","Avg"]
+        let value=d3.select(this).attr("value")
+        that.Aggregationdata.data=arrg[value-1]
+        d3.select("._Aggregation").selectAll("circle").attr("fill",function(d){
+          if(d!=value)return "white"
+          else{
+            return "red"
+          }
+        })
+      })
+     d3.select(dom)
+        .selectAll("T_Aggregation")
+        .data(["Sum","Count","Avg"])
+        .enter()
+        .append('text')
+        .attr('class','T_Aggregation')
+        .attr('alignment-baseline', 'central')
+        .attr('x', function(d,i){
+            return 26+(w-margin.left-margin.right)/3*i
+        })
+        .attr('y', 110)
+        .attr('fill','white')
+        .attr('font-size','14')
+        .text(function(d){
+            return d
+        })
+    },
     createSolider(dom,datas,targers){
       let datarange=[]
       let min=9999999,max=0;
-      if(d3.select(dom).select(".labelleft")!=null)return
-      if(datas[0]==undefined|| isNaN(Number(datas[0][targers])))return
+      
+      if(d3.select(dom).select(".labelleft")._parents[0]!=null)
+      {
+        console.log("err")
+        return 
+      }
+      if(datas[0]==undefined|| isNaN(Number(datas[0][targers]))){
+        console.log("err2")
+        return
+      }
       for(var i=0;i<datas.length;i++){
         if(Number(datas[i][targers])>max){
           max=Number(datas[i][targers])
@@ -219,6 +280,7 @@ export default {
       }
       datarange[0]=min
       datarange[1]=max
+     
       d3.select(dom).select("rect").attr("height",120)
        let w = d3.select(dom).select("rect").attr("width")
        let h = d3.select(dom).select("rect").attr("height")
@@ -588,7 +650,13 @@ export default {
         {
           that.filetersdata["selection"]=_com.container._groups[0][0];
         }
-        
+        if(_com.name=="Aggregation")
+        {
+          
+          
+          that.Aggregationdata["selection"]=_com.container._groups[0][0];
+          that.creatAggregation(that.Aggregationdata.selection)
+        }
        
       }
       const dimensionSelected = function(that, source, dim){
@@ -608,8 +676,10 @@ export default {
           if (that.selectedData[source][dim.name] != undefined) {
             //如果存在该数据源该属性
             that.selectedData[source][dim.name] = "0";
+            console.log(dim)
           } else {
             //如果存在该数据源不存在该属性
+            
             that.selectedData[source][dim.name] = "1";
             that.dataComponent[source].addPort("out", {
               name: dim.name,
@@ -626,6 +696,7 @@ export default {
           that.selectedData[source][dim.name] = "1";
 
           let properties = that.modelConfig["Table"];
+          console.log(properties)
           properties["outPorts"] = [
             {
               name: dim.name,
@@ -723,6 +794,7 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target, vegaObjKey) {
       let that = this;
+      console.log(source, target)
       source['targetname']=target.name
       source['parentname']=target.parent
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
@@ -732,6 +804,7 @@ export default {
         let metaName = '',
           metaType = ''
         if(source.parentid != undefined){
+          if(source.parentid.split("-")[0] == "Chart")console.log(target.name)
           if(source.parentid.split("-")[0] == "Calculator"){
             metaName = that.calculatorDict[source["id"]]
             metaType = "quantitative"
@@ -774,10 +847,10 @@ export default {
             else if(target.parent=="Sort")
             result=caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
             else if(target.parent=="Aggregation")
-            result=caculator_modules.Aggregations(that.vegaObjectObj[vegaObjKey].getData());
+            result=caculator_modules.Aggregations(that.Aggregationdata.data,that.vegaObjectObj[vegaObjKey].getData());
             else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
-         
+          console.log(result)
           let newData = result.data,
             newName = result.name;
           
@@ -1020,9 +1093,11 @@ export default {
       console.log( this.loadedDatasets)
       console.log(connect)
       if(connect.target.parent=="Filters"){
-        // console.log(this.loadedDatasets[connect.sourceId],connect.source.name)
+        console.log("fileters")
+
         that.createSolider(this.filetersdata.selection,this.loadedDatasets[connect.sourceId],connect.source.name)
       }
+      
       //每增加一条边就更新
       //首先处理componentIndex
 
@@ -1161,12 +1236,14 @@ export default {
           //component-component
           let _name = _componentLink[j]
           let _connections = connectionsDict[_name]
+          console.log(_connections)
           for(let k=0; k<_connections.length; k++){
             //component port - component port
             let _vegaObject = that.vegaObjectObj[_chart]
             let _sourcelink = _connections[k].source
             let _targetlink = _connections[k].target
-            console.log(_targetlink,_sourcelink,_vegaObject)
+            console.log(_targetlink,_sourcelink,connectionsDict)
+            
             that.setVegaConfig(_sourcelink, _targetlink, _chart)
           }
         }

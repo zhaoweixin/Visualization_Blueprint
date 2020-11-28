@@ -5,7 +5,13 @@ export default class caculator_modules {
     //Set calculator's operator, if A is occupied, set the B
     static setOperator(dimension){
         this.parent=dimension.parentname
-        if(this.parent=="Sort"||this.parent=="Aggregation"||this.parent=="Filters"){
+        // if(this.parent=="Aggregation"){
+        //     if(this.dimensionA == undefined)
+        //     this.dimensionA = dimension.name
+        //     else
+        //     this.dimensionB = dimension.name
+        // }
+        if(this.parent=="Sort"||this.parent=="Filters"){
             this.dimensionA = dimension.name
             this.dimensionB = dimension.name
         }
@@ -16,6 +22,7 @@ export default class caculator_modules {
             
         else{
             this.targname.push(dimension.targetname)
+            
         }
         if(this.dimensionA == undefined)
             this.dimensionA = dimension.name
@@ -37,6 +44,7 @@ export default class caculator_modules {
         // if(this.parent=="Sort"){
         //     return true
         // }
+        // if(this.parent=="Aggregation" && this.dimensionA != undefined)
         if(this.dimensionA != undefined && this.dimensionB != undefined){
 
             return true
@@ -47,7 +55,7 @@ export default class caculator_modules {
 
         let name = "sum_"
         let that = this
-
+        console.log(this.dimensionA,this.dimensionB)
         name = name + this.dimensionA + '_' + this.dimensionB
         let xdata=[]
         for(let i=0;i<data.length;i++){
@@ -107,36 +115,164 @@ export default class caculator_modules {
             return  {'data':cdata,'name':that.dimensionA}
         }
     }
-    static Aggregations(data){
+    static Aggregations(choose,data){
         let that=this
         let name="Aggregation_"
-        let xdata=new Array()
-        if(that.dimensionA!=undefined){
-            let xmap=new Map()
-            name=name+this.dimensionA
-            
-            for(let i=0;i<data.length;i++){
-                
-                if(xmap.get(data[i][this.dimensionA])==null){
-                    xmap.set(data[i][this.dimensionA],1)
-                }
-                else{
-                    xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
-                    
-                }
+        console.log(this.targname)
+        console.log(choose)
+        let ks=new Array()
+        for(let k in data[0]){
+            ks.push(k)
+            if(!isNaN(data[0][k])){
+                name=k
             }
-           console.log(xmap.keys())
-            for(let k of xmap.keys()){
-                let x={}
-                x[this.dimensionA]=k
-                x[name]=xmap.get(k)
-                console.log(x)
-                xdata.push(x)
-            }
-            console.log(xdata,name)
-           
         }
-        return {'data':xdata,'name':name}
+        if(data[0][this.dimensionB]==undefined)
+        return {'data':data,'name':name}
+        if(this.targname.length==1){
+            if(this.targname[0]=="Dimension"){
+                let xdata=new Array()
+                let xmap=new Map()
+                name=name+"count_"+this.dimensionA
+            
+                for(let i=0;i<data.length;i++){
+                
+                    if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                    }
+                    else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                    }
+                }
+                for(let k of xmap.keys()){
+                    let x={}
+                    x[this.dimensionA]=k
+                    x[name]=xmap.get(k)
+                    xdata.push(x)
+                }
+                return {'data':xdata,'name':name}
+                    
+            }
+            if(this.targname[0]=="Measure"){
+                if(!isNaN(Number(data[0][this.dimensionA]))){
+                    if(choose=="Sum"){
+                        let sum=0
+                        name=name+"sum_"+this.dimensionA
+                        for(let i=0;i<data.length;i++){
+                            sum=sum+Number(data[i][this.dimensionA])
+                        }
+                        return {'data':{name:sum},'name':name}
+                    }
+                    if(choose=="Avg"){
+                        let avg=0
+                        name=name+"savg_"+this.dimensionA
+                        for(let i=0;i<data.length;i++){
+                            avg=avg+Number(data[i][this.dimensionA])
+                        }
+                        return {'data':{name:avg/data.length},'name':name}
+                    }
+                    if(choose=="Count"){
+                        let xdata=new Array()
+                        let xmap=new Map()
+                        name=name+"count_"+this.dimensionA
+            
+                        for(let i=0;i<data.length;i++){
+                
+                            if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                            }
+                            else{
+                                xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                            }
+                        }
+                        for(let k of xmap.keys()){
+                            let x={}
+                            x[this.dimensionA]=k
+                            x[name]=xmap.get(k)
+                            xdata.push(x)
+                        }
+                        return {'data':xdata,'name':name}
+                    }
+                }
+            }
+        }
+        else{
+            if(this.targname.length==2){
+                let exchange=''
+                let exchange1=""
+                if(this.targname[0]!="Dimension"){
+                    exchange=this.this.targname[0]
+                    this.targname[0]=this.targname[1]
+                    this.targname[1]=exchange
+                    exchange1=this.dimensionA
+                    this.dimensionA=this.dimensionB
+                    this.dimensionB=exchange1
+                }
+                console.log(this.dimensionA,this.dimensionB)
+                let xdata=new Array()
+                let xmap=new Map()
+                if(choose=="Sum"){
+                    name=name+"sum_"+this.dimensionA
+                    console.log(data)
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            console.log(data[i][this.dimensionB],Number(data[i][this.dimensionB]),parseFloat(data[i][this.dimensionB]))
+                            xmap.set(data[i][this.dimensionA],Number(data[i][this.dimensionB]))
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+Number(data[i][this.dimensionB]))
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+                }
+                if(choose=="Count"){
+                    name=name+"count_"+this.dimensionA
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            xmap.set(data[i][this.dimensionA],1)
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+                }
+                if(choose=="Avg"){
+                    let cmap=new Map()
+                    name=name+"avg_"+this.dimensionA
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            xmap.set(data[i][this.dimensionA],1)
+                            cmap.set(data[i][this.dimensionA],Number(data[i][this.dimensionB]))
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                            cmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+Number(data[i][this.dimensionB]))
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=cmap.get(k)/xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+                }
+            }
+        }
+        return {'data':data,'name':this.dimensionA}
     }
     static Sorts(data){
         let name=""

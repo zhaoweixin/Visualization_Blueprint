@@ -4,6 +4,7 @@
 
 <script>
     import mapboxgl from 'mapbox-gl'
+
     export default {
         name: "AppMap",
         data(){
@@ -46,10 +47,7 @@
             //   this.map_lines('',[{
             //     path:[[104.732971, 31.465042], [104.642886, 31.464969],[104.532076, 31.454854]]
             // }])
-            
-            // this.map_points(null,[
-            //     {lng:104.732971,lat:31.465042}
-            // ])
+            // this.map_points(null,[{lng:104.732971, lat:31.465042}])
 
             // this.map_heatmap(null,[
             //     {lng:116.357701,lat:40.012707},
@@ -76,10 +74,26 @@
             map_points(style,data){
 
                 // this.map.setStyle('mapbox://styles/mapbox/' +style["map-style"]['style'])
+
                 let points_features = []
 
-                data.forEach( (d) =>{
-                    points_features.push({
+                // data.forEach( (d) =>{
+                //     points_features.push({
+                //         "type": "Feature",
+                //         "properties": {
+                //             "color": 'red',
+                //             "opacity":.8,
+                //             "radius":20
+                //         },
+                //         "geometry": {
+                //             "type": "Point",
+                //             "coordinates": [d.lng, d.lat]
+                //         }
+                //     });
+                // });
+                let cdata=[]
+                for(let i=0;i<data.length;i++){
+                    points_features[i]={
                         "type": "Feature",
                         "properties": {
                             "color": 'red',
@@ -88,10 +102,11 @@
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [d.lng, d.lat]
+                            "coordinates": [data[i].lng, data[i].lat]
                         }
-                    });
-                });
+                    }
+                }
+                console.log(points_features)
 
                 let points_source = {
                     "type": "geojson",
@@ -109,7 +124,7 @@
                         "minzoom":7,
                         "type": "circle",
                         "paint": {
-                            "circle-radius": 20,
+                            "circle-radius": 5,
                             "circle-color":['get','color'],
                             "circle-opacity":['get','opacity'],
                         }
@@ -263,7 +278,7 @@
                         "properties": {
                             "color": "#eae33f",
                             "opacity":0.5,
-                            "radius":40
+                            "radius":5
                         },
                         "geometry": {
                             "type": "Point",
@@ -313,15 +328,33 @@
         watch:{
             getmapdata:{
                handler(data){
-                     this.map_config()
+                   
+          
                     //  this.map_lines('',[{path:[[104.732971, 31.465042], [104.642886, 31.464969],[104.532076, 31.454854]]}])
                 //    console.log(data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
                 // //    data.data.
-                this.map_lines('',data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
-                //     this.map_line('',{path:[ [104.732971, 31.465042], [104.732886, 31.464969],[104.732076, 31.464854],[104.724424, 31.462606]]})
-                //       this.map_line('',{path:[[104.732971, 31.465042], [104.732886, 31.464969],[104.732076, 31.464854],[104.724424, 31.462606]]})
+               
+                if(data.maptype=="TrackMap")
+                {
+                     this.map_config()
+                     
+                     this.map.setCenter([104.732971, 31.465042])
+                     this.map_lines('',data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
+                }
+                
 
-   
+                if(data.maptype=="ScatterMap"){
+                    this.map_config()
+                    console.log(data.data)
+                    this.map.setCenter([data.data[0].lng,data.data[0].lat])
+                    this.map_points(null,data.data)
+                }
+                if(data.maptype=="HeatMap"){
+                    console.log(data)
+                    this.map_config()
+                    this.map.setCenter([data.data[0].lng,data.data[0].lat])
+                    this.map_heatmap(null,data.data)
+                }
                         
                 }
             }
@@ -330,6 +363,7 @@
 </script>
 
 <style scoped>
+ @import url('mapbox-gl/dist/mapbox-gl.css');
   #map{
     width: 100%;
     height: 100%;
