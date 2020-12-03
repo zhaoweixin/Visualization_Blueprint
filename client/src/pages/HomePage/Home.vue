@@ -17,7 +17,7 @@
                 <data-preview-table/>
                 <data-list-viewer /> 
                 -->
-
+                
             </vs-col>
         <!-- </vs-row> -->
     </div> 
@@ -43,7 +43,7 @@ export default{
         NavBar,
         SideBar,
         DataTable,
-        DataPreview
+        DataPreview,
     },
     created(){
         //this.openFullScreen()
