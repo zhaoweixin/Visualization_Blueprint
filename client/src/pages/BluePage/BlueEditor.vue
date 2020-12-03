@@ -3,39 +3,119 @@
     <NavBar></NavBar>
 
     <div class="toolbar" style="position: absolute; top: 45px; right: 2%">
-      <vs-button v-on:click="graphPreview" class="tool_button" radius color="#1473e6" type="filled" icon="view_quilt"></vs-button>
-      <vs-button v-on:click="cleanPanel" class="tool_button" radius color="#1473e6" type="filled" icon="autorenew"></vs-button>
-      <vs-button v-on:click="cleanChart" class="tool_button" radius color="#1473e6" type="filled" icon="delete"></vs-button>
-      <vs-button v-on:click="downloadSetting" class="tool_button" radius color="#1473e6" type="filled" icon="cloud_download"></vs-button>
+      <vs-button
+        v-on:click="graphPreview"
+        class="tool_button"
+        radius
+        color="#1473e6"
+        type="filled"
+        icon="view_quilt"
+      ></vs-button>
+      <vs-button
+        v-on:click="cleanPanel"
+        class="tool_button"
+        radius
+        color="#1473e6"
+        type="filled"
+        icon="autorenew"
+      ></vs-button>
+      <vs-button
+        v-on:click="cleanChart"
+        class="tool_button"
+        radius
+        color="#1473e6"
+        type="filled"
+        icon="delete"
+      ></vs-button>
+      <vs-button
+        v-on:click="downloadSetting"
+        class="tool_button"
+        radius
+        color="#1473e6"
+        type="filled"
+        icon="cloud_download"
+      ></vs-button>
     </div>
     <vs-row style="height: 1075px">
       <!--整个高度为10-->
 
-      <vs-col id="data_list_container" vs-justify="left" vs-align="top" vs-w="2" style="max-height: 1080px; overflow-y: scroll; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
+      <vs-col
+        id="data_list_container"
+        vs-justify="left"
+        vs-align="top"
+        vs-w="2"
+        style="
+          max-height: 1080px;
+          overflow-y: scroll;
+          box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        "
+      >
         <!--该列放置数据和操作-->
         <!--数据列-->
 
         <vs-divider border-style="solid" color="dark">DATALIST AREA</vs-divider>
         <vs-row vs-h="5" style="display: block">
           <div id="data_list">
-            <vs-collapse accordion :key="index" v-for="(data, index) in dataList">
-              <vs-collapse-item style="background: rgb(142, 170, 255); border-radius: 10px">
-                <div slot="header" style="color: white; border-left: white solid 2px; padding-left: 10px; font-size: 15px">
+            <vs-collapse
+              accordion
+              :key="index"
+              v-for="(data, index) in dataList"
+            >
+              <vs-collapse-item
+                style="background: rgb(142, 170, 255); border-radius: 10px"
+              >
+                <div
+                  slot="header"
+                  style="
+                    color: white;
+                    border-left: white solid 2px;
+                    padding-left: 10px;
+                    font-size: 15px;
+                  "
+                >
                   {{ data.name }}
                 </div>
 
-                <vs-button type="line" @click="initTable(data.name)">{{ buttonName }}</vs-button>
-                <span style="color: white; padding: 5px; float: right; font-size: 15px">Length: {{ data.length }}</span>
+                <vs-button type="line" @click="initTable(data.name)">{{
+                  buttonName
+                }}</vs-button>
+                <span
+                  style="
+                    color: white;
+                    padding: 5px;
+                    float: right;
+                    font-size: 15px;
+                  "
+                  >Length: {{ data.length }}</span
+                >
 
                 <vs-divider style="margin: 3px"></vs-divider>
 
                 <div :key="index" v-for="(dim, index) in data.dimensions">
                   <vs-list-item>
                     <h3 style="float: left; color: white">{{ dim.name }}</h3>
-                    <vs-select style="float: left; width: 80%" v-model="dim.type">
-                      <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item, index) in dataTypes" />
+                    <vs-select
+                      style="float: left; width: 80%"
+                      v-model="dim.type"
+                    >
+                      <vs-select-item
+                        :key="index"
+                        :value="item.value"
+                        :text="item.text"
+                        v-for="(item, index) in dataTypes"
+                      />
                     </vs-select>
-                    <vs-avatar style="float: right; margin: 0px; margin-left: 10px; background: rgb(167, 189, 255)" :color="dim.color" text="+" v-on:click="createNewComponent(data.name, dim)" />
+                    <vs-avatar
+                      style="
+                        float: right;
+                        margin: 0px;
+                        margin-left: 10px;
+                        background: rgb(167, 189, 255);
+                      "
+                      :color="dim.color"
+                      text="+"
+                      v-on:click="createNewComponent(data.name, dim)"
+                    />
                   </vs-list-item>
                 </div>
               </vs-collapse-item>
@@ -46,13 +126,34 @@
         <vs-divider border-style="solid" color="dark">FUNCTION AREA</vs-divider>
         <vs-row vs-h="5">
           <div id="editor">
-            <vs-collapse accordion :key="item.name" v-for="item in componentTypes">
-              <vs-collapse-item style="background: rgb(142, 170, 255); border-radius: 10px">
-                <div slot="header" style="color: white; border-left: white solid 2px; padding-left: 10px; font-size: 15px">
+            <vs-collapse
+              accordion
+              :key="item.name"
+              v-for="item in componentTypes"
+            >
+              <vs-collapse-item
+                style="background: rgb(142, 170, 255); border-radius: 10px"
+              >
+                <div
+                  slot="header"
+                  style="
+                    color: white;
+                    border-left: white solid 2px;
+                    padding-left: 10px;
+                    font-size: 15px;
+                  "
+                >
                   {{ item.name }}
                 </div>
                 <vs-list :key="index" v-for="(meta, index) in item.childrens">
-                  <vs-button style="width: 80%; justify-content: left; margin-left: 10%" color="rgb(167,189,255)" type="filled" v-on:click="createNewComponent(meta)" icon="add_circle">{{ meta }}</vs-button>
+                  <vs-button
+                    style="width: 80%; justify-content: left; margin-left: 10%"
+                    color="rgb(167,189,255)"
+                    type="filled"
+                    v-on:click="createNewComponent(meta)"
+                    icon="add_circle"
+                    >{{ meta }}</vs-button
+                  >
                   <vs-divider></vs-divider>
                 </vs-list>
               </vs-collapse-item>
@@ -64,21 +165,53 @@
       <vs-col vs-w="10">
         <vs-row>
           <!--该列放置蓝图-->
-          <vs-col vs-align="center" vs-w="12" style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
-            <div id="preview" style="background: rgba(0, 0, 0, 0.05)"><svg id="editorborad"></svg></div>
+          <vs-col
+            vs-align="center"
+            vs-w="12"
+            style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)"
+          >
+            <div id="preview" style="background: rgba(0, 0, 0, 0.05)">
+              <svg id="editorborad"></svg>
+            </div>
           </vs-col>
         </vs-row>
 
-        <vs-row v-if="!isTable" id="preview_container" vs-w="12" style="display: flex; padding: 20px 20px 20px 20px; height: 38%">
+        <vs-row
+          v-if="!isTable"
+          id="preview_container"
+          vs-w="12"
+          style="display: flex; padding: 20px 20px 20px 20px; height: 38%"
+        >
           <!--该列放置生成图-->
-          <vs-col vs-type="flex" vs-align="center" vs-w="12" style="display: flex; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
+          <vs-col
+            vs-type="flex"
+            vs-align="center"
+            vs-w="12"
+            style="display: flex; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)"
+          >
             <div style="padding: 0 15px 0 15px; height: 80%">
-              <div style="padding-top: 10px" :key="index" v-for="(meta, index) in viewerbuttonbox">
-                <vs-button color="primary" type="border" v-bind:id="meta.id" :style="{ display: meta.style }" v-on:click="generateChart(meta.id, meta)">{{ meta.content }}</vs-button>
+              <div
+                style="padding-top: 10px"
+                :key="index"
+                v-for="(meta, index) in viewerbuttonbox"
+              >
+                <vs-button
+                  color="primary"
+                  type="border"
+                  v-bind:id="meta.id"
+                  :style="{ display: meta.style }"
+                  v-on:click="generateChart(meta.id, meta)"
+                  >{{ meta.content }}</vs-button
+                >
               </div>
             </div>
-            <div style="height: 85%; border-right: 1px solid rgba(0, 0, 0, 0.2)"></div>
-            <div id="canvas" style="display: flex; with: 1420px; padding-left: 20px"></div>
+            <div
+              style="height: 85%; border-right: 1px solid rgba(0, 0, 0, 0.2)"
+            ></div>
+            <div
+              id="canvas"
+              style="display: flex; with: 1420px; padding-left: 20px"
+            ></div>
             <AppMap></AppMap>
           </vs-col>
         </vs-row>
@@ -182,6 +315,10 @@ export default {
         data: "",
         selection: "",
       },
+      Aggregationdata: {
+        data: "",
+        selection: "",
+      },
     };
   },
   components: {
@@ -198,12 +335,69 @@ export default {
     this.openFullScreen();
   },
   methods: {
+    creatAggregation(dom) {
+      let that = this;
+      d3.select(dom).select("rect").attr("height", 120);
+      let w = d3.select(dom).select("rect").attr("width");
+      let h = d3.select(dom).select("rect").attr("height");
+      let margin = { top: 80, bottom: 5, left: 10, right: 10 };
+      let g = d3.select(dom).append("g").attr("class", "_Aggregation");
+      g.selectAll("circle")
+        .data([1, 2, 3])
+        .enter()
+        .append("circle")
+        .attr("cx", function (d, i) {
+          return 20 + ((w - margin.left - margin.right) / 3) * i;
+        })
+        .attr("cy", 110)
+        .attr("r", 6)
+        .attr("fill", "white")
+        .attr("value", function (d) {
+          return d;
+        })
+        .on("click", function () {
+          let arrg = ["Sum", "Count", "Avg"];
+          let value = d3.select(this).attr("value");
+          that.Aggregationdata.data = arrg[value - 1];
+          d3.select("._Aggregation")
+            .selectAll("circle")
+            .attr("fill", function (d) {
+              if (d != value) return "white";
+              else {
+                return "red";
+              }
+            });
+        });
+      d3.select(dom)
+        .selectAll("T_Aggregation")
+        .data(["Sum", "Count", "Avg"])
+        .enter()
+        .append("text")
+        .attr("class", "T_Aggregation")
+        .attr("alignment-baseline", "central")
+        .attr("x", function (d, i) {
+          return 26 + ((w - margin.left - margin.right) / 3) * i;
+        })
+        .attr("y", 110)
+        .attr("fill", "white")
+        .attr("font-size", "14")
+        .text(function (d) {
+          return d;
+        });
+    },
     createSolider(dom, datas, targers) {
       let datarange = [];
       let min = 9999999,
         max = 0;
-      if (d3.select(dom).select(".labelleft") != null) return;
-      if (datas[0] == undefined || isNaN(Number(datas[0][targers]))) return;
+
+      if (d3.select(dom).select(".labelleft")._parents[0] != null) {
+        console.log("err");
+        return;
+      }
+      if (datas[0] == undefined || isNaN(Number(datas[0][targers]))) {
+        console.log("err2");
+        return;
+      }
       for (var i = 0; i < datas.length; i++) {
         if (Number(datas[i][targers]) > max) {
           max = Number(datas[i][targers]);
@@ -214,6 +408,7 @@ export default {
       }
       datarange[0] = min;
       datarange[1] = max;
+
       d3.select(dom).select("rect").attr("height", 120);
       let w = d3.select(dom).select("rect").attr("width");
       let h = d3.select(dom).select("rect").attr("height");
@@ -225,7 +420,11 @@ export default {
         .scaleLinear()
         .domain(datarange) // data space
         .range([0, width]); // display space
-      let g = d3.select(dom).append("g").attr("transform", "translate(10,80)").attr("class", "filter_solider");
+      let g = d3
+        .select(dom)
+        .append("g")
+        .attr("transform", "translate(10,80)")
+        .attr("class", "filter_solider");
       let labelL = g
         .append("text")
         .attr("class", "labelleft")
@@ -268,7 +467,39 @@ export default {
         let e = +(d.type == "e"),
           x = e ? 1 : -1,
           y = height / 2;
-        return "M" + 0.5 * x + "," + y + "A6,6 0 0 " + e + " " + 6.5 * x + "," + (y + 6) + "V" + (2 * y - 6) + "A6,6 0 0 " + e + " " + 0.5 * x + "," + 2 * y + "Z" + "M" + 2.5 * x + "," + (y + 8) + "V" + (2 * y - 8) + "M" + 4.5 * x + "," + (y + 8) + "V" + (2 * y - 8);
+        return (
+          "M" +
+          0.5 * x +
+          "," +
+          y +
+          "A6,6 0 0 " +
+          e +
+          " " +
+          6.5 * x +
+          "," +
+          (y + 6) +
+          "V" +
+          (2 * y - 6) +
+          "A6,6 0 0 " +
+          e +
+          " " +
+          0.5 * x +
+          "," +
+          2 * y +
+          "Z" +
+          "M" +
+          2.5 * x +
+          "," +
+          (y + 8) +
+          "V" +
+          (2 * y - 8) +
+          "M" +
+          4.5 * x +
+          "," +
+          (y + 8) +
+          "V" +
+          (2 * y - 8)
+        );
       };
 
       let handle = gBrush
@@ -297,7 +528,10 @@ export default {
           cx = d3.mouse(this)[0],
           x0 = cx - dx / 2,
           x1 = cx + dx / 2;
-        d3.select(this.parentNode).call(brush.move, x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]);
+        d3.select(this.parentNode).call(
+          brush.move,
+          x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]
+        );
       }
 
       // select entire range
@@ -332,7 +566,11 @@ export default {
       bluecomponentscountInit(that);
       this.containerListener();
       setTimeout(function () {
-        that.notifications({ title: "Congratulations", text: "drag and click to start your amazing work~", color: "rgb(31,116,225)" });
+        that.notifications({
+          title: "Congratulations",
+          text: "drag and click to start your amazing work~",
+          color: "rgb(31,116,225)",
+        });
       }, 3000);
     },
     //container listener
@@ -348,7 +586,10 @@ export default {
             wait = null;
           // euclidean distance
           function dist(a, b) {
-            return Math.sqrt(Math.pow(a[0] - b[0], 2), Math.pow(a[1] - b[1], 2));
+            return Math.sqrt(
+              Math.pow(a[0] - b[0], 2),
+              Math.pow(a[1] - b[1], 2)
+            );
           }
           selection.on("mousedown", function () {
             down = d3.mouse(document.body);
@@ -382,7 +623,12 @@ export default {
           var i = 1,
             n = arguments.length,
             method;
-          while (++i < n) target[(method = arguments[i])] = d3_rebind(target, source, source[method]);
+          while (++i < n)
+            target[(method = arguments[i])] = d3_rebind(
+              target,
+              source,
+              source[method]
+            );
           return target;
         };
         function d3_rebind(target, source, method) {
@@ -446,7 +692,9 @@ export default {
         }
       };
 
-      d3.select("#editorborad").attr("width", this.width).attr("height", this.height);
+      d3.select("#editorborad")
+        .attr("width", this.width)
+        .attr("height", this.height);
 
       drawGrids(that);
     },
@@ -460,7 +708,10 @@ export default {
       const addLineEvent = function (that, com) {
         //darwing the connection line accroding to the mouse real-time position
         that.container.on("mousemove", function (d) {
-          if (that.mouseAction == "drawing_line" && that.drawingLine.getConnectInfo()["target"] == "") {
+          if (
+            that.mouseAction == "drawing_line" &&
+            that.drawingLine.getConnectInfo()["target"] == ""
+          ) {
             let coordinates = d3.mouse(this);
 
             that.drawingLine.dynamicGenerateCurveLine(coordinates);
@@ -478,7 +729,14 @@ export default {
             x = d.parentX + d.x,
             y = d.parentY + d.y,
             sourceid = params.id;
-          let line = (that.drawingLine = new BlueprintLine(that.container, params.name, [x, y], d, sourceid, coverColor));
+          let line = (that.drawingLine = new BlueprintLine(
+            that.container,
+            params.name,
+            [x, y],
+            d,
+            sourceid,
+            coverColor
+          ));
           that.blueLines.push(line);
           that.mouseAction = "drawing_line";
 
@@ -545,7 +803,8 @@ export default {
         if (obj.type == "Layout") {
           that.layoutIdName[obj.id] = {};
           that.layoutIdName[obj.id]["name"] = obj.name;
-          that.layoutIdName[obj.id]["ref"] = "msg" + "-" + obj.name.split(" ")[1];
+          that.layoutIdName[obj.id]["ref"] =
+            "msg" + "-" + obj.name.split(" ")[1];
         }
         if (obj.type == "Chart") {
           let propertiesname = obj.name + "-" + that.comChartCount[obj.name];
@@ -563,7 +822,8 @@ export default {
             }
           });
         }
-        that.blueComponentsTypeCount[obj.type] = that.blueComponentsTypeCount[obj.type] + 1;
+        that.blueComponentsTypeCount[obj.type] =
+          that.blueComponentsTypeCount[obj.type] + 1;
 
         //test
         console.log(that.container);
@@ -577,6 +837,10 @@ export default {
         // d3.select().select("rect").attr("height",120)
         if (_com.name == "Filters") {
           that.filetersdata["selection"] = _com.container._groups[0][0];
+        }
+        if (_com.name == "Aggregation") {
+          that.Aggregationdata["selection"] = _com.container._groups[0][0];
+          that.creatAggregation(that.Aggregationdata.selection);
         }
       };
       const dimensionSelected = function (that, source, dim) {
@@ -594,8 +858,10 @@ export default {
           if (that.selectedData[source][dim.name] != undefined) {
             //如果存在该数据源该属性
             that.selectedData[source][dim.name] = "0";
+            console.log(dim);
           } else {
             //如果存在该数据源不存在该属性
+
             that.selectedData[source][dim.name] = "1";
             that.dataComponent[source].addPort("out", {
               name: dim.name,
@@ -612,6 +878,7 @@ export default {
           that.selectedData[source][dim.name] = "1";
 
           let properties = that.modelConfig["Table"];
+          console.log(properties);
           properties["outPorts"] = [
             {
               name: dim.name,
@@ -659,10 +926,19 @@ export default {
       let result = this.vegaObjectObj[meta["id"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
       console.log(result);
-      if (that.mapchart[result.layer[0].mark] != null) that.$store.commit("mapdata", { maptype: result.layer[0].mark, encoding: result.layer[0].encoding, data: result.data.values });
+      if (that.mapchart[result.layer[0].mark] != null)
+        that.$store.commit("mapdata", {
+          maptype: result.layer[0].mark,
+          encoding: result.layer[0].encoding,
+          data: result.data.values,
+        });
       else {
         vegaEmbed("#canvas", result, { theme: "default" });
-        this.notifications({ title: result.title.text, text: "Generate success~", color: "rgb(31,116,225)" });
+        this.notifications({
+          title: result.title.text,
+          text: "Generate success~",
+          color: "rgb(31,116,225)",
+        });
       }
     },
 
@@ -705,6 +981,7 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target, vegaObjKey) {
       let that = this;
+      console.log(source, target);
       source["targetname"] = target.name;
       source["parentname"] = target.parent;
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
@@ -714,6 +991,8 @@ export default {
         let metaName = "",
           metaType = "";
         if (source.parentid != undefined) {
+          if (source.parentid.split("-")[0] == "Chart")
+            console.log(target.name);
           if (source.parentid.split("-")[0] == "Calculator") {
             metaName = that.calculatorDict[source["id"]];
             metaType = "quantitative";
@@ -746,13 +1025,33 @@ export default {
         if (caculator_modules.operatorsSetted()) {
           let result = {};
 
-          if (target.parent == "Sum") result = caculator_modules.sum(that.vegaObjectObj[vegaObjKey].getData());
-          else if (target.parent == "Reduce") result = caculator_modules.reduce(that.vegaObjectObj[vegaObjKey].getData());
-          else if (target.parent == "Multi") result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
-          else if (target.parent == "Sort") result = caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
-          else if (target.parent == "Aggregation") result = caculator_modules.Aggregations(that.vegaObjectObj[vegaObjKey].getData());
-          else if (target.parent == "Filters") result = caculator_modules.Filters(that.filetersdata.selection, that.vegaObjectObj[vegaObjKey].getData());
-
+          if (target.parent == "Sum")
+            result = caculator_modules.sum(
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          else if (target.parent == "Reduce")
+            result = caculator_modules.reduce(
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          else if (target.parent == "Multi")
+            result = caculator_modules.multiple(
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          else if (target.parent == "Sort")
+            result = caculator_modules.Sorts(
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          else if (target.parent == "Aggregation")
+            result = caculator_modules.Aggregations(
+              that.Aggregationdata.data,
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          else if (target.parent == "Filters")
+            result = caculator_modules.Filters(
+              that.filetersdata.selection,
+              that.vegaObjectObj[vegaObjKey].getData()
+            );
+          console.log(result);
           let newData = result.data,
             newName = result.name;
 
@@ -772,13 +1071,19 @@ export default {
 
       if (source.attr == "field" && target.attr == "connector") {
         if (this.loadedDatasets[source.parent] == undefined) {
-          await dataHelper.getDataDetail(source.parent).then(function (response) {
-            that.loadedDatasets[source.parent] = response.data.data.values;
-          });
+          await dataHelper
+            .getDataDetail(source.parent)
+            .then(function (response) {
+              that.loadedDatasets[source.parent] = response.data.data.values;
+            });
         }
 
         if (this.dataConnection[source.parent] == undefined) {
-          this.dataConnection[source.parent] = { data: this.loadedDatasets[source.parent], dataName: source.parent, dim: source.name };
+          this.dataConnection[source.parent] = {
+            data: this.loadedDatasets[source.parent],
+            dataName: source.parent,
+            dim: source.name,
+          };
           let connectionNames = d3.keys(this.dataConnection);
           if (connectionNames.length == 2) {
             let data1 = this.dataConnection[connectionNames[0]];
@@ -831,7 +1136,11 @@ export default {
             }
           } else if (d3.keys(this.dataConnection).length > 2) {
             this.dataConnection[source.parent] = {};
-            this.dataConnection[source.parent] = { data: this.loadedDatasets[source.parent], dataName: source.parent, dim: source.name };
+            this.dataConnection[source.parent] = {
+              data: this.loadedDatasets[source.parent],
+              dataName: source.parent,
+              dim: source.name,
+            };
           }
         }
       }
@@ -842,13 +1151,20 @@ export default {
         let index = null;
 
         if (target.parent == "Filter") {
-          this.getComponentByName(target.parent).showDataPreview(this.loadedDatasets[this.contextData], sourcePortName);
+          this.getComponentByName(target.parent).showDataPreview(
+            this.loadedDatasets[this.contextData],
+            sourcePortName
+          );
 
           let _com = this.getComponentByName(target.parent);
 
           _com.setFieldName(source.name);
         } else if (target.parent == "Log") {
-          let result = caculator_modules.log(this.vegaObjectObj[vegaObjKey].getData(), sourcePortName, "e");
+          let result = caculator_modules.log(
+            this.vegaObjectObj[vegaObjKey].getData(),
+            sourcePortName,
+            "e"
+          );
 
           this.vegaObjectObj[vegaObjKey].setData(result.data);
           let _com = this.getComponentByName(target.parent);
@@ -865,11 +1181,17 @@ export default {
             type: source.dimension_type,
           };
 
-          let ret = this.getComponentByName(source.parent).getFilterRangeAndDim();
+          let ret = this.getComponentByName(
+            source.parent
+          ).getFilterRangeAndDim();
 
           let range = ret.range;
           let dimPreview = ret.dim;
-          let result = processor_modules.filter(this.vegaObjectObj[vegaObjKey].getData(), range, dimPreview);
+          let result = processor_modules.filter(
+            this.vegaObjectObj[vegaObjKey].getData(),
+            range,
+            dimPreview
+          );
 
           this.vegaObjectObj[vegaObjKey].setData(result.data);
           let maker = this.modelConfig[target.parent].maker;
@@ -952,11 +1274,17 @@ export default {
           that.chartLayoutObj[_target["id"]] = {};
 
           that.chartLayoutObj[_target["id"]][_target["text"]] = "";
-          that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]));
+          that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(
+            JSON.stringify(that.vegaObjectObj[_source["parentid"]])
+          );
         } else {
-          if (that.chartLayoutObj[_target["id"]][_target["text"]] == undefined) {
+          if (
+            that.chartLayoutObj[_target["id"]][_target["text"]] == undefined
+          ) {
             that.chartLayoutObj[_target["id"]][_target["text"]] = "";
-            that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(JSON.stringify(that.vegaObjectObj[_source["parentid"]]));
+            that.chartLayoutObj[_target["id"]][_target["text"]] = JSON.parse(
+              JSON.stringify(that.vegaObjectObj[_source["parentid"]])
+            );
           }
         }
       }
@@ -964,9 +1292,15 @@ export default {
       console.log(this.loadedDatasets);
       console.log(connect);
       if (connect.target.parent == "Filters") {
-        // console.log(this.loadedDatasets[connect.sourceId],connect.source.name)
-        that.createSolider(this.filetersdata.selection, this.loadedDatasets[connect.sourceId], connect.source.name);
+        console.log("fileters");
+
+        that.createSolider(
+          this.filetersdata.selection,
+          this.loadedDatasets[connect.sourceId],
+          connect.source.name
+        );
       }
+
       //每增加一条边就更新
       //首先处理componentIndex
 
@@ -993,8 +1327,12 @@ export default {
         }
       }
       for (let i = 0; i < this.blueLinesName.length; i++) {
-        let indexsource = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split("_")[0]);
-        let indextarget = this.blueComponentNameList.indexOf(String(this.blueLinesName[i]).split("_")[1]);
+        let indexsource = this.blueComponentNameList.indexOf(
+          String(this.blueLinesName[i]).split("_")[0]
+        );
+        let indextarget = this.blueComponentNameList.indexOf(
+          String(this.blueLinesName[i]).split("_")[1]
+        );
 
         componentGraph[indexsource][indextarget] = 1;
       }
@@ -1006,7 +1344,10 @@ export default {
 
       for (let i = 0; i < this.blueComponentNameList.length; i++) {
         if (this.blueComponentNameList[i] != "") {
-          if (this.getComponentById(this.blueComponentNameList[i]).getType() == "Chart") {
+          if (
+            this.getComponentById(this.blueComponentNameList[i]).getType() ==
+            "Chart"
+          ) {
             if (!chartDict.hasOwnProperty(this.blueComponentNameList[i])) {
               chartDict[this.blueComponentNameList[i]] = i;
               chartList.push(this.blueComponentNameList[i]);
@@ -1030,7 +1371,11 @@ export default {
           //1300 300
 
           //1350 350
-          that.vegaObjectObj[d] = new VegaModel(parseInt(_height), parseInt(_width), d);
+          that.vegaObjectObj[d] = new VegaModel(
+            parseInt(_height),
+            parseInt(_width),
+            d
+          );
         }
       });
 
@@ -1103,12 +1448,14 @@ export default {
           //component-component
           let _name = _componentLink[j];
           let _connections = connectionsDict[_name];
+          console.log(_connections);
           for (let k = 0; k < _connections.length; k++) {
             //component port - component port
             let _vegaObject = that.vegaObjectObj[_chart];
             let _sourcelink = _connections[k].source;
             let _targetlink = _connections[k].target;
-            console.log(_targetlink, _sourcelink, _vegaObject);
+            console.log(_targetlink, _sourcelink, connectionsDict);
+
             that.setVegaConfig(_sourcelink, _targetlink, _chart);
           }
         }
@@ -1120,7 +1467,9 @@ export default {
         that.chartLayout[d].forEach(function (v) {
           let _targetid = v.split("_")[0];
           let _targettext = v.split("_")[1];
-          that.chartLayoutObj[_targetid][_targettext] = JSON.parse(JSON.stringify(that.vegaObjectObj[d]));
+          that.chartLayoutObj[_targetid][_targettext] = JSON.parse(
+            JSON.stringify(that.vegaObjectObj[d])
+          );
         });
       });
     },
@@ -1140,7 +1489,11 @@ export default {
 
       if (key.length == 0) {
         //alert notice that user should choose one layout
-        that.notifications({ title: "Notice", text: "Please select a layout", color: "danger" });
+        that.notifications({
+          title: "Notice",
+          text: "Please select a layout",
+          color: "danger",
+        });
       } else if (key.length == 1) {
         that.layoutlist.forEach(function (d) {
           if (d == that.layoutIdName[key[0]]["name"].split(" ")[1]) {
@@ -1150,8 +1503,13 @@ export default {
             //owing to vue life circle, when the first click, the that.$refs[_ref] haven't loaded
             //when the second click, the that.$refs[_ref] have loaded
             if (that.$refs[_ref] != undefined) {
-              that.$refs[_ref].getModularInfo({ config: that.chartLayoutObj[key[0]], layoutname: key[0] });
-              that.model_config_text = JSON.parse(JSON.stringify(that.chartLayoutObj));
+              that.$refs[_ref].getModularInfo({
+                config: that.chartLayoutObj[key[0]],
+                layoutname: key[0],
+              });
+              that.model_config_text = JSON.parse(
+                JSON.stringify(that.chartLayoutObj)
+              );
               that.popupActivo4 = !that.popupActivo4;
             }
           } else {
@@ -1159,7 +1517,11 @@ export default {
           }
         });
       } else if (key.length == 2) {
-        that.notifications({ title: "Notice", text: "Please choose one layout. You have now chosen two layouts.", color: "danger" });
+        that.notifications({
+          title: "Notice",
+          text: "Please choose one layout. You have now chosen two layouts.",
+          color: "danger",
+        });
       }
     },
     remove(com) {
@@ -1215,12 +1577,17 @@ export default {
         that.viewerbuttonbox[index]["content"] = "button" + index;
         that.viewerbuttonbox[index]["style"] = "none";
         that.viewerbuttonbox[index]["id"] = "";
-        that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] + 1;
+        that.blueComponentsTypeCount[comtype] =
+          that.blueComponentsTypeCount[comtype] + 1;
       }
-      that.blueComponentsTypeCount[comtype] = that.blueComponentsTypeCount[comtype] - 1;
+      that.blueComponentsTypeCount[comtype] =
+        that.blueComponentsTypeCount[comtype] - 1;
       // if exist viewer, "delete" remove button
       if (that.blueComponentNameList.length > 0) {
-        that.blueComponentNameList.splice(that.blueComponentNameList.indexOf(comid), 1);
+        that.blueComponentNameList.splice(
+          that.blueComponentNameList.indexOf(comid),
+          1
+        );
       }
     },
     cleanChart() {
@@ -1233,7 +1600,11 @@ export default {
     cleanPanel() {
       let that = this;
       if (this.blueComponents.length == 0) {
-        this.notifications({ title: "Notice", text: "There are no components here.", color: "danger" });
+        this.notifications({
+          title: "Notice",
+          text: "There are no components here.",
+          color: "danger",
+        });
         return;
       }
       //clean draw panel
@@ -1267,7 +1638,11 @@ export default {
       for (let key in this.blueComponentsTypeCount) {
         this.blueComponentsTypeCount[key] = 0;
       }
-      this.notifications({ title: "Notice", text: "clean panel success~", color: "rgb(31,116,225)" });
+      this.notifications({
+        title: "Notice",
+        text: "clean panel success~",
+        color: "rgb(31,116,225)",
+      });
     },
     openFullScreen: function () {
       //el-icon-loading
@@ -1286,7 +1661,11 @@ export default {
       let req = async function () {
         let key = Object.keys(that.chartLayoutObj);
         if (key.length == 0) {
-          that.notifications({ title: "Notice", text: "Please connect a layout", color: "danger" });
+          that.notifications({
+            title: "Notice",
+            text: "Please connect a layout",
+            color: "danger",
+          });
         } else if (key.length == 1) {
           let template = key[0];
           let obj = {
@@ -1328,7 +1707,10 @@ export default {
               this.blueLines.forEach(function (line, i) {
                 //寻找与组件相关的blueLines
                 let connectInfo = line.getConnectInfo();
-                if (connectInfo.sourceId == curEle.getId() || connectInfo.targetId == curEle.getId()) {
+                if (
+                  connectInfo.sourceId == curEle.getId() ||
+                  connectInfo.targetId == curEle.getId()
+                ) {
                   line.parentPosUpdated(
                     curPos.dx, //delta of horizon postion
                     curPos.dy, //delta of vertical position

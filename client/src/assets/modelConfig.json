@@ -1,7 +1,7 @@
 {
     "Filters":{
         "inPorts": [
-            {"name":"labe","text":"LabeB","attr":"operator","type":"in"}
+            {"name":"labe","text":"Labe","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"filter","text":"Filter","attr":"field","type":"out"}
@@ -10,10 +10,12 @@
     },
     "Aggregation":{
         "inPorts": [
-            {"name":"labe","text":"LabeB","attr":"operator","type":"in"}
+            {"name":"Dimension","text":"Dimension","attr":"operator","type":"in"},
+            {"name":"measure","text":"Measure","attr":"operator","type":"in"}
+
         ],
         "outPorts": [
-            {"name":"aggregation","text":"Aggregation","attr":"field","type":"out"}
+            {"name":"out","text":"Out","attr":"field","type":"out"}
         ],
         "type":"Caculator"
     },
@@ -58,7 +60,8 @@
         "inPorts": [
             {"name":"lat","text":"Lat","attr":"encoding","type":"in"},
             {"name":"lng","text":"Lng","attr":"encoding","type":"in"},
-            {"name":"value","text":"Value","attr":"encoding","type":"in"}
+            {"name":"value","text":"Value","attr":"encoding","type":"in"},
+            {"name":"data","text":"Data","attr":"encoding","type":"in"}
         ],
         "outPorts": [
             {"name":"out","text":"out","attr":"field","type":"out"}
@@ -86,7 +89,8 @@
             {"name":"lat","text":"Lat","attr":"encoding","type":"in"},
             {"name":"lng","text":"Lng","attr":"encoding","type":"in"},
             {"name":"size","text":"Size","attr":"encoding","type":"in"},
-            {"name":"color","text":"Color","attr":"encoding","type":"in"}
+            {"name":"color","text":"Color","attr":"encoding","type":"in"},
+            {"name":"data","text":"Data","attr":"encoding","type":"in"}
         ],
         "outPorts": [
             {"name":"out","text":"out","attr":"field","type":"out"}
@@ -97,7 +101,8 @@
     "TrackMap":{
         "inPorts": [
             {"name":"track","text":"Track","attr":"encoding","type":"in"},
-            {"name":"name","text":"Name","attr":"encoding","type":"in"}
+            {"name":"name","text":"Name","attr":"encoding","type":"in"},
+            {"name":"data","text":"Data","attr":"encoding","type":"in"}
         ],
         "outPorts": [
             {"name":"out","text":"out","attr":"field","type":"out"}

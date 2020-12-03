@@ -171,6 +171,7 @@ const funcStore = {
         }
         dimension.forEach(function(d,i){
             d["data"] = []
+            
             rawdata.forEach(function(v,j){
                 d["data"].push(v[d["name"]])
             })
@@ -551,10 +552,32 @@ const dataInitFDB = {
         dbModel.find({},{"name": 1, "data": 1}, function(err, docs){
             if(err){console.log(err)}
             else{
+                
                 for(const key in docs){
-                    const name = docs[key]["name"],
-                        data = JSON.parse(docs[key]["data"])
-                    funcStore.addRawDataToBuffer(data, name);
+                    console.log(docs[key]["name"])
+                    
+                    let name = docs[key]["name"],data=''
+                    
+                        // data = JSON.parse(docs[key]["data"])
+                    // const data = '';
+                   
+                    // else 
+                    // {
+                        
+                    // }
+                    // if(docs[key]["name"]!="scattermap")
+                        data=JSON.parse(docs[key]["data"])
+                    
+                    //  if(docs[key]["name"]=="scattermap")
+                    // {
+                    //    data=JSON.parse('"'+docs[key]["data"]+'"')
+                    //     funcStore.addRawDataToBuffer(data, name);
+                    // }
+                    // else{
+                       
+                        funcStore.addRawDataToBuffer(data, name);
+                    // }
+                   
                     funcStore.generateDimensions(Object.keys(data[0]), name);
                     funcStore.calDimensionPreview(data, name);
                     funcStore.createIndex(data, name);
