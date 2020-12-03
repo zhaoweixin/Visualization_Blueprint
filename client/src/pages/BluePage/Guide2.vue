@@ -174,9 +174,8 @@ export default {
   font-size: 26px;
 }
 .guide {
-  width: 300px;
-  height: 200px;
-
+  width: 99%;
+  height: 100%;
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;
 }
