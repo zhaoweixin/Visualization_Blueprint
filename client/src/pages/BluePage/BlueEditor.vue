@@ -850,6 +850,8 @@ export default {
             result=caculator_modules.Aggregations(that.Aggregationdata.data,that.vegaObjectObj[vegaObjKey].getData());
             else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Features")
+            result=caculator_modules.features(that.vegaObjectObj[vegaObjKey].getData());
           console.log(result)
           let newData = result.data,
             newName = result.name;
