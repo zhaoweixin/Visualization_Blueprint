@@ -1,4 +1,13 @@
 {
+    "Features":{
+        "inPorts": [
+            {"name":"labe","text":"Labe","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"features","text":"Features","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
     "Filters":{
         "inPorts": [
             {"name":"labe","text":"Labe","attr":"operator","type":"in"}

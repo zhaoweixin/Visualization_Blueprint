@@ -100,6 +100,47 @@ export default class caculator_modules {
        
         return {'data':xdata,'name':name}
     }
+    static features(data){
+        let that=this;
+        let min=0;
+        let max=0;
+        let bins=100;
+        let bin_length=0;
+        let startbin=0
+        let bindata={}
+        if(that.dimensionA!=undefined){
+            min=parseFloat(data[0][that.dimensionA])
+            max=parseFloat(data[0][that.dimensionA])
+            for(let i=0;i<data.length;i++){
+                if(parseFloat(data[i][that.dimensionA])<min){
+                    min=parseFloat(data[i][that.dimensionA])
+                }
+                if(parseFloat(data[i][that.dimensionA])>max){
+                    max=parseFloat(data[i][that.dimensionA]);
+                }
+            }
+            bin_length=(max-min)/data.length
+            startbin=min;
+            while(startbin<=max){
+                if(bindata[(startbin+bin_length)/2]==undefined){
+                    bindata[(startbin+bin_length)/2]=[]
+                }
+                startbin=startbin+bin_length
+            }
+            data.sort((a,d)=>parseFloat(a[that.dimensionA])>parseFloat(b[that.dimensionB])?1:-1)
+            // for(let i=0;i<data.length;i++){
+            //     if(parseFloat(data[i][that.dimensionA])){
+
+            //     }
+            // }
+            console.log(data)
+        }
+        // let cdata=new Array()
+        // let testdata=[]
+        // if(this.dimensionA!=undefined){
+        //     let bins=d3.bin()
+        // }
+    }
     static Filters(sele,data){
         let that=this
         let cdata=new Array()
