@@ -12,34 +12,32 @@
                 map:null,
                 style: {
                     'map-style':{
-                        style: 'streets-v11',// 'light-v10','dark-v10','outdoors-v11','satellite-v9'
+                        style: 'light-v10',// 'light-v10','dark-v10','outdoors-v11','satellite-v9'
                         center:'',
                         zoom:''
                     },
                     'point-style':{
-                        'circle-color':'#ff2f23',
+                        'circle-color':'#ff355a',
                         'circle-opacity':1,
                         'circle-radius':10,
-                        'circle-stroke-color':'',
+                        'circle-stroke-color':'#ffffff',
                         'circle-stroke-opacity':'',
                     },
                     'line-style':{
-                        'line-color':'',
-                        'line-opacity':'',
-                        'line-width':''
+                        'line-color':'#f9fdff',
+                        'line-opacity':.6,
+                        'line-width':4
                     },
                     'polygon-style':{
-                        'fill-color':'',
-                        'fill-opacity':'',
-                        'fill-outline-color':''
+                        'fill-color':'#57dd95',
+                        'fill-opacity':.5,
+                        'fill-outline-color':'#646464'
                     }
                 }
             }
         },
         mounted(){
-            // console.log(this.$store)
             // this.map_config()
-
             // this.map_polygons('',[{
             //     polyline:[[104.732971, 31.465042], [104.642886, 31.464969],[104.532076, 31.454854]]
             // }])
@@ -62,19 +60,31 @@
                 mapboxgl.accessToken = 'pk.eyJ1IjoicWFzaW01NyIsImEiOiJjanZzMTN4YmYwbTJoNDRtc3lveTUycjR5In0.NHo5uv7_XQpM7fPEus_M-w';
                 this.map = new mapboxgl.Map({
                     container: this.$refs.basicMapbox,
-                    style: 'mapbox://styles/mapbox/dark-v9', //地图样式自定义
+                    style: `mapbox://styles/mapbox/${this.style["map-style"].style}`, //地图样式自定义
                     center: [104.732971, 31.465042], // 地图中心自定义
                     zoom: 12  // 设置地图比例
                     //pitch:50
                 });
             },
             /*------------------------------------------------------*/
-
+            map_center(lng,lat){
+                this.map.on('load',()=>{
+                    this.map.setCenter([lng, lat])
+                })
+            },
+            map_fly(lng,lat){
+                this.map.on('load',()=>{
+                    this.map.flyTo({center:[lng,lat]});
+                })
+            },
+            map_style(name){
+                this.map.on('load',()=>{
+                    map.setStyle('mapbox://styles/mapbox/' + name);
+                })
+            },
             /*------------------Points Drawing----------------------*/
             map_points(style,data){
-
-                // this.map.setStyle('mapbox://styles/mapbox/' +style["map-style"]['style'])
-
+                // this.map.setStyle('mapbox://styles/mapbox/' +style["map-style"]['style']
                 let points_features = []
 
                 // data.forEach( (d) =>{
@@ -91,7 +101,6 @@
                 //         }
                 //     });
                 // });
-                let cdata=[]
                 for(let i=0;i<data.length;i++){
                     points_features[i]={
                         "type": "Feature",
@@ -106,7 +115,6 @@
                         }
                     }
                 }
-                console.log(points_features)
 
                 let points_source = {
                     "type": "geojson",
@@ -124,9 +132,9 @@
                         "minzoom":7,
                         "type": "circle",
                         "paint": {
-                            "circle-radius": 5,
-                            "circle-color":['get','color'],
-                            "circle-opacity":['get','opacity'],
+                            "circle-radius": this.style["point-style"]['circle-radius'],
+                            "circle-color":this.style["point-style"]['circle-color'],
+                            "circle-opacity":this.style["point-style"]['circle-opacity'],
                         }
                     })
                 })
@@ -183,9 +191,9 @@
                         'type': 'line',
                         'source': 'lines_source',
                         'paint': {
-                            'line-width': 4,
-                            'line-color': '#fff',
-                            'line-opacity':1
+                            'line-width': this.style["line-style"]['line-width'],
+                            'line-color': this.style["line-style"]['line-color'],
+                            'line-opacity':this.style["line-style"]['line-opacity'],
                         }
                     });
                 })
@@ -246,8 +254,9 @@
                         'source': 'polygons_source',
                         'layout': {},
                         'paint': {
-                            'fill-color': ['get','color'],
-                            'fill-opacity': .3,
+                            'fill-color': this.style["polygon-style"]['fill-color'],
+                            'fill-opacity': this.style["polygon-style"]['fill-opacity'],
+                            'fill-outline-color':this.style["polygon-style"]['fill-outline-color'],
                         }
                     });
                 })
@@ -328,20 +337,20 @@
         watch:{
             getmapdata:{
                handler(data){
-                   
-          
+
+
                     //  this.map_lines('',[{path:[[104.732971, 31.465042], [104.642886, 31.464969],[104.532076, 31.454854]]}])
                 //    console.log(data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
                 // //    data.data.
-               
+
                 if(data.maptype=="TrackMap")
                 {
                      this.map_config()
-                     
+
                      this.map.setCenter([104.732971, 31.465042])
                      this.map_lines('',data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
                 }
-                
+
 
                 if(data.maptype=="ScatterMap"){
                     this.map_config()
@@ -355,7 +364,7 @@
                     this.map.setCenter([data.data[0].lng,data.data[0].lat])
                     this.map_heatmap(null,data.data)
                 }
-                        
+
                 }
             }
         }
