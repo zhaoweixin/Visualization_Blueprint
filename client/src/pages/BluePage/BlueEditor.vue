@@ -1037,24 +1037,16 @@ export default {
               that.vegaObjectObj[vegaObjKey].getData()
             );
           else if (target.parent == "Multi")
-            result = caculator_modules.multiple(
-              that.vegaObjectObj[vegaObjKey].getData()
-            );
-          else if (target.parent == "Sort")
-            result = caculator_modules.Sorts(
-              that.vegaObjectObj[vegaObjKey].getData()
-            );
-          else if (target.parent == "Aggregation")
-            result = caculator_modules.Aggregations(
-              that.Aggregationdata.data,
-              that.vegaObjectObj[vegaObjKey].getData()
-            );
-          else if (target.parent == "Filters")
-            result = caculator_modules.Filters(
-              that.filetersdata.selection,
-              that.vegaObjectObj[vegaObjKey].getData()
-            );
-          console.log(result);
+            result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Sort")
+            result=caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Aggregation")
+            result=caculator_modules.Aggregations(that.Aggregationdata.data,that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Filters")
+            result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
+            else if(target.parent=="Features")
+            result=caculator_modules.features(that.vegaObjectObj[vegaObjKey].getData());
+          console.log(result)
           let newData = result.data,
             newName = result.name;
 
