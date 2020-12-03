@@ -182,11 +182,15 @@
           vs-w="12"
           style="display: flex; padding: 20px 20px 20px 20px; height: 38%"
         >
+          <vs-col  vs-w="4" vs-align="center" style="display: flex; flex-direction:column; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
+           <vs-row><Guide2/></vs-row>
+           <vs-row><Guide2/></vs-row>
+          </vs-col>
           <!--该列放置生成图-->
           <vs-col
             vs-type="flex"
             vs-align="center"
-            vs-w="12"
+            vs-w="8"
             style="display: flex; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)"
           >
             <div style="padding: 0 15px 0 15px; height: 80%">
@@ -216,7 +220,6 @@
           </vs-col>
         </vs-row>
 
-        <Guide2 />
         <vs-row v-if="isTable" vs-w="12">
           <vs-col vs-type="flex" vs-align="center" vs-w="12">
             <data-preview-table :tabledata="tableData"></data-preview-table>
