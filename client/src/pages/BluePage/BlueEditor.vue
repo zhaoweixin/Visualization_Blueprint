@@ -214,7 +214,7 @@
             ></div>
             <div
               id="canvas"
-              style="display: flex; with: 1420px; padding-left: 20px"
+              style="display: flex; with: 100%; padding-left: 20px"
             ></div>
             <AppMap></AppMap>
           </vs-col>
@@ -928,7 +928,10 @@ export default {
       let that = this;
       let result = this.vegaObjectObj[meta["id"]].getOutputForced();
       //Show the result in bottom canvas via vage compilier
+      console.log(111)
       console.log(result);
+      console.log(result.style);
+    
       if (that.mapchart[result.layer[0].mark] != null)
         that.$store.commit("mapdata", {
           maptype: result.layer[0].mark,
@@ -1361,10 +1364,14 @@ export default {
       chartList.forEach(function (d) {
         if (!(d in that.vegaObjectObj)) {
           //不存在则新建vegaobject
-          let _height = window.innerHeight * 0.29;
-          let _width = window.innerWidth * 0.7;
+          let _height = window.innerHeight * 0.3;
+          // 改为07 =》0.4
+          let _width = window.innerWidth * 0.42;
           //1300 300
-
+          const preview_container = document.getElementById("preview_container")
+          // console.log("#######preview_container#######", preview_container)
+          // console.log(preview_container.style)
+          // console.log(preview_container.innerWidth)
           //1350 350
           that.vegaObjectObj[d] = new VegaModel(
             parseInt(_height),
