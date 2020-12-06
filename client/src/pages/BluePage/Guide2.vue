@@ -5,54 +5,54 @@
           <div class="data-logo">
             <i class="iconfont icon-shujuku actived" @click="onClick(0)"></i>
           </div>
-          <i 
+          <i
             class="iconfont icon-xuxianxiejiantou arrow-up"
             :class="[0 === this.currentStep ? 'active' : '', 0 < this.currentStep ? 'actived': '']"
           ></i>
-          <i 
+          <i
             class="iconfont icon-xuxianxiejiantou arrow-down"
             :class="[2 === this.currentStep ? 'active' : '', 2 < this.currentStep ? 'actived': '']"
           ></i>
         </div>
         <div class="right">
           <div class="right-up">
-            <i 
+            <i
               class="iconfont icon-tubiao_ditu map"
               :class="[0 === this.currentStep ? 'active' : '', 0 < this.currentStep ? 'actived': '']"
               @click="onClick(0)"
             ></i>
-            <i 
+            <i
               class="iconfont icon-zititubiaoxiugai-"
               :class="[1 === this.currentStep ? 'active' : '', 1 < this.currentStep ? 'actived': '']"
             ></i>
-            <i 
+            <i
               class="iconfont icon-zititubiaoxiugai-"
               :class="[1 === this.currentStep ? 'active' : '', 1 < this.currentStep ? 'actived': '']"
             ></i>
-           
-             <i 
+
+             <i
               class="iconfont icon-transform transform"
               :class="[1 === this.currentStep ? 'active' : '', 1 < this.currentStep ? 'actived': '']"
               @click="onClick(1)"
             ></i>
           </div>
           <div class="right-down">
-            <i 
+            <i
               class="iconfont icon-barchart chart"
               :class="[2 === this.currentStep ? 'active' : '', 2 < this.currentStep ? 'actived': '']"
               @click="onClick(2)"
             ></i>
-            <i 
+            <i
               class="iconfont icon-zititubiaoxiugai-"
               :class="[3 === this.currentStep ? 'active' : '', 3 < this.currentStep ? 'actived': '']"
-              
+
             ></i>
-            <i 
+            <i
               class="iconfont icon-zititubiaoxiugai-"
               :class="[3 === this.currentStep ? 'active' : '', 3 < this.currentStep ? 'actived': '']"
             ></i>
-            
-            <i 
+
+            <i
               class="iconfont icon-transform transform"
               :class="[3 === this.currentStep ? 'active' : '', 3 < this.currentStep ? 'actived': '']"
               @click="onClick(3)"
@@ -70,13 +70,13 @@
               <div v-if="typeof item === 'object'">
                 <div v-for="(subitem, subkey) in item">
                 <i class="iconfont icon-duihao" style="font-size:10px; color:#819ffb"></i>
-                <span>{{subkey}} 的推荐逻辑操作:</span>  
+                <span>{{subkey}} 的推荐逻辑操作:</span>
                 <span v-for=" i in subitem">{{i}} </span>
                 </div>
               </div>
               <div v-else>
                 <i class="iconfont icon-duihao" style="font-size:10px; color:#819ffb" :class="[]"></i>
-                <span>推荐图表 {{item}}</span> 
+                <span>推荐图表 {{item}}</span>
               </div>
           </li>
         </ul>
@@ -145,7 +145,7 @@ export default {
         }
         return newData
       }
-      
+
     }
   },
   methods: {
@@ -177,7 +177,8 @@ export default {
   width: 99%;
   height: 100%;
   border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;
+  /*box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;*/
+  border-bottom: 2px solid #ccc;
 }
 
 .header {
@@ -222,7 +223,7 @@ export default {
 }
 
 .content {
-  height: 120px;
+  height: 150px;
   position: relative;
 }
 .button-group {
