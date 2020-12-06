@@ -11,7 +11,8 @@ export default class caculator_modules {
         //     else
         //     this.dimensionB = dimension.name
         // }
-        if(this.parent=="Sort"||this.parent=="Filters"){
+        console.log(this.parent)
+        if(this.parent=="Sort"||this.parent=="Filters"||this.parent=="Features"){
             this.dimensionA = dimension.name
             this.dimensionB = dimension.name
         }
@@ -108,6 +109,11 @@ export default class caculator_modules {
         let bin_length=0;
         let startbin=0
         let bindata={}
+        let bingks=new Array()
+        let reslutdata=new Array()
+        let indexk=0
+        let name='features_'+that.dimensionA
+        if(data[0][name]!=undefined)return {'data':data,'name':name}
         if(that.dimensionA!=undefined){
             min=parseFloat(data[0][that.dimensionA])
             max=parseFloat(data[0][that.dimensionA])
@@ -122,24 +128,55 @@ export default class caculator_modules {
             bin_length=(max-min)/data.length
             startbin=min;
             while(startbin<=max){
-                if(bindata[(startbin+bin_length)/2]==undefined){
-                    bindata[(startbin+bin_length)/2]=[]
+                if(bindata[startbin]==undefined){
+                    bindata[startbin]=new Array()
+                    bingks.push((startbin))
                 }
                 startbin=startbin+bin_length
             }
-            data.sort((a,d)=>parseFloat(a[that.dimensionA])>parseFloat(b[that.dimensionB])?1:-1)
+            let cdata=data.sort((a,d)=>parseFloat(a[that.dimensionA])>parseFloat(d[that.dimensionB])?1:-1)
             // for(let i=0;i<data.length;i++){
             //     if(parseFloat(data[i][that.dimensionA])){
 
             //     }
             // }
-            console.log(data)
+            startbin=min;
+            let k=0;
+            for(let i=0;i<cdata.length;i++){
+                let num=parseFloat(cdata[i][that.dimensionA])
+               
+                if(num<(bingks[k]+bin_length)&&num>=(bingks[k])){
+                    bindata[bingks[k]].push(num);
+                }
+                else{
+                    while(true){
+                        if(num>=(bingks[k]+bin_length))
+                          k=k+1
+                        else
+                        if(num<(bingks[k]+bin_length)){
+                            bindata[bingks[k]].push(num);
+                            break
+                        }
+                    }
+                }
+
+            }
+        
+          for(let key in bindata){
+              let x={}
+              x[that.dimensionA]=key
+              console.log(bindata[key].length)
+              x[name]=bindata[key].length/data.length
+              reslutdata.push(x)
+          }
         }
+        console.log(reslutdata)
         // let cdata=new Array()
         // let testdata=[]
         // if(this.dimensionA!=undefined){
         //     let bins=d3.bin()
         // }
+        return  {'data':reslutdata,'name':name}
     }
     static Filters(sele,data){
         let that=this
