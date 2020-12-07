@@ -186,12 +186,15 @@
         >
           <vs-col vs-w="4" vs-align="center"
                   style="display: flex; flex-direction:column; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); justify-content:space-around;">
-            <vs-row style="flex: 2">
+            <vs-row style="flex:1">
+              <selectType />
+            </vs-row>
+            <vs-row style="flex: 3">
               <Guide2/>
             </vs-row>
             <vs-row style="flex-direction: column; flex: 1; position: relative;">
-              <my-rate style="flex: 2" :score="2" show-text="向导推荐评分：" disabled/>
-              <my-rate style="flex: 2;" :score.sync="curScore" show-text="用户评分：" />
+              <my-rate style="flex: 2" :score="2" textHtml="向导推荐评分：" disabled/>
+              <my-rate style="flex: 2;" :score.sync="curScore" :textHtml="'用户评分：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'" />
               <button @click="handleSubmit" style="width: 40px; position: absolute; right: 10px; bottom: 10px;" :class="curScore === 0 ? 'button-disabled': ''">提交</button>
             </vs-row>
           </vs-col>
@@ -270,7 +273,7 @@ import Guide from "./Guide";
 import Guide2 from "./Guide2";
 //import AutoPage from "../AutoBoard/AutoPage";
 import myRate from './Star'
-
+import selectType from './SelectType'
 export default {
   name: "blue-editor",
   data() {
@@ -344,7 +347,8 @@ export default {
     Guide,
     Guide2,
     AppMap,
-    myRate
+    myRate,
+    selectType
   },
   created() {
     //

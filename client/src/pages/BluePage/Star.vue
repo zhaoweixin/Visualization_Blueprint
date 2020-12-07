@@ -2,7 +2,7 @@
 <!--评分-->
 <template>
   <div class="rate" :class="{'disabled':disabled}">
-    <span class="text">{{ showText }}</span>
+    <span class="text" v-html="textHtml"></span>
     <i
       v-for="i in 5"
       class="iconfont"
@@ -24,7 +24,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    showText: {
+    textHtml: {
       type: String,
       default: "",
     },

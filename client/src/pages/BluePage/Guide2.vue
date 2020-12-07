@@ -1,6 +1,7 @@
 <template>
     <div class="guide">
       <div class="header">
+        <span class="text">向导推荐</span>
         <div class="left">
           <div class="data-logo">
             <i class="iconfont icon-shujuku actived" @click="onClick(0)"></i>
@@ -66,7 +67,7 @@
         <h4 style="text-align:center;padding:5px 0;" v-show="this.currentStep===2">向导 -- 图表推荐</h4>
         <h4 style="text-align:center;padding:5px 0;" v-show="this.currentStep===3">向导 -- 逻辑（chart）推荐</h4>
         <ul class="content-text">
-          <li v-for="item in this.container" :key="item">
+          <li v-for="(item, index) in this.container" :key="index">
               <div v-if="typeof item === 'object'">
                 <div v-for="(subitem, subkey) in item">
                 <i class="iconfont icon-duihao" style="font-size:10px; color:#819ffb"></i>
@@ -185,6 +186,10 @@ export default {
   height: 80px;
   display: flex;
   border-bottom: 2px dashed #ccc;
+}
+.text {
+  padding-left: 10px;
+  margin-top: 25px;
 }
 .left {
   flex: 1;
