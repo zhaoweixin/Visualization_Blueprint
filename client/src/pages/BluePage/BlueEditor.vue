@@ -77,8 +77,9 @@
                 </div>
 
                 <vs-button type="line" @click="initTable(data.name)">{{
-                  buttonName
-                }}</vs-button>
+                    buttonName
+                  }}
+                </vs-button>
                 <span
                   style="
                     color: white;
@@ -86,7 +87,7 @@
                     float: right;
                     font-size: 15px;
                   "
-                  >Length: {{ data.length }}</span
+                >Length: {{ data.length }}</span
                 >
 
                 <vs-divider style="margin: 3px"></vs-divider>
@@ -152,7 +153,8 @@
                     type="filled"
                     v-on:click="createNewComponent(meta)"
                     icon="add_circle"
-                    >{{ meta }}</vs-button
+                  >{{ meta }}
+                  </vs-button
                   >
                   <vs-divider></vs-divider>
                 </vs-list>
@@ -182,9 +184,19 @@
           vs-w="12"
           style="display: flex; padding: 20px 20px 20px 20px; height: 38%"
         >
-          <vs-col  vs-w="4" vs-align="center" style="display: flex; flex-direction:column; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
-           <vs-row><Guide2/></vs-row>
-           <vs-row><Guide2/></vs-row>
+          <vs-col vs-w="4" vs-align="center"
+                  style="display: flex; flex-direction:column; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); justify-content:space-around;">
+            <vs-row style="flex:1">
+              <selectType />
+            </vs-row>
+            <vs-row style="flex: 3">
+              <Guide2/>
+            </vs-row>
+            <vs-row style="flex-direction: column; flex: 1; position: relative;">
+              <my-rate style="flex: 2" :score="2" textHtml="向导推荐评分：" disabled/>
+              <my-rate style="flex: 2;" :score.sync="curScore" :textHtml="'用户评分：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'" />
+              <button @click="handleSubmit" style="width: 40px; position: absolute; right: 10px; bottom: 10px;" :class="curScore === 0 ? 'button-disabled': ''">提交</button>
+            </vs-row>
           </vs-col>
           <!--该列放置生成图-->
           <vs-col
@@ -205,7 +217,8 @@
                   v-bind:id="meta.id"
                   :style="{ display: meta.style }"
                   v-on:click="generateChart(meta.id, meta)"
-                  >{{ meta.content }}</vs-button
+                >{{ meta.content }}
+                </vs-button
                 >
               </div>
             </div>
@@ -250,7 +263,7 @@ import blueComponentTypes from "../../assets/blueComponentTypes.json";
 import modelConfig from "../../assets/modelConfig.json";
 import VegaModel from "../../common/BlueComponents/vegaModel";
 import viewerbutton from "../../assets/vsbuttonbox.json";
-import { keys } from "d3";
+import {keys} from "d3";
 import TemplateA from "../ViewLayouts/TemplateA";
 import TemplateB from "../ViewLayouts/TemplateB";
 import NavBar from "../../common/NavBar/NavBar";
@@ -259,7 +272,8 @@ import DataPreviewTable from "../../common/DataPreviewer/DataPreviewTable";
 import Guide from "./Guide";
 import Guide2 from "./Guide2";
 //import AutoPage from "../AutoBoard/AutoPage";
-
+import myRate from './Star'
+import selectType from './SelectType'
 export default {
   name: "blue-editor",
   data() {
@@ -327,7 +341,8 @@ export default {
       oldoprationSourecID:null,
       lastopration:null,
       lastname:null,
-      lastencoding:null
+      lastencoding:null,
+      curScore: 0
     };
   },
   components: {
@@ -338,18 +353,23 @@ export default {
     Guide,
     Guide2,
     AppMap,
+    myRate,
+    selectType
   },
   created() {
     //
     this.openFullScreen();
   },
   methods: {
+    handleSubmit(){
+      console.log(this.curScore)
+    },
     creatAggregation(dom) {
       let that = this;
       d3.select(dom).select("rect").attr("height", 120);
       let w = d3.select(dom).select("rect").attr("width");
       let h = d3.select(dom).select("rect").attr("height");
-      let margin = { top: 80, bottom: 5, left: 10, right: 10 };
+      let margin = {top: 80, bottom: 5, left: 10, right: 10};
       let g = d3.select(dom).append("g").attr("class", "_Aggregation");
       g.selectAll("circle")
         .data([1, 2, 3])
@@ -422,7 +442,7 @@ export default {
       let w = d3.select(dom).select("rect").attr("width");
       let h = d3.select(dom).select("rect").attr("height");
 
-      let margin = { top: 80, bottom: 5, left: 10, right: 10 };
+      let margin = {top: 80, bottom: 5, left: 10, right: 10};
       let width = w - margin.left - margin.right;
       let height = h - margin.top - margin.bottom;
       let x = d3
@@ -513,7 +533,7 @@ export default {
 
       let handle = gBrush
         .selectAll(".handle--custom")
-        .data([{ type: "w" }, { type: "e" }])
+        .data([{type: "w"}, {type: "e"}])
         .enter()
         .append("path")
         .attr("class", "handle--custom")
@@ -586,13 +606,16 @@ export default {
     containerListener() {
       //distinguish click and dblclick
       let that = this;
+
       function clickcancel() {
         var event = d3.dispatch("click", "dblclick");
+
         function cc(selection) {
           var down,
             tolerance = 5,
             last,
             wait = null;
+
           // euclidean distance
           function dist(a, b) {
             return Math.sqrt(
@@ -600,6 +623,7 @@ export default {
               Math.pow(a[1] - b[1], 2)
             );
           }
+
           selection.on("mousedown", function () {
             down = d3.mouse(document.body);
             last = +new Date();
@@ -628,6 +652,7 @@ export default {
             }
           });
         }
+
         let rebind = function (target, source) {
           var i = 1,
             n = arguments.length,
@@ -640,14 +665,17 @@ export default {
             );
           return target;
         };
+
         function d3_rebind(target, source, method) {
           return function () {
             var value = method.apply(source, arguments);
             return value === source ? target : value;
           };
         }
+
         return rebind(cc, event, "on");
       }
+
       function deleteSingleLine() {
         that.drawingLine.remove();
         that.blueLines.pop();
@@ -655,6 +683,7 @@ export default {
         that.mouseAction == "";
         that.container.on("mousemove", null);
       }
+
       let cc = clickcancel();
       d3.select("#editorborad").call(cc);
 
@@ -677,11 +706,11 @@ export default {
         //Darwing the grids line in canvas which help user the recognize the canvas and components
         let lineData = [];
         for (let i = 10; i < that.width; i += 20) {
-          lineData.push({ x1: i, y1: 0, x2: i, y2: that.height });
+          lineData.push({x1: i, y1: 0, x2: i, y2: that.height});
         }
 
         for (let i = 10; i < that.height; i += 20) {
-          lineData.push({ x1: 0, y1: i, x2: that.width, y2: i });
+          lineData.push({x1: 0, y1: i, x2: that.width, y2: i});
         }
 
         if (that.container != "") {
@@ -937,9 +966,9 @@ export default {
       console.log(111)
       console.log(result);
       console.log(result.style);
-    
+
       if (that.mapchart[result.layer[0].mark] != null){
-         that.$store.commit("mapdata", {
+        that.$store.commit("mapdata", {
           maptype: result.layer[0].mark,
           encoding: result.layer[0].encoding,
           data: result.data.values,
@@ -951,7 +980,7 @@ export default {
         });
       }
       else {
-        vegaEmbed("#canvas", result, { theme: "default" });
+        vegaEmbed("#canvas", result, {theme: "default"});
         this.notifications({
           title: result.title.text,
           text: "Generate success~",
@@ -1936,11 +1965,30 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .filter_solider rect.selection {
   stroke: none;
   fill: steelblue;
   fill-opacity: 0.6;
+}
+button {
+  background: #819ffb;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 25px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+button:active {
+  background: #eee;
+  color: #819ffb;
+  cursor: pointer;
+}
+.button-disabled {
+  pointer-events: none;
+  color: black;
+  background: #ccc;
 }
 </style>
 <style lang="stylus" scoped>
