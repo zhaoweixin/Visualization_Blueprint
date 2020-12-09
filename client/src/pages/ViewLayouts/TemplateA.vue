@@ -8,16 +8,14 @@
                 <div id="t1">
                     <div id="chartA"></div>
                 </div>
-                <div id="t2">
-                    <div id="chartC"></div>
-                </div>
+                
             </div>
             <div class="right">
                 <div id="t3">
                     <div id="chartB"></div>
                 </div>
-                <div id='t4'>
-                    <div id="chartD"></div>
+               <div id="t2">
+                    <div id="chartC"></div>
                 </div>
             </div>
             <!--图表 4-->
@@ -34,10 +32,10 @@ export default{
     data() {
         return {
             ModularInfo:{},
-            chartStyle:{"chartA":{"width": 828,"height": 390},
-                    "chartB":{"width": 828,"height": 390},
-                    "chartC":{"width": 828,"height": 390},
-                    "chartD":{"width": 828,"height": 390}
+            chartStyle:{"chartA":{"width": 1325,"height": 780},
+                    "chartB":{"width": 331,"height": 390},
+                    "chartC":{"width": 331,"height": 390}
+                   
                     },
             layoutObj:{}
         }
@@ -160,23 +158,28 @@ export default{
     background-color: white;
 }
 .left{
-    width: 50%;
+    width: 80%;
     height: 100%;
     float: left;
 }
 .right{
-    width: 50%;
+    width: 20%;
     height: 100%;
     float: left;
 }
-#chartA,#chartB,#chartC,#chartD{
+#chartA,#chartB,#chartC{
     height: 100% ;
     border-radius: 3px;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
 
-#t1,#t2,#t3,#t4{
+#t2,#t3{
 	height:46%;
+	width:96%;
+	padding:2%
+}
+#t1{
+    height:100%;
 	width:96%;
 	padding:2%
 }

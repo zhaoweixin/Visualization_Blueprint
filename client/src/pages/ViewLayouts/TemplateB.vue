@@ -17,13 +17,12 @@
 					<div class="t3">
 						<div id="chartC"></div>
 					</div>
+					<div class="t4">
+						<div id="chartD"></div>
+					</div>
 				</div>
 			</div>
-			<div class="footer">
-				<div class="t4">
-					<div id="chartD"></div>
-				</div>
-			</div>
+			
 		</div>
 </template>
 
@@ -35,10 +34,10 @@ export default{
     data() {
         return {
             ModularInfo:{},
-            chartStyle:{"chartA":{"width": 1030,"height": 720},
-                    "chartB":{"width": 660,"height": 340},
-                    "chartC":{"width": 660,"height": 340},
-                    "chartD":{"width": 1720,"height": 200}
+            chartStyle:{"chartA":{"width": 1352,"height": 720},
+                    "chartB":{"width": 338,"height": 240},
+                    "chartC":{"width": 338,"height": 240},
+                    "chartD":{"width": 338,"height": 240}
                     },
             layoutObj:{}
         }
@@ -120,13 +119,13 @@ export default{
 	}
 	
 	.left {
-		width: 60%;
+		width: 80%;
 		height: 100%;
 		float: left;
 	}
 	
 	.right {
-		width: 40%;
+		width: 20%;
 		height: 100%;
 		float: left;
 	}
@@ -138,17 +137,14 @@ export default{
 	}
 	
 	.t2,
-	.t3 {
-		height: 50%;
+	.t3,
+	.t4 {
+		height: 33%;
 		width: 96%;
 		padding: 2%
 	}
 	
-	.t4 {
-		height: 98%;
-		width: 98%;
-		padding: 1%
-	}
+	
 	
 	#chartA,
 	#chartB,

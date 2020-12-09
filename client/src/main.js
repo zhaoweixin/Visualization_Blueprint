@@ -60,7 +60,8 @@ const store = new Vuex.Store({
     tableData : null,
     filesData: {},
     currentTable: "barley",
-    mapdata:null
+    mapdata:null,
+    
   },
   mutations: {
     mapdata(state,mapdata){

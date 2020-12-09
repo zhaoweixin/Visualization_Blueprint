@@ -11,21 +11,41 @@ export default class caculator_modules {
         //     else
         //     this.dimensionB = dimension.name
         // }
+        console.log(dimension)
         console.log(this.parent)
-        if(this.parent=="Sort"||this.parent=="Filters"||this.parent=="Features"){
-            this.dimensionA = dimension.name
-            this.dimensionB = dimension.name
-        }
+       
         if(this.targname==undefined){
             this.targname=new Array()
+            
             this.targname.push(dimension.targetname)
         }
-            
         else{
-            this.targname.push(dimension.targetname)
-            
+            this.targname.push(dimension.targetname) 
         }
-        if(this.dimensionA == undefined)
+        let fea=false
+        if(this.parent=="Features"){
+            for(let i=0;i<this.targname.length;i++){
+                if(this.targname[i] ==="data"){
+                    fea=true;
+                    break;
+                }
+            }
+        }
+        console.log(this.targname)
+        if(this.parent=="Features"&&fea){
+            if(this.dimensionB == undefined)
+            this.dimensionB = dimension.name
+            else
+            this.dimensionA = dimension.name
+        }else
+        if(this.parent=="Sort"||this.parent=="Filters"||(this.parent=="Features"&&!fea)){
+            this.dimensionA = dimension.name
+            
+                this.dimensionB = dimension.name
+            console.log(dimension.name)
+        }    
+        
+        if(this.dimensionA == undefined&&!fea)
             this.dimensionA = dimension.name
         else
             this.dimensionB = dimension.name
@@ -102,6 +122,7 @@ export default class caculator_modules {
         return {'data':xdata,'name':name}
     }
     static features(data){
+       
         let that=this;
         let min=0;
         let max=0;
@@ -113,6 +134,8 @@ export default class caculator_modules {
         let reslutdata=new Array()
         let indexk=0
         let name='features_'+that.dimensionA
+        console.log(data)
+        console.log(that.dimensionA)
         if(data[0][name]!=undefined)return {'data':data,'name':name}
         if(that.dimensionA!=undefined){
             min=parseFloat(data[0][that.dimensionA])
@@ -165,18 +188,22 @@ export default class caculator_modules {
           for(let key in bindata){
               let x={}
               x[that.dimensionA]=key
-              console.log(bindata[key].length)
+            //   console.log(bindata[key].length)
               x[name]=bindata[key].length/data.length
               reslutdata.push(x)
           }
+          return  {'data':reslutdata,'name':name}
         }
-        console.log(reslutdata)
+        // else{
+        //     return  {'data':data,'name':this.dimensionB}
+        // }
+       
         // let cdata=new Array()
         // let testdata=[]
         // if(this.dimensionA!=undefined){
         //     let bins=d3.bin()
         // }
-        return  {'data':reslutdata,'name':name}
+        
     }
     static Filters(sele,data){
         let that=this
