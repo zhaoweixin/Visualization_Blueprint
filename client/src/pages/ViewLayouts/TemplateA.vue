@@ -6,7 +6,8 @@
         <div class="mutiItem">
             <div class="left">
                 <div id="t1">
-                    <div id="chartA"></div>
+                    <div id="chartA">
+                    </div>
                 </div>
                 <div id="t2">
                     <div id="chartC"></div>
@@ -29,6 +30,7 @@
 
 import vegaEmbed from "vega-embed";
 import * as d3 from "d3";
+import AppMapx from "../BluePage/AppMapx";
 
 export default{
     data() {
@@ -44,6 +46,7 @@ export default{
     },
     props:["layout"],
     components: {
+        AppMapx
         //图表组件
         //chartA,
         //chartB,
@@ -55,10 +58,12 @@ export default{
             handler(curval){
                 console.log(curval)
             },
-            deep: true            
+            deep: true
         }
     },
     mounted(){
+
+        document.getElementById('chartA').appendChild(document.createElement(AppMapx))
     },
     methods:{
         getModularInfo(m){
@@ -69,7 +74,7 @@ export default{
             //this.setBackgroundColor()
             this.adaptWidthHeight()
             this.generateGraph()
-            
+
         },
         adaptWidthHeight(){
             //this.layoutObj.[chartA].data.height/width
@@ -88,7 +93,7 @@ export default{
                     })
                 }
             })
-            
+
         },
         setBackgroundColor(){
             let that = this
@@ -136,7 +141,7 @@ export default{
             })
         }
     }
-    
+
 }
 
 </script>
