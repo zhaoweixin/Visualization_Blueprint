@@ -336,6 +336,12 @@ export default {
         data: "",
         selection: "",
       },
+      oldoprationSourec:'',
+      oldoprationdata:null,
+      oldoprationSourecID:null,
+      lastopration:null,
+      lastname:null,
+      lastencoding:null,
       curScore: 0
     };
   },
@@ -961,12 +967,18 @@ export default {
       console.log(result);
       console.log(result.style);
 
-      if (that.mapchart[result.layer[0].mark] != null)
+      if (that.mapchart[result.layer[0].mark] != null){
         that.$store.commit("mapdata", {
           maptype: result.layer[0].mark,
           encoding: result.layer[0].encoding,
           data: result.data.values,
         });
+         this.notifications({
+          title: result.title.text,
+          text: "Generate success~",
+          color: "rgb(31,116,225)",
+        });
+      }
       else {
         vegaEmbed("#canvas", result, {theme: "default"});
         this.notifications({
@@ -1016,11 +1028,13 @@ export default {
     //The configurariton change rules
     async setVegaConfig(source, target, vegaObjKey) {
       let that = this;
+      
       console.log(source, target);
       source["targetname"] = target.name;
       source["parentname"] = target.parent;
+       
       // The case of source attribution is 「FIELD」 and target is 「ENCODING」
-      if (source.attr == "field" && target.attr == "encoding") {
+      if ((source.attr == "field" && target.attr == "encoding")) {
         //console.log(source.dimension_type, source.name, target.name)
         //that.calculator[source["id"]] -> sum_miles_per_gallon_cylinders
         let metaName = "",
@@ -1052,9 +1066,10 @@ export default {
         that.vegaObjectObj[vegaObjKey].setEncoding(target.parent, meta);
         that.vegaObjectObj[vegaObjKey].setMark(target.parent, maker);
       }
-
+     
       // The case of source attribution is 「FIELD」 and target is 「OPERATOR」
       if (source.attr == "field" && target.attr == "operator") {
+        // if(that.lastopration!=null&&target.parent!=that.lastopration)return
         caculator_modules.setOperator(source);
 
         if (caculator_modules.operatorsSetted()) {
@@ -1077,8 +1092,16 @@ export default {
             else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
             else if(target.parent=="Features")
+            {
+              if(that.oldoprationdata!=null){
+                result=caculator_modules.features(that.oldoprationdata);
+                that.oldoprationdata=result.data
+                that.lastname=result.name
+              }else{
                 result=caculator_modules.features(that.vegaObjectObj[vegaObjKey].getData());
-              
+              }
+            }
+                
           console.log(result)
           let newData = result.data,
             newName = result.name;
@@ -1091,8 +1114,18 @@ export default {
           caculator_modules.resetOperators();
 
           let _com = that.getComponentByName(target.parent);
+          console.log(_com)
           _com.setFieldName(newName);
+          console.log(newName)
+          console.log(vegaObjKey)
+          console.log(that.vegaObjectObj[vegaObjKey])
+          if(that.lastopration!=null&&that.lastencoding!=null){
+           that.vegaObjectObj[vegaObjKey].setData(that.oldoprationdata);
+            that.vegaObjectObj[vegaObjKey].layers[that.lastencoding.charttype].encoding[that.lastencoding.chartaxis]={'field':that.lastname,'type':"quantitative",'sort':null}
+          }
+         
         }
+      
       }
 
       // The case of source attribution is 「FIELD」 and target is 「CONNECTOR」
@@ -1277,6 +1310,55 @@ export default {
         emptyItems();
       }
     },
+    
+
+    async testT(source, target, data){
+       let that = this;
+      let result =[];
+      source["targetname"] = target.name;
+      source["parentname"] = target.parent;
+      caculator_modules.setOperator(source);
+       if (caculator_modules.operatorsSetted()) {
+          
+
+          if (target.parent == "Sum")
+            result = caculator_modules.sum(
+              data
+            );
+          else if (target.parent == "Reduce")
+            result = caculator_modules.reduce(
+             data
+            );
+          else if (target.parent == "Multi")
+            result = caculator_modules.multiple(data);
+            else if(target.parent=="Sort")
+            result=caculator_modules.Sorts(data);
+            else if(target.parent=="Aggregation")
+            result=caculator_modules.Aggregations(that.Aggregationdata.data,data);
+            else if(target.parent=="Filters")
+            result=caculator_modules.Filters(that.filetersdata.selection,data);
+            else if(target.parent=="Features")
+                result=caculator_modules.features(data);
+         that.oldoprationdata=result.data
+        
+          // let newData = result.data,
+          //   newName = result.name;
+
+          // if (!target.id in that.calculatorDict) {
+          //   that.calculatorDict[target["id"]] = newName;
+          // }
+
+          // that.vegaObjectObj[vegaObjKey].setData(newData);
+          // caculator_modules.resetOperators();
+
+          // let _com = that.getComponentByName(target.parent);
+          // _com.setFieldName(newName);
+        }
+       
+    },
+
+
+    
     buildBlueGraph(con) {
       let that = this;
       let connect = con.getConnectInfo();
@@ -1316,9 +1398,7 @@ export default {
           }
         }
       }
-      console.log(_source);
-      console.log(this.loadedDatasets);
-      console.log(connect);
+     
       if (connect.target.parent == "Filters") {
         console.log("fileters");
 
@@ -1328,7 +1408,8 @@ export default {
           connect.source.name
         );
       }
-
+      
+      
       //每增加一条边就更新
       //首先处理componentIndex
 
@@ -1365,6 +1446,38 @@ export default {
         componentGraph[indexsource][indextarget] = 1;
       }
 
+
+      console.log(_source);
+      console.log(this.loadedDatasets);
+      console.log(connect);
+      console.log(this.blueLinesName)
+      console.log(componentGraph)
+      if(connect['source'].parentid==undefined&&connect['target'].parentid.split("-")[0] === "Caculator"){
+        that.oldoprationSourec=connect['source']
+        that.oldoprationSourecID=connect['sourceId']
+      }
+      if(connect['source'].parentid!=undefined&&connect['source'].parentid!=undefined)
+      {
+        console.log(connect['source'].parentid.split("-"),connect['target'].parentid.split("-"))
+        console.log(connect['source'].parentid.split("-")[0] == "Caculator",connect['target'].parentid.split("-")[0] === "Caculator")
+        if((connect['source'].parentid.split("-")[0] == "Caculator"&&connect['target'].parentid.split("-")[0] == "Caculator"))
+           {
+             that.lastopration=connect['target'].parent
+             console.log(that.oldoprationSourec)
+             that.testT(that.oldoprationSourec,connect['source'],this.loadedDatasets[that.oldoprationSourecID])
+             console.log(that.oldoprationdata)
+            }
+      }
+      if(that.lastopration!=null&&connect['source'].parentid!=undefined)
+      {
+        if((connect['source'].parentid.split("-")[0] == "Caculator"&&connect['target'].parentid.split("-")[0] == "Chart"))
+           {
+             that.lastencoding={'charttype':connect['target'].parent,'chartaxis':connect['target'].name}  
+             console.log(that.lastencoding)
+          }
+      }
+
+
       //获取chart组件
       let chartDict = {};
       let chartList = [];
@@ -1390,6 +1503,7 @@ export default {
           //如果在chartlist中没有该chart,则该chart已被删除,需从vegaObjectObj中去掉键值对
           delete that.vegaObjectObj[d];
         }
+        
       });
       chartList.forEach(function (d) {
         if (!(d in that.vegaObjectObj)) {
@@ -1518,7 +1632,7 @@ export default {
       //only allowed to exist one layout in blueEditor
       let that = this;
       let key = Object.keys(that.chartLayoutObj);
-
+      console.log(key)
       if (key.length == 0) {
         //alert notice that user should choose one layout
         that.notifications({
@@ -1526,7 +1640,10 @@ export default {
           text: "Please select a layout",
           color: "danger",
         });
+      console.log(that.layoutlist)
+        console.log(that.chartLayoutObj)
       } else if (key.length == 1) {
+        
         that.layoutlist.forEach(function (d) {
           if (d == that.layoutIdName[key[0]]["name"].split(" ")[1]) {
             that[d] = true;

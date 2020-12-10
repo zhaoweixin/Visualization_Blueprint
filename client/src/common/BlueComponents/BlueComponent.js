@@ -327,7 +327,7 @@ export default class BlueComponent {
         let that = this;
         let name = that.name;
         //console.log(that)
-        let dataTodraw = ['A','B','C','D'];
+        let dataTodraw = ['A','B','','C'];
         this.container
            // .data(dataTodraw)
             //.enter()
@@ -343,11 +343,11 @@ export default class BlueComponent {
         let endX = that.width*9/10;
         let startY = that.height*7/27;
         let endY = that.height*25/27-10;
-        let data1 = [[startX,(startY+endY)/2],[endX,(startY+endY)/2]]; //画横线的数据
+        let data1 = [[(startX+endX)/2,(startY+endY)/2],[endX,(startY+endY)/2]]; //画横线的数据
         let data2 = [[(startX+endX)/2,startY],[(startX+endX)/2,endY]]; //画竖线的数据
 
-        let data11 = [[startX,(endY-startY)*3/4+startY],[endX,(endY-startY)*3/4+startY]];
-        let data22 = [[(endX-startX)*2/3+startX,startY],[(endX-startX)*2/3+startX,(endY-startY)*3/4+startY]];
+        let data11 = [[(endX-startX)*2/3+startX,(endY-startY)*3/4+startY],[endX,(endY-startY)*3/4+startY]];
+        let data22 = [[(endX-startX)*2/3+startX,startY],[(endX-startX)*2/3+startX,endY]];
         let data33 = [[(endX-startX)*2/3+startX,startY+(endY-startY)*3/8],[endX,startY+(endY-startY)*3/8]];
         
         let lineGenerator = d3.line()
@@ -420,7 +420,7 @@ export default class BlueComponent {
         .attr('d',lineGenerator(data33));
         
         this.container.selectAll(".info")
-            .data(dataTodraw)
+            .data(['A','B','C','D'])
             .enter()
             .append("text")
             .attr("class","info")
@@ -430,10 +430,11 @@ export default class BlueComponent {
                 if(i===0){
                     return (endX-startX)/3+startX
                 }
-                else if(i===3){
-                    return (endX-startX)/2+startX
-                }
-                else{
+                // else if(i===3){
+                //     return (endX-startX)/2+startX
+                // }
+                else
+                {
                     return (endX-startX)*5/6+startX
                 }
             })

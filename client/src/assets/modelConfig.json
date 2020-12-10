@@ -1,7 +1,8 @@
 {
     "Features":{
         "inPorts": [
-            {"name":"labe","text":"Labe","attr":"operator","type":"in"}
+            {"name":"labe","text":"Labe","attr":"operator","type":"in"},
+            {"name":"data","text":"Data","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"features","text":"Features","attr":"field","type":"out"}
@@ -327,8 +328,8 @@
         "inPorts":[
             {"name":"chart_a","text":"chartA","attr":"Layout","type":"in"},
             {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
-            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
-            {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+            {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"}
+            
         ],
         
         "type":"Layout"
@@ -339,6 +340,7 @@
             {"name":"chart_b","text":"chartB","attr":"Layout","type":"in"},
             {"name":"chart_c","text":"chartC","attr":"Layout","type":"in"},
             {"name":"chart_d","text":"chartD","attr":"Layout","type":"in"}
+          
         ],
         "type":"Layout"
     }
