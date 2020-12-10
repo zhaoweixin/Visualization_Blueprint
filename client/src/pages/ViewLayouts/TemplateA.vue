@@ -7,6 +7,7 @@
             <div class="left">
                 <div id="t1">
                     <div id="chartA">
+                      <AppMapx></AppMapx>
                     </div>
                 </div>
                 <div id="t2">
@@ -62,8 +63,6 @@ export default{
         }
     },
     mounted(){
-
-        document.getElementById('chartA').appendChild(document.createElement(AppMapx))
     },
     methods:{
         getModularInfo(m){
