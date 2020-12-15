@@ -21,7 +21,7 @@
     "element-ui": "^2.6.3",
     "fs": "0.0.1-security",
     "iview": "^3.3.3",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "mapbox-gl": "^1.13.0",
     "material-icons": "^0.2.3",
     "mathjs": "^5.2.3",
