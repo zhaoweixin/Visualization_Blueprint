@@ -29,6 +29,39 @@
         ],
         "type":"Caculator"
     },
+    "AggregationSum":{
+        "inPorts": [
+            {"name":"Dimension","text":"Dimension","attr":"operator","type":"in"},
+            {"name":"measure","text":"Measure","attr":"operator","type":"in"}
+
+        ],
+        "outPorts": [
+            {"name":"out","text":"Out","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "AggregationCount":{
+        "inPorts": [
+            {"name":"Dimension","text":"Dimension","attr":"operator","type":"in"},
+            {"name":"measure","text":"Measure","attr":"operator","type":"in"}
+
+        ],
+        "outPorts": [
+            {"name":"out","text":"Out","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+    "AggregationAvg":{
+        "inPorts": [
+            {"name":"Dimension","text":"Dimension","attr":"operator","type":"in"},
+            {"name":"measure","text":"Measure","attr":"operator","type":"in"}
+        ],
+        "outPorts": [
+            {"name":"out","text":"Out","attr":"field","type":"out"}
+        ],
+        "type":"Caculator"
+    },
+
     "Sort":{
         "inPorts": [
             {"name":"ascending","text":"Ascending","attr":"operator","type":"in"},

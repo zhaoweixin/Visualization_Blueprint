@@ -7,7 +7,7 @@
     }, 
     "Caculator": { 
         "name": "Caculator", 
-        "childrens": ["BasicSum", "BasicReduce", "BasicMulti","Sort","Aggregation","Filters","Probability"],
+        "childrens": ["BasicSum", "BasicReduce", "BasicMulti","Sort","Aggregation","Filters","Probability", "AggregationSum", "AggregationCount", "AggregationAvg"],
         "color": "#37BC9B"
     },
     "Layout":{

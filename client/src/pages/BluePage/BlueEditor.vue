@@ -1093,6 +1093,12 @@ export default {
             result=caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
           else if(target.parent=="Aggregation")
             result=caculator_modules.Aggregations(that.Aggregationdata.data,that.vegaObjectObj[vegaObjKey].getData());
+          else if(target.parent=="AggregationSum")
+            result=caculator_modules.AggregationSum(that.vegaObjectObj[vegaObjKey].getData());
+          else if(target.parent=="AggregationCount")
+            result=caculator_modules.AggregationCount(that.vegaObjectObj[vegaObjKey].getData());
+          else if(target.parent=="AggregationAvg")
+            result=caculator_modules.AggregationAvg(that.vegaObjectObj[vegaObjKey].getData());
           else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
           else if(target.parent=="Probability")
@@ -1339,6 +1345,12 @@ export default {
             result=caculator_modules.Sorts(data);
             else if(target.parent=="Aggregation")
             result=caculator_modules.Aggregations(that.Aggregationdata.data,data);
+            else if(target.parent=="AggregationSum")
+            result=caculator_modules.AggregationSum(data);
+            else if(target.parent=="AggregationCount")
+            result=caculator_modules.AggregationCount(data);
+            else if(target.parent=="AggregationAvg")
+            result=caculator_modules.AggregationAvg(data);
             else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,data);
             else if(target.parent=="Probability")

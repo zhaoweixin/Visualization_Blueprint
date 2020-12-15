@@ -33,17 +33,20 @@ export default class caculator_modules {
         }
         console.log(this.targname)
         if(this.parent=="Probability"&&fea){
-            if(this.dimensionB == undefined)
-            this.dimensionB = dimension.name
-            else
-            this.dimensionA = dimension.name
-        }else
-        if(this.parent=="Sort"||this.parent=="Filters"||(this.parent=="Probability"&&!fea)){
-            this.dimensionA = dimension.name
-            
+            if(this.dimensionB == undefined){
                 this.dimensionB = dimension.name
-            console.log(dimension.name)
-        }    
+            }
+            else{
+                this.dimensionA = dimension.name
+            }
+        }
+        else{
+            if(this.parent=="Sort"||this.parent=="Filters"||(this.parent=="Probability"&&!fea)){
+                this.dimensionA = dimension.name
+                this.dimensionB = dimension.name
+                console.log(dimension.name)
+            }
+        }
         
         if(this.dimensionA == undefined&&!fea)
             this.dimensionA = dimension.name
@@ -375,6 +378,282 @@ export default class caculator_modules {
                     }
                     return {'data':xdata,'name':name}
                 }
+            }
+        }
+        return {'data':data,'name':this.dimensionA}
+    }
+    static AggregationSum(data){
+        let that=this
+        let name="AggregationSum_"
+        console.log(this.targname)
+        let ks=new Array()
+        for(let k in data[0]){
+            ks.push(k)
+            if(!isNaN(data[0][k])){
+                name=k
+            }
+        }
+        if(data[0][this.dimensionB]==undefined){
+            return {'data':data,'name':name}
+        }
+        
+        if(this.targname.length==1){
+            if(this.targname[0]=="Dimension"){
+                let xdata=new Array()
+                let xmap=new Map()
+                name=name+"count_"+this.dimensionA
+            
+                for(let i=0;i<data.length;i++){
+                
+                    if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                    }
+                    else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                    }
+                }
+                for(let k of xmap.keys()){
+                    let x={}
+                    x[this.dimensionA]=k
+                    x[name]=xmap.get(k)
+                    xdata.push(x)
+                }
+                return {'data':xdata,'name':name}
+            }
+            if(this.targname[0]=="Measure"){
+                if(!isNaN(Number(data[0][this.dimensionA]))){
+                    let sum=0
+                    name=name+"sum_"+this.dimensionA
+                    for(let i=0;i<data.length;i++){
+                        sum=sum+Number(data[i][this.dimensionA])
+                    }
+                    return {'data':{name:sum},'name':name}
+                }
+            }
+        }
+        else{
+            if(this.targname.length==2){
+                let exchange=''
+                let exchange1=""
+                if(this.targname[0]!="Dimension"){
+                    exchange=this.this.targname[0]
+                    this.targname[0]=this.targname[1]
+                    this.targname[1]=exchange
+                    exchange1=this.dimensionA
+                    this.dimensionA=this.dimensionB
+                    this.dimensionB=exchange1
+                }
+                console.log(this.dimensionA,this.dimensionB)
+                let xdata=new Array()
+                let xmap=new Map()
+
+                    name=name+"sum_"+this.dimensionA
+                    console.log(data)
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            console.log(data[i][this.dimensionB],Number(data[i][this.dimensionB]),parseFloat(data[i][this.dimensionB]))
+                            xmap.set(data[i][this.dimensionA],Number(data[i][this.dimensionB]))
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+Number(data[i][this.dimensionB]))
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+            }
+        }
+        return {'data':data,'name':this.dimensionA}
+    }
+    static AggregationCount(data){
+        let that=this
+        let name="AggregationCount_"
+        console.log(this.targname)
+        let ks=new Array()
+        for(let k in data[0]){
+            ks.push(k)
+            if(!isNaN(data[0][k])){
+                name=k
+            }
+        }
+        if(data[0][this.dimensionB]==undefined)
+        return {'data':data,'name':name}
+        if(this.targname.length==1){
+            if(this.targname[0]=="Dimension"){
+                let xdata=new Array()
+                let xmap=new Map()
+                name=name+"count_"+this.dimensionA
+            
+                for(let i=0;i<data.length;i++){
+                
+                    if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                    }
+                    else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                    }
+                }
+                for(let k of xmap.keys()){
+                    let x={}
+                    x[this.dimensionA]=k
+                    x[name]=xmap.get(k)
+                    xdata.push(x)
+                }
+                return {'data':xdata,'name':name}
+                    
+            }
+            if(this.targname[0]=="Measure"){
+                if(!isNaN(Number(data[0][this.dimensionA]))){
+                        let xdata=new Array()
+                        let xmap=new Map()
+                        name=name+"count_"+this.dimensionA
+            
+                        for(let i=0;i<data.length;i++){
+                
+                            if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                            }
+                            else{
+                                xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                            }
+                        }
+                        for(let k of xmap.keys()){
+                            let x={}
+                            x[this.dimensionA]=k
+                            x[name]=xmap.get(k)
+                            xdata.push(x)
+                        }
+                        return {'data':xdata,'name':name}
+                    
+                }
+            }
+        }
+        else{
+            if(this.targname.length==2){
+                let exchange=''
+                let exchange1=""
+                if(this.targname[0]!="Dimension"){
+                    exchange=this.this.targname[0]
+                    this.targname[0]=this.targname[1]
+                    this.targname[1]=exchange
+                    exchange1=this.dimensionA
+                    this.dimensionA=this.dimensionB
+                    this.dimensionB=exchange1
+                }
+                console.log(this.dimensionA,this.dimensionB)
+                let xdata=new Array()
+                let xmap=new Map()
+                    name=name+"count_"+this.dimensionA
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            xmap.set(data[i][this.dimensionA],1)
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+                
+            }
+        }
+        return {'data':data,'name':this.dimensionA}
+    }
+    static AggregationAvg(data){
+        let that=this
+        let name="AggregationAvg_"
+        console.log(this.targname)
+        let ks=new Array()
+        for(let k in data[0]){
+            ks.push(k)
+            if(!isNaN(data[0][k])){
+                name=k
+            }
+        }
+        if(data[0][this.dimensionB]==undefined)
+        return {'data':data,'name':name}
+        if(this.targname.length==1){
+            if(this.targname[0]=="Dimension"){
+                let xdata=new Array()
+                let xmap=new Map()
+                name=name+"count_"+this.dimensionA
+            
+                for(let i=0;i<data.length;i++){
+                
+                    if(xmap.get(data[i][this.dimensionA])==null){
+                                xmap.set(data[i][this.dimensionA],1)
+                    }
+                    else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                    }
+                }
+                for(let k of xmap.keys()){
+                    let x={}
+                    x[this.dimensionA]=k
+                    x[name]=xmap.get(k)
+                    xdata.push(x)
+                }
+                return {'data':xdata,'name':name}
+                    
+            }
+            if(this.targname[0]=="Measure"){
+                if(!isNaN(Number(data[0][this.dimensionA]))){
+                    
+                        let avg=0
+                        name=name+"savg_"+this.dimensionA
+                        for(let i=0;i<data.length;i++){
+                            avg=avg+Number(data[i][this.dimensionA])
+                        }
+                        return {'data':{name:avg/data.length},'name':name}
+                    
+                }
+            }
+        }
+        else{
+            if(this.targname.length==2){
+                let exchange=''
+                let exchange1=""
+                if(this.targname[0]!="Dimension"){
+                    exchange=this.this.targname[0]
+                    this.targname[0]=this.targname[1]
+                    this.targname[1]=exchange
+                    exchange1=this.dimensionA
+                    this.dimensionA=this.dimensionB
+                    this.dimensionB=exchange1
+                }
+                console.log(this.dimensionA,this.dimensionB)
+                let xdata=new Array()
+                let xmap=new Map()
+
+                    let cmap=new Map()
+                    name=name+"avg_"+this.dimensionA
+                    for(let i=0;i<data.length;i++){
+                        if(xmap.get(data[i][this.dimensionA])==null){
+                            xmap.set(data[i][this.dimensionA],1)
+                            cmap.set(data[i][this.dimensionA],Number(data[i][this.dimensionB]))
+                        }
+                        else{
+                            xmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+1)
+                            cmap.set(data[i][this.dimensionA],xmap.get(data[i][this.dimensionA])+Number(data[i][this.dimensionB]))
+                        }
+                    }
+                    for(let k of xmap.keys()){
+                        let x={}
+                        x[this.dimensionA]=k
+                        x[name]=cmap.get(k)/xmap.get(k)
+                        xdata.push(x)
+                    }
+                    return {'data':xdata,'name':name}
+                
             }
         }
         return {'data':data,'name':this.dimensionA}
