@@ -4,6 +4,7 @@
 
 <script>
     import mapboxgl from 'mapbox-gl'
+    import * as d3 from 'd3'
 
     export default {
         name: "AppMap",
@@ -19,12 +20,12 @@
                     'point-style':{
                         'circle-color':'#ff355a',
                         'circle-opacity':1,
-                        'circle-radius':10,
+                        'circle-radius': 3.5,
                         'circle-stroke-color':'#ffffff',
                         'circle-stroke-opacity':'',
                     },
                     'line-style':{
-                        'line-color':'#f9fdff',
+                        'line-color':'#333333',
                         'line-opacity':.6,
                         'line-width':4
                     },
@@ -101,11 +102,42 @@
                 //         }
                 //     });
                 // });
+
+                let getcolor = null
+                window.d3 = d3
+                if(data[0].hasOwnProperty('color')){
+                    /*
+                    let colorlist = Array.from(new Set(data.map(function(d){return d.color})))
+                    //console.log(colorlist)
+                    //d3.scaleOrdinal().domain(colorlist).range(colorlist[])
+                    let colorscale = d3.scaleOrdinal(d3.schemeSet2)
+                    let colorrange = colorlist.map(function(v,j){return colorscale(j)})
+                    getcolor = d3.scaleOrdinal().domain(colorlist).range(colorrange)
+                    //getcolor = d3.scaleOrdinal().domain(idlist).interpolator(d3.interpolateViridis);
+                    */
+                   let keylist = Array.from(new Set(data.map(function(d){return d.color})))
+                   let arrow = d3.scaleLinear().domain([0, keylist.length-1]).range([0,1])
+                   getcolor = function(key){
+                       return d3.interpolateCool(arrow(keylist.indexOf(key)))
+                   }
+                } else {
+                    getcolor = function(){
+                        return 'steelblue'
+                    }
+                }
+
                 for(let i=0;i<data.length;i++){
+                    let itemcolor = function(){
+                        if(data[i].hasOwnProperty('color')){
+                            return getcolor(data[i].color)
+                        }
+                        return getcolor()
+                    }()
+                    
                     points_features[i]={
                         "type": "Feature",
                         "properties": {
-                            "color": 'red',
+                            "color": itemcolor,
                             "opacity":.8,
                             "radius":20
                         },
@@ -129,15 +161,16 @@
                     this.map.addLayer({
                         "id": "points",
                         "source": "points_source",
-                        "minzoom":7,
+                        "minzoom":3,
                         "type": "circle",
                         "paint": {
                             "circle-radius": this.style["point-style"]['circle-radius'],
-                            "circle-color":this.style["point-style"]['circle-color'],
+                            "circle-color":['get', 'color'],
                             "circle-opacity":this.style["point-style"]['circle-opacity'],
                         }
                     })
                 })
+
             },
             /*------------------------------------------------------*/
             /*
@@ -160,18 +193,31 @@
 
             /*------------------Lines Drawing----------------------*/
             map_lines(style,data){
-
+                console.log('this is map_lines data', data)
                 let lines_features = []
+                let getcolor = null;
 
-                data.forEach( d=> {
+                if(data[0].hasOwnProperty('name')){
+                   let keylist = Array.from(new Set(data.map(function(d){return d.name})))
+                   let arrow = d3.scaleLinear().domain([0, keylist.length-1]).range([0,1])
+                   getcolor = function(key){
+                       return d3.interpolateCool(arrow(keylist.indexOf(key)))
+                   }
+                } else {
+                    getcolor = function(){
+                        return 'grey'
+                    }
+                }
+
+                data.forEach(d=> {
                     lines_features.push({
                         'type': 'Feature',
                         'properties':{
-                            'color': "#fff",
+                            'color': getcolor(d.name),
                         },
                         'geometry': {
                             'type': 'LineString',
-                            'coordinates': d.path
+                            'coordinates': d.track
                         }
                     });
                 });
@@ -192,7 +238,7 @@
                         'source': 'lines_source',
                         'paint': {
                             'line-width': this.style["line-style"]['line-width'],
-                            'line-color': this.style["line-style"]['line-color'],
+                            'line-color': ['get', 'color'],
                             'line-opacity':this.style["line-style"]['line-opacity'],
                         }
                     });
@@ -287,7 +333,7 @@
                         "properties": {
                             "color": "#eae33f",
                             "opacity":0.5,
-                            "radius":5
+                            "radius":2
                         },
                         "geometry": {
                             "type": "Point",
@@ -311,17 +357,32 @@
                         "type": "heatmap",
                         "source": "heatmap_source",
                         "paint": {
-                            // "heatmap-color": [
-                            //     "interpolate",
-                            //     ["linear"],
-                            //     ["heatmap-density"],
-                            //     0,
-                            //     "rgba(0, 0, 255, 0)",0.1,
-                            //     "royalblue",0.3,
-                            //     "cyan",0.5,
-                            //     "lime",0.7,
-                            //     "yellow",1,
-                            //     "red"]
+                            "heatmap-intensity": [
+                                "interpolate",
+                                ["linear"],
+                                ["zoom"],
+                                0, 1,
+                                9, 9
+                            ],
+                            "heatmap-color": [
+                                "interpolate",
+                                ["linear"],
+                                ["heatmap-density"],
+                                0, "rgba(33,102,172,0)",
+                                0.2, "rgb(103,169,207)",
+                                0.4, "rgb(209,229,240)",
+                                0.6, "rgb(253,219,199)",
+                                0.8, "rgb(239,138,98)",
+                                1, "rgb(65, 156, 214)"
+                                //1, "rgb(178,24,43)"
+                            ],
+                            "heatmap-radius": [
+                                "interpolate",
+                                ["linear"],
+                                ["zoom"],
+                                0, 2,
+                                9, 10
+                            ]
                         }
                     })
                 })
@@ -337,7 +398,8 @@
         watch:{
             getmapdata:{
                handler(data){
-
+                
+                console.log('getmapdata', data)
 
                     //  this.map_lines('',[{path:[[104.732971, 31.465042], [104.642886, 31.464969],[104.532076, 31.454854]]}])
                 //    console.log(data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
@@ -345,18 +407,51 @@
 
                 if(data.maptype=="TrackMap")
                 {
-                     this.map_config()
+                    // let rawDataKey = [],
+                    //     drawData = []
+                    // for(key in data.encoding){
+                    //     rawDataKey.push(data.encoding[key].field)
+                    // }
 
+                    let drawData = data.data.map(function(d){
+                        let obj = {};
+                        for(let key in data.encoding){
+
+                            if(key == 'track'){
+                                obj[key] = eval(d[data.encoding[key]['field']]).map(s => [s[1], s[0]])
+                            } else {
+                                obj[key] = d[data.encoding[key]['field']]
+                            }
+                        }
+                        return obj
+                    })
+                    
+                    console.log('drawdata', drawData)
+                     this.map_config()
                      this.map.setCenter([104.732971, 31.465042])
-                     this.map_lines('',data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
+                     this.map_lines('', drawData)
+                     //this.map_lines('',data.data.map(d=>{return {path:eval(d.path).map(s=>[s[1],s[0]])}}))
                 }
 
-
                 if(data.maptype=="ScatterMap"){
+
+                    for(let key in data.encoding){
+                        console.log('data encoding key', key)
+                    }
+
+                    let drawData = data.data.map(function(d){
+                        let obj = {};
+                        for(let key in data.encoding){
+                            obj[key] = d[data.encoding[key]['field']]
+                        }
+                        return obj 
+                    })
+
+                    console.log('this i s scattermap raw data', data)
                     this.map_config()
-                    console.log(data.data)
+                    console.log('ScatterMap', drawData)
                     this.map.setCenter([data.data[0].lng,data.data[0].lat])
-                    this.map_points(null,data.data)
+                    this.map_points(null,drawData)
                 }
                 if(data.maptype=="HeatMap"){
                     console.log(data)

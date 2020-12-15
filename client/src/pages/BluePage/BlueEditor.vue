@@ -376,11 +376,13 @@ export default {
         .enter()
         .append("circle")
         .attr("cx", function (d, i) {
-          return 20 + ((w - margin.left - margin.right) / 3) * i;
+          return 20 + ((w - margin.left - margin.right) / 2.8) * i;
         })
         .attr("cy", 110)
         .attr("r", 6)
         .attr("fill", "white")
+        .attr('stroke', 'black')
+        .attr('stroke-width', 2)
         .attr("value", function (d) {
           return d;
         })
@@ -393,10 +395,11 @@ export default {
             .attr("fill", function (d) {
               if (d != value) return "white";
               else {
-                return "red";
+                return "greenyellow";
               }
             });
         });
+
       d3.select(dom)
         .selectAll("T_Aggregation")
         .data(["Sum", "Count", "Avg"])
@@ -405,7 +408,7 @@ export default {
         .attr("class", "T_Aggregation")
         .attr("alignment-baseline", "central")
         .attr("x", function (d, i) {
-          return 26 + ((w - margin.left - margin.right) / 3) * i;
+          return 28 + ((w - margin.left - margin.right) / 2.8) * i;
         })
         .attr("y", 110)
         .attr("fill", "white")
@@ -940,6 +943,7 @@ export default {
           if (!(source in that.loadedDatasets)) {
             dataHelper.getDataDetail(source).then(function (response) {
               //that.vegaObject.setData(response.data.data.values);
+              console.log('data response', response)
               that.loadedDatasets[source] = response.data.data.values;
             });
           }
@@ -1075,30 +1079,30 @@ export default {
         if (caculator_modules.operatorsSetted()) {
           let result = {};
 
-          if (target.parent == "Sum")
-            result = caculator_modules.sum(
+          if (target.parent == "BasicSum")
+            result = caculator_modules.BasicSum(
               that.vegaObjectObj[vegaObjKey].getData()
             );
-          else if (target.parent == "Reduce")
-            result = caculator_modules.reduce(
+          else if (target.parent == "BasicReduce")
+            result = caculator_modules.BasicReduce(
               that.vegaObjectObj[vegaObjKey].getData()
             );
-          else if (target.parent == "Multi")
-            result = caculator_modules.multiple(that.vegaObjectObj[vegaObjKey].getData());
-            else if(target.parent=="Sort")
+          else if (target.parent == "BasicMulti")
+            result = caculator_modules.BasicMulti(that.vegaObjectObj[vegaObjKey].getData());
+          else if(target.parent=="Sort")
             result=caculator_modules.Sorts(that.vegaObjectObj[vegaObjKey].getData());
-            else if(target.parent=="Aggregation")
+          else if(target.parent=="Aggregation")
             result=caculator_modules.Aggregations(that.Aggregationdata.data,that.vegaObjectObj[vegaObjKey].getData());
-            else if(target.parent=="Filters")
+          else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,that.vegaObjectObj[vegaObjKey].getData());
-            else if(target.parent=="Features")
+          else if(target.parent=="Probability")
             {
               if(that.oldoprationdata!=null){
-                result=caculator_modules.features(that.oldoprationdata);
+                result=caculator_modules.probability(that.oldoprationdata);
                 that.oldoprationdata=result.data
                 that.lastname=result.name
               }else{
-                result=caculator_modules.features(that.vegaObjectObj[vegaObjKey].getData());
+                result=caculator_modules.probability(that.vegaObjectObj[vegaObjKey].getData());
               }
             }
                 
@@ -1321,24 +1325,24 @@ export default {
        if (caculator_modules.operatorsSetted()) {
           
 
-          if (target.parent == "Sum")
-            result = caculator_modules.sum(
+          if (target.parent == "BasicSum")
+            result = caculator_modules.BasicSum(
               data
             );
-          else if (target.parent == "Reduce")
-            result = caculator_modules.reduce(
+          else if (target.parent == "BasicReduce")
+            result = caculator_modules.BasicReduce(
              data
             );
-          else if (target.parent == "Multi")
-            result = caculator_modules.multiple(data);
+          else if (target.parent == "BasicMulti")
+            result = caculator_modules.BasicMulti(data);
             else if(target.parent=="Sort")
             result=caculator_modules.Sorts(data);
             else if(target.parent=="Aggregation")
             result=caculator_modules.Aggregations(that.Aggregationdata.data,data);
             else if(target.parent=="Filters")
             result=caculator_modules.Filters(that.filetersdata.selection,data);
-            else if(target.parent=="Features")
-                result=caculator_modules.features(data);
+            else if(target.parent=="Probability")
+                result=caculator_modules.probability(data);
          that.oldoprationdata=result.data
         
           // let newData = result.data,
@@ -1976,7 +1980,6 @@ button {
   color: white;
   border: none;
   width: 35px;
-  height: 25px;
   cursor: pointer;
   border-radius: 5px;
 }

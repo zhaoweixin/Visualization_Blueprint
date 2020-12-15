@@ -23,7 +23,7 @@ export default class caculator_modules {
             this.targname.push(dimension.targetname) 
         }
         let fea=false
-        if(this.parent=="Features"){
+        if(this.parent=="Probability"){
             for(let i=0;i<this.targname.length;i++){
                 if(this.targname[i] ==="data"){
                     fea=true;
@@ -32,13 +32,13 @@ export default class caculator_modules {
             }
         }
         console.log(this.targname)
-        if(this.parent=="Features"&&fea){
+        if(this.parent=="Probability"&&fea){
             if(this.dimensionB == undefined)
             this.dimensionB = dimension.name
             else
             this.dimensionA = dimension.name
         }else
-        if(this.parent=="Sort"||this.parent=="Filters"||(this.parent=="Features"&&!fea)){
+        if(this.parent=="Sort"||this.parent=="Filters"||(this.parent=="Probability"&&!fea)){
             this.dimensionA = dimension.name
             
                 this.dimensionB = dimension.name
@@ -72,9 +72,9 @@ export default class caculator_modules {
         }
         return false
     }
-    static sum(data) {
+    static BasicSum(data) {
 
-        let name = "sum_"
+        let name = "BasicSum_"
         let that = this
         console.log(this.dimensionA,this.dimensionB)
         name = name + this.dimensionA + '_' + this.dimensionB
@@ -91,7 +91,7 @@ export default class caculator_modules {
         // console.log(cdata)
         return {'data':xdata,'name':name}
     }
-    static reduce(data) {
+    static BasicReduce(data) {
 
         let name = 'reduce_'
         let that = this
@@ -106,9 +106,9 @@ export default class caculator_modules {
 
         return {'data':xdata,'name':name}
     }
-    static multiple(data) {
+    static BasicMulti(data) {
 
-        let name = 'multi_'
+        let name = 'BasicMulti_'
         let that = this
 
         name = name + this.dimensionA + '_' + this.dimensionB
@@ -121,7 +121,7 @@ export default class caculator_modules {
        
         return {'data':xdata,'name':name}
     }
-    static features(data){
+    static probability(data){
        
         let that=this;
         let min=0;
@@ -133,7 +133,7 @@ export default class caculator_modules {
         let bingks=new Array()
         let reslutdata=new Array()
         let indexk=0
-        let name='features_'+that.dimensionA
+        let name='Probability_'+that.dimensionA
         console.log(data)
         console.log(that.dimensionA)
         if(data[0][name]!=undefined)return {'data':data,'name':name}

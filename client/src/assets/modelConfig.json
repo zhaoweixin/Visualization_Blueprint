@@ -1,17 +1,17 @@
 {
-    "Features":{
+    "Probability":{
         "inPorts": [
-            {"name":"labe","text":"Labe","attr":"operator","type":"in"},
+            {"name":"labe","text":"Dimension","attr":"operator","type":"in"},
             {"name":"data","text":"Data","attr":"operator","type":"in"}
         ],
         "outPorts": [
-            {"name":"features","text":"Features","attr":"field","type":"out"}
+            {"name":"probability","text":"out","attr":"field","type":"out"}
         ],
         "type":"Caculator"
     },
     "Filters":{
         "inPorts": [
-            {"name":"labe","text":"Labe","attr":"operator","type":"in"}
+            {"name":"labe","text":"Dimension","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"filter","text":"Filter","attr":"field","type":"out"}
@@ -257,33 +257,31 @@
         ],
         "type":"Operator"
     },
-    "Sum":{
-
+    "BasicSum":{
         "inPorts": [
-            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
-            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+            {"name":"Num A","text":"Property A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Property B","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"Sum","text":"Sum","attr":"field","type":"out"}
         ],
         "type":"Caculator"
     },
-    "Reduce":{
-
+    "BasicReduce":{
         "inPorts": [
-            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
-            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+            {"name":"Num A","text":"Property A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Property B","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"Reduce","text":"Reduce","attr":"field","type":"out"}
         ],
         "type":"Caculator"
     },
-    "Multi":{
+    "BasicMulti":{
 
         "inPorts": [
-            {"name":"Num A","text":"Num A","attr":"operator","type":"in"},
-            {"name":"Num B","text":"Num B","attr":"operator","type":"in"}
+            {"name":"Num A","text":"Property A","attr":"operator","type":"in"},
+            {"name":"Num B","text":"Property B","attr":"operator","type":"in"}
         ],
         "outPorts": [
             {"name":"Multi","text":"Multi","attr":"field","type":"out"}
